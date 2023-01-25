@@ -1,0 +1,5 @@
+include "item.t"
+include "battleaxe.t"
+include "bow.t"
+include "kingssword.t"
+include "twohanded.t"

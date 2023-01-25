@@ -1,7 +1,7 @@
 /*
  ---Grail Quest---
  An S.P.I. Games Production
- Last Updated December 12, 2011
+ Last Updated January 24, 2023
  <><><><><><><><><>
  Grail Quest is an adventure role playing game set in the medieval times where the player searches
  the lands in an ultimate quest to find the holy grail. The player can kill enemies for experience and gold
@@ -9,12 +9,16 @@
  <><><><><><><><><>
 */
 %--------------------------------------------------------------
+
+include "items/index.t"
+include "enemies/index.t"
+
 setscreen ("position:middle,centre,graphics:500;400,offscreenonly,nobuttonbar,nocursor")
 var loadpic : int := Pic.FileNew ("Images/opening screen - loading.bmp") %loading screen
 var font5 : int := Font.New ("Courier:12")
 var record1, record2 : int %records
 var percent : real := 0 %load percent
-var version : string := "V - GQ2011.12.8"
+var version : string := "V - GQ2023.01.24"
 var xloadanimation, yloadanimation : int := 50
 var loaddotsize : array 1 .. 9 of int
 loaddotsize (1) := 2
@@ -27,6 +31,23 @@ loaddotsize (7) := 8
 loaddotsize (8) := 9
 loaddotsize (9) := 2
 var finishedloading : boolean := false
+
+%Items
+var kingsSword: ^KingsSword
+new KingsSword, kingsSword
+
+var twoHanded: ^TwoHanded
+new TwoHanded, twoHanded
+
+var battleAxe: ^BattleAxe
+new BattleAxe, battleAxe
+
+var bow: ^Bow
+new Bow, bow
+
+%Enemies
+var goblin: ^Goblin
+new Goblin, goblin
 
 process loadanimation
     loop
@@ -41,13 +62,13 @@ process loadanimation
 	for d : 1 .. 9
 	    drawfilloval (xloadanimation, yloadanimation, loaddotsize (d), loaddotsize (d), red)
 	    if yloadanimation > 25 and yloadanimation < 100 and xloadanimation = 50 then
-		yloadanimation := yloadanimation + 25
+	    yloadanimation := yloadanimation + 25
 	    elsif yloadanimation = 100 and xloadanimation > 25 and xloadanimation < 100 then
-		xloadanimation := xloadanimation + 25
+	    xloadanimation := xloadanimation + 25
 	    elsif yloadanimation > 50 and xloadanimation > 75 then
-		yloadanimation := yloadanimation - 25
+	    yloadanimation := yloadanimation - 25
 	    elsif yloadanimation = 50 and xloadanimation > 50 then
-		xloadanimation := xloadanimation - 25
+	    xloadanimation := xloadanimation - 25
 	    end if
 	    View.Update
 	end for
@@ -440,7 +461,7 @@ drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
 Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
 View.Update
 percent := percent + 2.5
-var kingsswordinvpic : int := Pic.FileNew ("Images/king's sword-inv.bmp")
+var kingsswordinvpic : int := kingsSword -> invpic
 
 drawfillbox (100, 190, 400, 210, darkgrey)
 drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
@@ -601,7 +622,7 @@ var grail : boolean := false %holy grail obtained
 var up : boolean := true %character image cycling
 var battleaxe : boolean := false %battleaxe item obtained
 var twohanded : boolean := false %twohanded sword item obtained
-var bow : boolean := false %bow item obtained
+var bowObtained : boolean := false %bow item obtained
 var key_west_hall : boolean := false %west hall key obtained
 var cottagekey : boolean := false %cottage key obtained
 var goblinalive : boolean := true %goblin alive
@@ -804,7 +825,8 @@ var xsplash3 : int := Rand.Int (500, 560) %splash x coordinate of splash 3 at co
 var ysplash1 : int := Rand.Int (315, 370) %splash y coordinate of splash 1 at cottage scene
 var ysplash2 : int := Rand.Int (315, 370) %splash y coordinate of splash 2 at cottage scene
 var ysplash3 : int := Rand.Int (315, 370) %splash y coordinate of splash 3 at cottage scene
-var weapon : string := "king's sword" %equipped player weapon
+var weapon : pointer to Item := kingsSword %equipped player weapon
+var equipped : string
 var scene : string := "" %current scene
 var goto : string := "" %scene redirection
 var text : string := "Your quest begins...you seek the Holy Grail." %top bar text
@@ -830,13 +852,13 @@ View.Update
 %>>PROGRAM<<<
 %------------------------------------------
 
-proc kings_sword_info
+proc getInfo(item : pointer to Item)
     loop
 	Pic.Draw (info, 100, 100, picMerge)
 	drawfillbox (150, 150, 650, 450, black)
-	Font.Draw ("The King's Sword", 150, 420, font3, brightred)
-	Font.Draw ("This sword was provided to you by your king.", 150, 390, font1, brightred)
-	Font.Draw ("Attack advantage: +0", 150, 360, font1, brightred)
+	Font.Draw (item -> name, 150, 420, font3, brightred)
+	Font.Draw (item -> description, 150, 390, font1, brightred)
+	Font.Draw ("Attack advantage: +" + intstr(item -> power), 150, 360, font1, brightred)
 	Pic.Draw (returnbtn, 630, 100, picMerge)
 	buttonchoose ("multibutton")
 	mousewhere (xm, ym, button)
@@ -848,67 +870,7 @@ proc kings_sword_info
 	end if
 	View.Update
     end loop
-end kings_sword_info
-
-proc battleaxe_info
-    loop
-	Pic.Draw (info, 100, 100, picMerge)
-	drawfillbox (150, 150, 650, 450, black)
-	Font.Draw ("Battleaxe", 150, 420, font3, brightred)
-	Font.Draw ("This is purchased at the shop in the castle.", 150, 390, font1, brightred)
-	Font.Draw ("Attack advantage: +10", 150, 360, font1, brightred)
-	Pic.Draw (returnbtn, 630, 100, picMerge)
-	buttonchoose ("multibutton")
-	mousewhere (xm, ym, button)
-	left := button mod 10         % left = 0 or 1
-	middle := (button - left) mod 100         % middle = 0 or 10
-	right := button - middle - left         % right = 0 or 100
-	if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
-	    return
-	end if
-	View.Update
-    end loop
-end battleaxe_info
-
-proc twohanded_info
-    loop
-	Pic.Draw (info, 100, 100, picMerge)
-	drawfillbox (150, 150, 650, 450, black)
-	Font.Draw ("Two-Handed Sword", 150, 420, font3, brightred)
-	Font.Draw ("This is purchased at the shop in the castle.", 150, 390, font1, brightred)
-	Font.Draw ("Attack advantage: +15", 150, 360, font1, brightred)
-	Pic.Draw (returnbtn, 630, 100, picMerge)
-	buttonchoose ("multibutton")
-	mousewhere (xm, ym, button)
-	left := button mod 10         % left = 0 or 1
-	middle := (button - left) mod 100         % middle = 0 or 10
-	right := button - middle - left         % right = 0 or 100
-	if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
-	    return
-	end if
-	View.Update
-    end loop
-end twohanded_info
-
-proc bow_info
-    loop
-	Pic.Draw (info, 100, 100, picMerge)
-	drawfillbox (150, 150, 650, 450, black)
-	Font.Draw ("Bow", 150, 420, font3, brightred)
-	Font.Draw ("This is purchased at the shop in the castle.", 150, 390, font1, brightred)
-	Font.Draw ("Attack advantage: +5", 150, 360, font1, brightred)
-	Pic.Draw (returnbtn, 630, 100, picMerge)
-	buttonchoose ("multibutton")
-	mousewhere (xm, ym, button)
-	left := button mod 10         % left = 0 or 1
-	middle := (button - left) mod 100         % middle = 0 or 10
-	right := button - middle - left         % right = 0 or 100
-	if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
-	    return
-	end if
-	View.Update
-    end loop
-end bow_info
+end getInfo
 
 proc usermanual
     colourback (black)
@@ -980,25 +942,25 @@ proc talk
     if cottagekey = true then
 	Pic.Draw (cottagekey_pic, 119, 635, picMerge)
     end if
-    if battleaxe = true then
-	Pic.Draw (battleaxeinvpic, 213, 635, picMerge)
+    if battleAxe -> obtained = true then
+	Pic.Draw (battleAxe -> invpic, 213, 635, picMerge)
     end if
-    if twohanded = true then
-	Pic.Draw (twohandedinvpic, 235, 635, picMerge)
+    if twoHanded -> obtained = true then
+	Pic.Draw (twoHanded -> invpic, 235, 635, picMerge)
     end if
-    if bow = true then
-	Pic.Draw (bowinvpic, 258, 635, picMerge)
+    if bow -> obtained = true then
+	Pic.Draw (bow -> invpic, 258, 635, picMerge)
     end if
     if grail = true then
 	Pic.Draw (grailinvpic, 285, 636, picMerge)
     end if
-    if weapon = "king's sword" then
+    if weapon = kingsSword then
 	drawbox (190, 634, 212, 656, red)
-    elsif weapon = "battleaxe" then
+    elsif weapon = battleAxe then
 	drawbox (212, 634, 234, 656, red)
-    elsif weapon = "2h" then
+    elsif weapon = twoHanded then
 	drawbox (234, 634, 257, 656, red)
-    elsif weapon = "bow" then
+    elsif weapon = bow then
 	drawbox (257, 634, 280, 656, red)
     end if
     if grail = true then
@@ -1166,11 +1128,11 @@ proc enterchat
 	elsif chattext = "DOWN" then
 	    y := y - 50
 	elsif chattext = "BATTLEAXE" then
-	    battleaxe := true
+	    battleAxe -> setObtained(true)
 	elsif chattext = "2H" then
-	    twohanded := true
+	    twoHanded -> setObtained(true)
 	elsif chattext = "BOW" then
-	    bow := true
+	    bow -> setObtained(true)
 	elsif chattext = "HEALTHPACKS" then
 	    healthpacks := healthpacks + 100
 	elsif chattext = "ARROWS" then
@@ -1224,37 +1186,12 @@ process swords
     Music.PlayFile ("Sounds/sword.wav")
 end swords
 
-process swordhit
-    if attacksfxplaying = false then
-	%attacksfxplaying := true
-	Music.PlayFile ("Sounds/swordhit.wav")
-	attacksfxplaying := false
-    end if
-end swordhit
-
-process battleaxehit
-    if attacksfxplaying = false then
-	%attacksfxplaying := true
-	Music.PlayFile ("Sounds/battleaxehit.wav")
-	attacksfxplaying := false
-    end if
-end battleaxehit
-
-process twohandedhit
-    if attacksfxplaying = false then
-	%attacksfxplaying := true
-	Music.PlayFile ("Sounds/2hhit.wav")
-	attacksfxplaying := false
-    end if
-end twohandedhit
-
-process bowhit
-    if attacksfxplaying = false then
-	%attacksfxplaying := true
-	Music.PlayFile ("Sounds/bowhit.wav")
-	attacksfxplaying := false
-    end if
-end bowhit
+proc hit
+	if not attacksfxplaying then
+		Music.PlayFile(weapon -> hitSound)
+		attacksfxplaying := false
+	end if
+end hit
 
 process purchase
     Music.PlayFile ("Sounds/buy.wav")
@@ -1600,16 +1537,16 @@ proc credits
 	Font.Draw ("Hoping For Real Betterness - Ensemble Studios - Age of Mythology", 20, ycredits - 1220, font2, white)
 	Font.Draw ("Never Mind The Slacks And Bashers - Ensemble Studios - Age of Mythology", 20, ycredits - 1240, font2, white)
 	Font.Draw ("The Ballad Of Ace Lebaron - Ensemble Studios - Age of Mythology", 20, ycredits - 1260, font2, white)
-	Font.Draw ("(Fine Layers Of) Slaysenflite - Ensemble Studios - Age of Mythology", 20, ycredits - 1280, font2, white)
+	Font.Draw ("Fine Layers Of Slaysenflite - Ensemble Studios - Age of Mythology", 20, ycredits - 1280, font2, white)
 	Font.Draw ("Won1 - Ensemble Studios - Age of Empires (Kings)", 20, ycredits - 1300, font2, white)
 	Font.Draw ("Open - Ensemble Studios - Age of Empires (Kings)", 20, ycredits - 1320, font2, white)
 
 	Font.Draw ("Sound Effects", 10, ycredits - 1370, font1, white)
 	Font.Draw ("Button Highlight (sword) - criterionmud.net", 20, ycredits - 1390, font2, white)
-	Font.Draw ("Combat (sword) - microsoft.com", 20, ycredits - 1410, font2, white)
-	Font.Draw ("Combat (battleaxe) - mine.nu", 20, ycredits - 1430, font2, white)
-	Font.Draw ("Combat (bow) - microsoft.com", 20, ycredits - 1450, font2, white)
-	Font.Draw ("Combat (two-handed sword) - livjm.ac.uk", 20, ycredits - 1470, font2, white)
+	Font.Draw ("Combat sword - microsoft.com", 20, ycredits - 1410, font2, white)
+	Font.Draw ("Combat battleaxe - mine.nu", 20, ycredits - 1430, font2, white)
+	Font.Draw ("Combat bow - microsoft.com", 20, ycredits - 1450, font2, white)
+	Font.Draw ("Combat two-handed sword - livjm.ac.uk", 20, ycredits - 1470, font2, white)
 	Font.Draw ("Shop Purchase (coins) - rozziland.com", 20, ycredits - 1490, font2, white)
 	Font.Draw ("Gate - sounddogs.com", 20, ycredits - 1510, font2, white)
 	Font.Draw ("Key - soundjay.com", 20, ycredits - 1530, font2, white)
@@ -1637,7 +1574,7 @@ proc credits
 	Font.Draw ("S.P.I. Games", 110, ycredits - 1950, font9, white)
 
 
-	Font.Draw ("Copyright 2007-2012 Sciberras Programming Inc. All rights reserved.", 40, ycredits - 1990, font2, white)
+	Font.Draw ("Copyright 2007-2023 Sciberras Programming Inc. All rights reserved.", 40, ycredits - 1990, font2, white)
 	%Pic.Draw (logo, 30, ycredits - 1990, picCopy)
 
 	View.Update
@@ -1934,25 +1871,25 @@ proc map
 	if cottagekey = true then
 	    Pic.Draw (cottagekey_pic, 119, 635, picMerge)
 	end if
-	if battleaxe = true then
-	    Pic.Draw (battleaxeinvpic, 213, 635, picMerge)
+	if battleAxe -> obtained = true then
+	    Pic.Draw (battleAxe -> invpic, 213, 635, picMerge)
 	end if
-	if twohanded = true then
-	    Pic.Draw (twohandedinvpic, 235, 635, picMerge)
+	if twoHanded -> obtained = true then
+	    Pic.Draw (twoHanded -> invpic, 235, 635, picMerge)
 	end if
-	if bow = true then
-	    Pic.Draw (bowinvpic, 258, 635, picMerge)
+	if bow -> obtained = true then
+	    Pic.Draw (bow -> invpic, 258, 635, picMerge)
 	end if
 	if grail = true then
 	    Pic.Draw (grailinvpic, 285, 636, picMerge)
 	end if
-	if weapon = "king's sword" then
+	if weapon = kingsSword then
 	    drawbox (190, 634, 212, 656, red)
-	elsif weapon = "battleaxe" then
+	elsif weapon = battleAxe then
 	    drawbox (212, 634, 234, 656, red)
-	elsif weapon = "2h" then
+	elsif weapon = twoHanded then
 	    drawbox (234, 634, 257, 656, red)
-	elsif weapon = "bow" then
+	elsif weapon = bow then
 	    drawbox (257, 634, 280, 656, red)
 	end if
 	if grail = true then
@@ -2066,15 +2003,39 @@ proc map
     end loop
 end map
 
+proc restoreInv
+	battleAxe -> setObtained(battleaxe)
+	twoHanded -> setObtained(twohanded)
+	bow -> setObtained(bowObtained)
+	if equipped = "kingsSword" then
+		weapon := kingsSword
+	elsif equipped = "battleAxe" then
+		weapon := battleAxe
+	elsif equipped = "twoHanded" then
+		weapon := twoHanded
+	elsif equipped = "bow" then
+		weapon := bow
+	end if
+end restoreInv
+
 proc save
+	if weapon = kingsSword then
+		equipped := "kingsSword"
+	elsif weapon = battleAxe then
+		equipped := "battleAxe"
+	elsif weapon = twoHanded then
+		equipped := "twoHanded"
+	elsif weapon = bow then
+		equipped := "bow"
+	end if
     open : record1, "Grail Quest - records.gqr", write
-    write : record1, grail, up, battleaxe, twohanded, bow, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
+    write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
 	victory, music_on, stopmusic, destination, goblinmove, skeletonmove, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xgoblin, ygoblin, rgoblin, xskeleton, yskeleton, rskeleton, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints, goblinhp,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, goblinreturncounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter, skeletonreturncounter,
-	ghostreturncounter, zombiereturncounter, bonus, skeletonhp, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
+	ghostreturncounter, zombiereturncounter, bonus, skeletonhp, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
     drawdot (793, 602, brightgreen)
@@ -2084,15 +2045,16 @@ end save
 
 proc load
     open : record1, "Grail Quest - records.gqr", read
-    read : record1, grail, up, battleaxe, twohanded, bow, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
+    read : record1, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
 	victory, music_on, stopmusic, destination, goblinmove, skeletonmove, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xgoblin, ygoblin, rgoblin, xskeleton, yskeleton, rskeleton, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints, goblinhp,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, goblinreturncounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter, skeletonreturncounter,
-	ghostreturncounter, zombiereturncounter, bonus, skeletonhp, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
+	ghostreturncounter, zombiereturncounter, bonus, skeletonhp, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
+	restoreInv()
 end load
 
 proc picture     %selects appropriate picture number
@@ -2111,7 +2073,7 @@ end picture
 proc movement     %manipulates character movement input
     if victory = false then
 	if xm > x - 1 and xm < x + 21 and ym > y - 1 and ym < y + 30 then
-	    Font.Draw ("You (Level " + intstr (totallvl) + ")", x, y + 30, font2, white)
+	    Font.Draw ("You [Level " + intstr (totallvl) + "]", x, y + 30, font2, white)
 	end if
 	if ym < 601 and ym > -1 and xm > -1 and xm < 801 then         %if mouse in playing screen then move character
 	    if xm < 787 or xm > 793 or ym < 585 or ym > 595 then
@@ -2131,8 +2093,8 @@ proc movement     %manipulates character movement input
 		xdest := xskeleton
 		ydest := yskeleton
 	    elsif follow = "goblin" then
-		xdest := xgoblin
-		ydest := ygoblin
+		xdest := goblin -> xPos
+		ydest := goblin -> yPos
 	    elsif follow = "ghost" then
 		xdest := xghost
 		ydest := yghost
@@ -2285,6 +2247,36 @@ proc movement     %manipulates character movement input
     end if
 end movement
 
+proc buyItem(item: pointer to Item)
+	if ~ item -> obtained then
+		if gold >= item -> cost then
+			item -> setObtained(true)
+			gold := gold - item -> cost
+			Pic.Draw (item -> invpic, 235, 635, picMerge)
+			View.Update
+			if sfx_on then
+				fork purchase
+			end if
+		else
+			text := "You need " + intstr (item -> cost - gold) + " more gold to cover the cost."
+		end if
+	end if
+end buyItem
+
+proc equipItem(item: pointer to Item)
+	if item -> obtained then
+		if weapon not= item then
+			weapon := item
+			if sfx_on then
+				hit()
+			end if
+			text := item -> wieldText
+		end if
+	else
+		text := item -> unobtainedText
+	end if
+end equipItem
+
 proc collision (var go_to : string)     %detects collisions with objects and buttons
     Input.KeyDown (hotkey)
     if not hotkey ('n') then
@@ -2333,13 +2325,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     if xm > 190 and xm < 212 and ym > 633 and ym < 657 then         %king's sword
 	drawbox (190, 634, 212, 656, red)
 	if left = 1 then         %if king's sword is selected
-	    if weapon not= "king's sword" then
-		if sfx_on not= false then
-		    fork swordhit
-		end if
-		weapon := "king's sword"
-		text := "You wield the sword provided by your king."
-	    end if
+	    equipItem(kingsSword)
 	elsif right = 100 then
 	    kingsswordlist := true
 	    battleaxelist := false
@@ -2349,17 +2335,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     elsif xm > 212 and xm < 234 and ym > 633 and ym < 656 then         %battleaxe
 	drawbox (212, 634, 234, 656, red)
 	if left = 1 then         %if battleaxe is selected
-	    if battleaxe = true then
-		if weapon not= "battleaxe" then
-		    if sfx_on not= false then
-			fork battleaxehit
-		    end if
-		    weapon := "battleaxe"
-		    text := "You wield your battleaxe, it is heavy and improves your attack force somewhat."
-		end if
-	    else
-		text := "You don't have a battleaxe."
-	    end if
+	    equipItem(battleAxe)
 	elsif right = 100 then
 	    kingsswordlist := false
 	    battleaxelist := true
@@ -2369,17 +2345,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     elsif xm > 234 and xm < 257 and ym > 633 and ym < 656 then         %2h
 	drawbox (234, 634, 257, 656, red)
 	if left = 1 then         %if 2h is selected
-	    if twohanded = true then
-		if weapon not= "2h" then
-		    if sfx_on not= false then
-			fork twohandedhit
-		    end if
-		    weapon := "2h"
-		    text := "You wield your two-handed sword, it improves your attack force signifigantly."
-		end if
-	    else
-		text := "You don't have a two-handed sword."
-	    end if
+	    equipItem(twoHanded)
 	elsif right = 100 then
 	    kingsswordlist := false
 	    battleaxelist := false
@@ -2389,17 +2355,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     elsif xm > 257 and xm < 280 and ym > 633 and ym < 656 then         %bow
 	drawbox (257, 634, 280, 656, red)
 	if left = 1 then         %if bow is selected
-	    if bow = true then
-		if weapon not= "bow" then
-		    if sfx_on not= false then
-			fork bowhit
-		    end if
-		    weapon := "bow"
-		    text := "You wield your bow...You can now perform ranged attacks.  Arrows: " + intstr (arrownum)
-		end if
-	    else
-		text := "You don't have a bow.  Arrows: " + intstr (arrownum)
-	    end if
+	    equipItem(bow)
 	elsif right = 100 then
 	    kingsswordlist := false
 	    battleaxelist := false
@@ -2513,20 +2469,14 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 	    Font.Draw ("Wield", 155, 610, font2, yellow)
 	    Font.Draw ("Info.", 155, 580, font2, yellow)
 	    if left = 1 then
-		if weapon not= "king's sword" then
-		    if sfx_on not= false then
-			fork swordhit
-		    end if
-		    weapon := "king's sword"
-		    text := "You wield the sword provided by your king."
-		end if
+		  equipItem(kingsSword)
 	    end if
 	elsif ym > 570 and ym < 600 then
 	    drawfillbox (150, 570, 212, 600, green)
 	    Font.Draw ("Wield", 155, 610, font2, yellow)
 	    Font.Draw ("Info.", 155, 580, font2, yellow)
 	    if left = 1 then
-		kings_sword_info
+		getInfo(kingsSword)
 	    end if
 	end if
 	Font.Draw ("Wield", 155, 610, font2, yellow)
@@ -2542,24 +2492,14 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 	    Font.Draw ("Wield", 177, 610, font2, yellow)
 	    Font.Draw ("Info.", 177, 580, font2, yellow)
 	    if left = 1 then
-		if battleaxe = true then
-		    if weapon not= "battleaxe" then
-			if sfx_on not= false then
-			    fork battleaxehit
-			end if
-			weapon := "battleaxe"
-			text := "You wield your battleaxe, it is heavy and improves your attack force somewhat."
-		    end if
-		else
-		    text := "You don't have a battleaxe."
-		end if
+			equipItem(battleAxe)
 	    end if
 	elsif ym > 570 and ym < 600 then
 	    drawfillbox (172, 570, 234, 600, green)
 	    Font.Draw ("Wield", 177, 610, font2, yellow)
 	    Font.Draw ("Info.", 177, 580, font2, yellow)
 	    if left = 1 then
-		battleaxe_info
+		getInfo(battleAxe)
 	    end if
 	end if
 	Font.Draw ("Wield", 177, 610, font2, yellow)
@@ -2575,24 +2515,14 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 	    Font.Draw ("Wield", 199, 610, font2, yellow)
 	    Font.Draw ("Info.", 199, 580, font2, yellow)
 	    if left = 1 then
-		if twohanded = true then
-		    if weapon not= "2h" then
-			if sfx_on not= false then
-			    fork twohandedhit
-			end if
-			weapon := "2h"
-			text := "You wield your two-handed sword, it improves your attack force signifigantly."
-		    end if
-		else
-		    text := "You don't have a two-handed sword."
-		end if
+			equipItem(twoHanded)
 	    end if
 	elsif ym > 570 and ym < 600 then
 	    drawfillbox (194, 570, 256, 600, green)
 	    Font.Draw ("Wield", 199, 610, font2, yellow)
 	    Font.Draw ("Info.", 199, 580, font2, yellow)
 	    if left = 1 then
-		twohanded_info
+		getInfo(twoHanded)
 	    end if
 	end if
 	Font.Draw ("Wield", 199, 610, font2, yellow)
@@ -2608,24 +2538,14 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 	    Font.Draw ("Wield", 225, 610, font2, yellow)
 	    Font.Draw ("Info.", 225, 580, font2, yellow)
 	    if left = 1 then
-		if bow = true then
-		    if weapon not= "bow" then
-			if sfx_on not= false then
-			    fork bowhit
-			end if
-			weapon := "bow"
-			text := "You wield your bow...You can now perform ranged attacks.  Arrows: " + intstr (arrownum)
-		    end if
-		else
-		    text := "You don't have a bow.  Arrows: " + intstr (arrownum)
-		end if
+			equipItem(bow)
 	    end if
 	elsif ym > 570 and ym < 600 then
 	    drawfillbox (216, 570, 278, 600, green)
 	    Font.Draw ("Wield", 225, 610, font2, yellow)
 	    Font.Draw ("Info.", 225, 580, font2, yellow)
 	    if left = 1 then
-		bow_info
+		getInfo(bow)
 	    end if
 	end if
 	Font.Draw ("Wield", 225, 610, font2, yellow)
@@ -2634,15 +2554,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 	    bowlist := false
 	end if
     end if
-    if weapon = "king's sword" then
-	bonus := 0
-    elsif weapon = "battleaxe" then
-	bonus := 10
-    elsif weapon = "2h" then
-	bonus := 15
-    elsif weapon = "bow" then
-	bonus := 5
-    end if
+	bonus := weapon -> power
     if scene = "castle entrance" then         %if inside castle
 	if y > 354 and (x < 284 or x > 457) then         %if colliding with wall but not entrance
 	    y := 354
@@ -2725,7 +2637,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "troll"
 		end if
 	    end if
-	    if ((weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h") and (abs ((xtroll + 10) - (x + 15)) < 20 and abs ((ytroll + 15) - (y + 15)) < 20)) or (weapon = "bow"
+	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((xtroll + 10) - (x + 15)) < 20 and abs ((ytroll + 15) - (y + 15)) < 20)) or (weapon = bow
 		    and (abs ((xtroll + 10)
 		    - (x + 15)) < 100 and abs ((ytroll + 15) - (y + 15)) < 200)) then
 		attacking := true
@@ -2751,9 +2663,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			attacking := false
 			text := "You die...a monk resurrects you and warns you to be more careful..."
 			go_to := "castle entrance"
-			battleaxe := false
-			twohanded := false
-			bow := false
+			battleAxe -> setObtained(false)
+			twoHanded -> setObtained(false)
+			bow -> setObtained(false)
 			platebody := false
 			platelegs := false
 			fullhelm := false
@@ -2765,12 +2677,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			gold := 0
 			hitpoints := 25
 			healthpacks := 0
-			weapon := "king's sword"
+			weapon := kingsSword
 			return
 		    end if
 		    if trollhp > 0 then
 			%if using a combat attack style
-			if weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h" then
+			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
 			    %inflicts damage to troll accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    trollhp := trollhp - damagedealt
@@ -2792,7 +2704,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = "bow" then
+			elsif weapon = bow then
 			    %inflicts damage to troll accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
@@ -2820,25 +2732,13 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			    text := "You have run out of arrows!"
 			end if
 		    end if
-		    if weapon = "king's sword" then
-			if sfx_on not= false then
-			    fork swordhit
+			if weapon = bow then
+				if arrownum > 0 then
+					hit()
+				end if
+			else
+				hit()
 			end if
-		    elsif weapon = "battleaxe" then
-			if sfx_on not= false then
-			    fork battleaxehit
-			end if
-		    elsif weapon = "2h" then
-			if sfx_on not= false then
-			    fork twohandedhit
-			end if
-		    elsif weapon = "bow" then
-			if arrownum > 0 then
-			    if sfx_on not= false then
-				fork bowhit
-			    end if
-			end if
-		    end if
 		end if
 	    else
 		attacking := false
@@ -2900,33 +2800,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     elsif scene = "in shop" then
 	if shopscreen = 1 then
 	    if xm > 159 and xm < 241 and ym > 342 and ym < 389 and left = 1 then             %if battleaxe selected
-		if battleaxe = false then
-		    if gold >= 500 then
-			battleaxe := true
-			gold := gold - 500
-			Pic.Draw (battleaxeinvpic, 213, 635, picMerge)
-			View.Update
-			if sfx_on not= false then
-			    fork purchase
-			end if
-		    else
-			text := "You need " + intstr (500 - gold) + " more gold to cover the cost."
-		    end if
-		end if
+			buyItem(battleAxe)
 	    elsif xm > 322 and xm < 404 and ym > 342 and ym < 389 and left = 1 then             %if 2h selected
-		if twohanded = false then
-		    if gold >= 1000 then
-			twohanded := true
-			gold := gold - 1000
-			Pic.Draw (twohandedinvpic, 235, 635, picMerge)
-			View.Update
-			if sfx_on not= false then
-			    fork purchase
-			end if
-		    else
-			text := "You need " + intstr (1000 - gold) + " more gold to cover the cost."
-		    end if
-		end if
+			buyItem(twoHanded)
 	    elsif xm > 190 and xm < 272 and ym > 93 and ym < 140 then             %if healthpacks selected
 		if left = 1 and buyhp = true then
 		    if gold >= 100 then
@@ -2945,19 +2821,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    buyhp := true
 		end if
 	    elsif xm > 527 and xm < 609 and ym > 342 and ym < 389 and left = 1 then             %if bow selected
-		if bow = false then
-		    if gold >= 300 then
-			gold := gold - 300
-			bow := true
-			Pic.Draw (bowinvpic, 258, 635, picMerge)
-			View.Update
-			if sfx_on not= false then
-			    fork purchase
-			end if
-		    else
-			text := "You need " + intstr (300 - gold) + " more gold to cover the cost."
-		    end if
-		end if
+			buyItem(bow)
 	    elsif xm > 454 and xm < 536 and ym > 95 and ym < 138 then             %if arrows selected
 		if left = 1 and buyarrow = true then
 		    if gold >= 50 then
@@ -3060,7 +2924,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "skeleton"
 		end if
 	    end if
-	    if ((weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h") and (abs ((xskeleton + 10) - (x + 15)) < 20 and abs ((yskeleton + 15) - (y + 15)) < 20)) or (weapon = "bow"
+	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((xskeleton + 10) - (x + 15)) < 20 and abs ((yskeleton + 15) - (y + 15)) < 20)) or (weapon = bow
 		    and (abs ((xskeleton + 10)
 		    - (x + 15)) < 100 and abs ((yskeleton + 15) - (y + 15)) < 200)) then
 		attacking := true
@@ -3086,9 +2950,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			attacking := false
 			text := "You die...a monk resurrects you and warns you to be more careful..."
 			go_to := "castle entrance"
-			battleaxe := false
-			twohanded := false
-			bow := false
+			battleAxe -> setObtained(false)
+			twoHanded -> setObtained(false)
+			bow -> setObtained(false)
 			platebody := false
 			platelegs := false
 			fullhelm := false
@@ -3100,12 +2964,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			gold := 0
 			hitpoints := 25
 			healthpacks := 0
-			weapon := "king's sword"
+			weapon := kingsSword
 			return
 		    end if
 		    if skeletonhp > 0 then
 			%if using a combat attack style
-			if weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h" then
+			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
 			    %inflicts damage to skeleton accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    skeletonhp := skeletonhp - damagedealt
@@ -3127,7 +2991,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = "bow" then
+			elsif weapon = bow then
 			    %inflicts damage to skeleton accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
@@ -3155,25 +3019,13 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			    text := "You have run out of arrows!"
 			end if
 		    end if
-		    if weapon = "king's sword" then
-			if sfx_on not= false then
-			    fork swordhit
+			if weapon = bow then
+				if arrownum > 0 then
+					hit()
+				end if
+			else
+				hit()
 			end if
-		    elsif weapon = "battleaxe" then
-			if sfx_on not= false then
-			    fork battleaxehit
-			end if
-		    elsif weapon = "2h" then
-			if sfx_on not= false then
-			    fork twohandedhit
-			end if
-		    elsif weapon = "bow" then
-			if arrownum > 0 then
-			    if sfx_on not= false then
-				fork bowhit
-			    end if
-			end if
-		    end if
 		end if
 	    else
 		attacking := false
@@ -3205,7 +3057,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "ghost"
 		end if
 	    end if
-	    if ((weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h") and (abs ((xghost + 10) - (x + 15)) < 20 and abs ((yghost + 15) - (y + 15)) < 20)) or (weapon = "bow"
+	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((xghost + 10) - (x + 15)) < 20 and abs ((yghost + 15) - (y + 15)) < 20)) or (weapon = bow
 		    and (abs ((xghost + 10) - (x + 15)) < 100 and abs ((yghost + 15) - (y + 15)) < 200)) then
 		attacking := true
 		if xdest = xghost and ydest = yghost then
@@ -3230,9 +3082,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			attacking := false
 			text := "You die...a monk resurrects you and warns you to be more careful..."
 			go_to := "castle entrance"
-			battleaxe := false
-			twohanded := false
-			bow := false
+			battleAxe -> setObtained(false)
+			twoHanded -> setObtained(false)
+			bow -> setObtained(false)
 			platebody := false
 			platelegs := false
 			fullhelm := false
@@ -3244,12 +3096,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			gold := 0
 			hitpoints := 25
 			healthpacks := 0
-			weapon := "king's sword"
+			weapon := kingsSword
 			return
 		    end if
 		    if ghosthp > 0 then
 			%if using a combat attack style
-			if weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h" then
+			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
 			    %inflicts damage to ghost accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    ghosthp := ghosthp - damagedealt
@@ -3271,7 +3123,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = "bow" then
+			elsif weapon = bow then
 			    %inflicts damage to ghost accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
@@ -3298,24 +3150,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You have run out of arrows!"
 			    end if
 			end if
-			if weapon = "king's sword" then
-			    if sfx_on not= false then
-				fork swordhit
-			    end if
-			elsif weapon = "battleaxe" then
-			    if sfx_on not= false then
-				fork battleaxehit
-			    end if
-			elsif weapon = "2h" then
-			    if sfx_on not= false then
-				fork twohandedhit
-			    end if
-			elsif weapon = "bow" then
-			    if arrownum > 0 then
-				if sfx_on not= false then
-				    fork bowhit
+			if weapon = bow then
+				if arrownum > 0 then
+					hit()
 				end if
-			    end if
+			else
+				hit()
 			end if
 		    end if
 		end if
@@ -3351,7 +3191,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "zombie"
 		end if
 	    end if
-	    if ((weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h") and (abs ((xzombie + 10) - (x + 15)) < 20 and abs ((yzombie + 15) - (y + 15)) < 20)) or (weapon = "bow"
+	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((xzombie + 10) - (x + 15)) < 20 and abs ((yzombie + 15) - (y + 15)) < 20)) or (weapon = bow
 		    and (abs ((xzombie + 10) - (x + 15)) < 100 and abs ((yzombie + 15) - (y + 15)) < 200)) then
 		attacking := true
 		if xdest = xzombie and ydest = yzombie then
@@ -3376,9 +3216,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			attacking := false
 			text := "You die...a monk resurrects you and warns you to be more careful..."
 			go_to := "castle entrance"
-			battleaxe := false
-			twohanded := false
-			bow := false
+			battleAxe -> setObtained(false)
+			twoHanded -> setObtained(false)
+			bow -> setObtained(false)
 			platebody := false
 			platelegs := false
 			fullhelm := false
@@ -3390,12 +3230,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			gold := 0
 			hitpoints := 25
 			healthpacks := 0
-			weapon := "king's sword"
+			weapon := kingsSword
 			return
 		    end if
 		    if zombiehp > 0 then
 			%if using a combat attack style
-			if weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h" then
+			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
 			    %inflicts damage to zombie accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    zombiehp := zombiehp - damagedealt
@@ -3417,7 +3257,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = "bow" then
+			elsif weapon = bow then
 			    %inflicts damage to zombie accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
@@ -3444,24 +3284,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You have run out of arrows!"
 			    end if
 			end if
-			if weapon = "king's sword" then
-			    if sfx_on not= false then
-				fork swordhit
-			    end if
-			elsif weapon = "battleaxe" then
-			    if sfx_on not= false then
-				fork battleaxehit
-			    end if
-			elsif weapon = "2h" then
-			    if sfx_on not= false then
-				fork twohandedhit
-			    end if
-			elsif weapon = "bow" then
-			    if arrownum > 0 then
-				if sfx_on not= false then
-				    fork bowhit
+			if weapon = bow then
+				if arrownum > 0 then
+					hit()
 				end if
-			    end if
+			else
+				hit()
 			end if
 		    end if
 		end if
@@ -3514,9 +3342,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     elsif scene = "east of 'west river'" then
 	if y < 30 then         %bottom of screen
 	    y := 30
-	end if
-	if goblinalive = true then
-	    if xm > xgoblin - 1 and xm < xgoblin + 21 and ym > ygoblin - 1 and ym < ygoblin + 30 then
+	end if  
+	if goblin -> alive then
+	    if xm > goblin -> xPos - 1 and xm < goblin -> xPos + 21 and ym > goblin -> yPos - 1 and ym < goblin -> yPos + 30 then
 		if right = 100 then
 		    text := "Eww, it's a goblin!"
 		elsif left = 1 then
@@ -3524,18 +3352,18 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "goblin"
 		end if
 	    end if
-	    if ((weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h") and (abs ((xgoblin + 10) - (x + 15)) < 20 and abs ((ygoblin + 15) - (y + 15)) < 20)) or (weapon = "bow"
-		    and (abs ((xgoblin + 10)
-		    - (x + 15)) < 100 and abs ((ygoblin + 15) - (y + 15)) < 200)) then
+	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((goblin -> xPos + 10) - (x + 15)) < 20 and abs ((goblin -> yPos + 15) - (y + 15)) < 20)) or (weapon = bow
+		    and (abs ((goblin -> xPos + 10)
+		    - (x + 15)) < 100 and abs ((goblin -> yPos + 15) - (y + 15)) < 200)) then
 		attacking := true
-		if xdest = xgoblin and ydest = ygoblin then
+		if xdest = goblin -> xPos and ydest = goblin -> yPos then
 		    destination := false
 		end if
 		text := "You are attacking a goblin!  Arrows left: " + intstr (arrownum) + "  Goblin: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
 		if hpcounter = 20 or hpcounter = 40 then
 		    if hitpoints > 0 then
-			if abs ((xgoblin + 10) - (x + 15)) < 20 and abs ((ygoblin + 15) - (y + 15)) < 20 then
-			    damagetaken := Rand.Int (0, 1)
+			if abs ((goblin -> xPos + 10) - (x + 15)) < 20 and abs ((goblin -> yPos + 15) - (y + 15)) < 20 then
+			    damagetaken := Rand.Int (goblin -> dmgMin, goblin -> dmgMax)
 			    if defence < damagetaken then
 				hitpoints := hitpoints - (damagetaken - defence)
 			    end if
@@ -3550,9 +3378,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			attacking := false
 			text := "You die...a monk resurrects you and warns you to be more careful..."
 			go_to := "castle entrance"
-			battleaxe := false
-			twohanded := false
-			bow := false
+			battleAxe -> setObtained(false)
+			twoHanded -> setObtained(false)
+			bow -> setObtained(false)
 			platebody := false
 			platelegs := false
 			fullhelm := false
@@ -3564,21 +3392,21 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			gold := 0
 			hitpoints := 25
 			healthpacks := 0
-			weapon := "king's sword"
+			weapon := kingsSword
 			return
 		    end if
-		    if goblinhp > 0 then
+		    if goblin -> hp > 0 then
 			%if using a combat attack style
-			if weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h" then
+			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
 			    %inflicts damage to goblin accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
-			    goblinhp := goblinhp - damagedealt
-			    if goblinhp > 0 then
-				goblinalive := true
+			    goblin -> setHp(goblin -> hp - damagedealt)
+			    if goblin -> hp > 0 then
+				goblin -> setAlive(true)
 			    else
-				goblinhp := 0
+				goblin -> setHp(0)
 				text := "You defeat the goblin and gain 10 experience and 10 gold."
-				goblinalive := false
+				goblin -> setAlive(false)
 				if gold <= 99989 then
 				    gold := gold + 10
 				else
@@ -3591,18 +3419,18 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = "bow" then
+			elsif weapon = bow then
 			    %inflicts damage to goblin accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
 				damagedealt := Rand.Int (0, (archerylvl + bonus))
-				goblinhp := goblinhp - damagedealt
-				if goblinhp > 0 then
-				    goblinalive := true
+				goblin -> setHp(goblinhp - damagedealt)
+				if goblin -> hp > 0 then
+				    goblin -> setAlive(true)
 				else
-				    goblinhp := 0
+				    goblin -> setHp(0)
 				    text := "You defeat the goblin and gain 10 experience and 10 gold."
-				    goblinalive := false
+				    goblin -> setAlive(false)
 				    if gold <= 99989 then
 					gold := gold + 10
 				    else
@@ -3618,24 +3446,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You have run out of arrows!"
 			    end if
 			end if
-			if weapon = "king's sword" then
-			    if sfx_on not= false then
-				fork swordhit
-			    end if
-			elsif weapon = "battleaxe" then
-			    if sfx_on not= false then
-				fork battleaxehit
-			    end if
-			elsif weapon = "2h" then
-			    if sfx_on not= false then
-				fork twohandedhit
-			    end if
-			elsif weapon = "bow" then
-			    if arrownum > 0 then
-				if sfx_on not= false then
-				    fork bowhit
+			if weapon = bow then
+				if arrownum > 0 then
+					hit()
 				end if
-			    end if
+			else
+				hit()
 			end if
 		    end if
 		end if
@@ -3795,9 +3611,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			attacking := false
 			text := "You die...a monk resurrects you and warns you to be more careful..."
 			go_to := "castle entrance"
-			battleaxe := false
-			twohanded := false
-			bow := false
+			battleAxe -> setObtained(false)
+			twoHanded -> setObtained(false)
+			bow -> setObtained(false)
 			platebody := false
 			platelegs := false
 			fullhelm := false
@@ -3809,12 +3625,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			gold := 0
 			hitpoints := 25
 			healthpacks := 0
-			weapon := "king's sword"
+			weapon := kingsSword
 			return
 		    end if
 		    if dragonhead1hp > 0 then
 			%if using a combat attack style
-			if weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h" then
+			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
 			    %inflicts damage to dragon accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    dragonhead1hp := dragonhead1hp - damagedealt
@@ -3830,18 +3646,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			end if
-			if weapon = "king's sword" then
-			    if sfx_on not= false then
-				fork swordhit
-			    end if
-			elsif weapon = "battleaxe" then
-			    if sfx_on not= false then
-				fork battleaxehit
-			    end if
-			elsif weapon = "2h" then
-			    if sfx_on not= false then
-				fork twohandedhit
-			    end if
+			if weapon = bow then
+				if arrownum > 0 then
+					hit()
+				end if
+			else
+				hit()
 			end if
 		    end if
 		end if
@@ -3870,9 +3680,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			attacking := false
 			text := "You die...a monk resurrects you and warns you to be more careful..."
 			go_to := "castle entrance"
-			battleaxe := false
-			twohanded := false
-			bow := false
+			battleAxe -> setObtained(false)
+			twoHanded -> setObtained(false)
+			bow -> setObtained(false)
 			platebody := false
 			platelegs := false
 			fullhelm := false
@@ -3884,12 +3694,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			gold := 0
 			hitpoints := 25
 			healthpacks := 0
-			weapon := "king's sword"
+			weapon := kingsSword
 			return
 		    end if
 		    if dragonhead2hp > 0 then
 			%if using a combat attack style
-			if weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h" then
+			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
 			    %inflicts damage to dragon accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    dragonhead2hp := dragonhead2hp - damagedealt
@@ -3905,18 +3715,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You've mastered the art of combat and cannot gain further experience."
 			    end if
 			end if
-			if weapon = "king's sword" then
-			    if sfx_on not= false then
-				fork swordhit
-			    end if
-			elsif weapon = "battleaxe" then
-			    if sfx_on not= false then
-				fork battleaxehit
-			    end if
-			elsif weapon = "2h" then
-			    if sfx_on not= false then
-				fork twohandedhit
-			    end if
+			if weapon = bow then
+				if arrownum > 0 then
+					hit()
+				end if
+			else
+				hit()
 			end if
 		    end if
 		end if
@@ -3945,9 +3749,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			attacking := false
 			text := "You die...a monk resurrects you and warns you to be more careful..."
 			go_to := "castle entrance"
-			battleaxe := false
-			twohanded := false
-			bow := false
+			battleAxe -> setObtained(false)
+			twoHanded -> setObtained(false)
+			bow -> setObtained(false)
 			platebody := false
 			platelegs := false
 			fullhelm := false
@@ -3959,12 +3763,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			gold := 0
 			hitpoints := 25
 			healthpacks := 0
-			weapon := "king's sword"
+			weapon := kingsSword
 			return
 		    end if
 		    if dragonhead3hp > 0 then
 			%if using a combat attack style
-			if weapon = "king's sword" or weapon = "battleaxe" or weapon = "2h" then
+			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
 			    %inflicts damage to dragon accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    dragonhead3hp := dragonhead3hp - damagedealt
@@ -3980,18 +3784,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You've mastered the art of combat and cannot gain further experience."
 			    end if
 			end if
-			if weapon = "king's sword" then
-			    if sfx_on not= false then
-				fork swordhit
-			    end if
-			elsif weapon = "battleaxe" then
-			    if sfx_on not= false then
-				fork battleaxehit
-			    end if
-			elsif weapon = "2h" then
-			    if sfx_on not= false then
-				fork twohandedhit
-			    end if
+			if weapon = bow then
+				if arrownum > 0 then
+					hit()
+				end if
+			else
+				hit()
 			end if
 		    end if
 		end if
@@ -4064,21 +3862,21 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	end if
     end if
     %goblin
-    if goblinalive = true then
-	if goblinhp < 10 then
+    if goblin -> alive then
+	if goblin -> hp < 10 then
 	    if hpcounter = 40 then
-		if abs ((xgoblin + 10) - (x + 15)) > 19 and abs ((ygoblin + 15) - (y + 15)) > 19 then
-		    goblinhp := goblinhp + 1
+		if abs ((goblin -> xPos + 10) - (x + 15)) > 19 and abs ((goblin -> yPos + 15) - (y + 15)) > 19 then
+		    goblin -> setHp(goblinhp + 1)
 		end if
 	    end if
 	end if
     else
-	if goblinreturncounter = 300 then
-	    goblinreturncounter := 0
-	    goblinalive := true
-	    goblinhp := 10
+	if goblin -> respawnCounter = 300 then
+	    goblin -> setRespawnCounter(0)
+	    goblin -> setAlive(true)
+	    goblin -> setHp(10)
 	else
-	    goblinreturncounter := goblinreturncounter + 1
+	    goblin -> setRespawnCounter(goblin -> respawnCounter + 1)
 	end if
     end if
     %skeleton
@@ -4270,7 +4068,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		trolllvlcolour := brightred
 	    end if
 	    if xm > xtroll - 1 and xm < xtroll + 32 and ym > ytroll - 1 and ym < ytroll + 41 then
-		Font.Draw ("Troll (Level " + intstr (trolltotallvl) + ")", xtroll, ytroll + 67, font2, trolllvlcolour)
+		Font.Draw ("Troll [Level " + intstr (trolltotallvl) + "]", xtroll, ytroll + 67, font2, trolllvlcolour)
 	    end if
 	    Pic.Draw (trollpic (rtroll), xtroll, ytroll, picMerge)
 	    if abs ((xtroll + 10) - x + 15) < 200 and abs ((ytroll + 15) - y + 15) < 200 and trollhp > 0 then
@@ -4304,23 +4102,23 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	    Pic.Draw (leavebutton, 719, 1, picMerge)
 	    Pic.Draw (morebutton, 719, 47, picMerge)
 	    Pic.Draw (buybutton, 160, 343, picMerge)             %battleaxe
-	    Font.Draw ("Battleaxe: 500 gold  Two-Handed sword: 1000 gold    Bow: 300 gold", 5, 550, font1, black)
+	    Font.Draw ("Battleaxe: " + intstr(battleAxe -> cost) + " gold  Two-Handed sword: " + intstr(twoHanded -> cost) + " gold    Bow: " + intstr(bow -> cost) + " gold", 5, 550, font1, black)
 	    Font.Draw ("Healthpack: 100 gold           Arrows: 50 gold/15", 5, 290, font1, black)
-	    if battleaxe = true then             %if battleaxe has been purchased
-		Pic.Draw (battleaxe_bought, 119, 371, picMerge)
+	    if battleAxe -> obtained = true then             %if battleaxe has been purchased
+		Pic.Draw (battleAxe -> boughtpic, 119, 371, picMerge)
 		Font.Draw ("Purchased", 120, 320, font1, brightgreen)
 	    else
-		Pic.Draw (battleaxepic, 119, 371, picMerge)
+		Pic.Draw (battleAxe -> pic, 119, 371, picMerge)
 	    end if
 	    Pic.Draw (buybutton, 323, 343, picMerge)             %2h
-	    if twohanded = true then             %if 2h has been purchased
-		Pic.Draw (twohanded_bought, 292, 348, picMerge)
+	    if twoHanded -> obtained = true then             %if 2h has been purchased
+		Pic.Draw (twoHanded -> boughtpic, 292, 348, picMerge)
 		Font.Draw ("Purchased", 293, 320, font1, brightgreen)
 	    else
-		Pic.Draw (twohandedpic, 292, 348, picMerge)
+		Pic.Draw (twoHanded -> pic, 292, 348, picMerge)
 	    end if
 	    Pic.Draw (buybutton, 528, 343, picMerge)             %bow
-	    if bow = true then             %if 2h has been purchased
+	    if bow -> obtained = true then             %if 2h has been purchased
 		Pic.Draw (bow_bought, 452, 378, picMerge)
 		Font.Draw ("Purchased", 528, 320, font1, brightgreen)
 	    else
@@ -4377,7 +4175,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		skeletonlvlcolour := brightred
 	    end if
 	    if xm > xskeleton - 1 and xm < xskeleton + 32 and ym > yskeleton - 1 and ym < yskeleton + 41 then
-		Font.Draw ("Skeleton (Level " + intstr (skeletontotallvl) + ")", xskeleton, yskeleton + 41, font2, skeletonlvlcolour)
+		Font.Draw ("Skeleton [Level " + intstr (skeletontotallvl) + "]", xskeleton, yskeleton + 41, font2, skeletonlvlcolour)
 	    end if
 	    Pic.Draw (skeletonpic (rskeleton), xskeleton, yskeleton, picMerge)
 	    if abs ((xskeleton + 10) - x + 15) < 200 and abs ((yskeleton + 15) - y + 15) < 200 and skeletonhp > 0 then
@@ -4416,7 +4214,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		ghostlvlclr := brightred
 	    end if
 	    if xm > xghost - 1 and xm < xghost + 32 and ym > yghost - 1 and ym < yghost + 41 then
-		Font.Draw ("Ghost (Level " + intstr (ghosttotallvl) + ")", xghost, yghost + 41, font2, ghostlvlclr)
+		Font.Draw ("Ghost [Level " + intstr (ghosttotallvl) + "]", xghost, yghost + 41, font2, ghostlvlclr)
 	    end if
 	    Pic.DrawSpecial (ghostpic (rghost), xghost, yghost, picMerge, picBlend, 1)
 	    if abs ((xghost + 10) - x + 15) < 200 and abs ((yghost + 15) - y + 15) < 200 and ghosthp > 0 then
@@ -4452,7 +4250,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		zombielvlclr := brightred
 	    end if
 	    if xm > xzombie - 1 and xm < xzombie + 32 and ym > yzombie - 1 and ym < yzombie + 41 then
-		Font.Draw ("Zombie (Level " + intstr (zombietotallvl) + ")", xzombie, yzombie + 41, font2, zombielvlclr)
+		Font.Draw ("Zombie [Level " + intstr (zombietotallvl) + "]", xzombie, yzombie + 41, font2, zombielvlclr)
 	    end if
 	    Pic.DrawSpecial (darkoverlay, x - 790, y - 590, picMerge, picBlend, 1)
 	    Pic.Draw (zombiepic (rzombie), xzombie, yzombie, picMerge)
@@ -4493,7 +4291,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
     elsif scene = "east of 'west river'" then         %if east of 'west river'
 	Pic.Draw (east_of_westriver_pic, 0, 0, picMerge)
-	if goblinalive = true then
+	if goblin -> alive then
 	    if totallvl > goblintotallvl then
 		goblinlvlcolour := brightgreen
 	    elsif totallvl = goblintotallvl then
@@ -4501,21 +4299,21 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	    elsif totallvl < goblintotallvl then
 		goblinlvlcolour := brightred
 	    end if
-	    if xm > xgoblin - 1 and xm < xgoblin + 32 and ym > ygoblin - 1 and ym < ygoblin + 41 then
-		Font.Draw ("Goblin (Level " + intstr (goblintotallvl) + ")", xgoblin, ygoblin + 30, font2, goblinlvlcolour)
+	    if xm > goblin -> xPos - 1 and xm < goblin -> xPos + 32 and ym > goblin -> yPos - 1 and ym < goblin -> yPos + 41 then
+		Font.Draw ("Goblin [Level " + intstr (goblin -> totalLvl) + "]", goblin -> xPos, goblin -> yPos + 30, font2, goblinlvlcolour)
 	    end if
-	    Pic.Draw (goblinpic (rgoblin), xgoblin, ygoblin, picMerge)
-	    if abs ((xgoblin + 10) - x + 15) < 200 and abs ((ygoblin + 15) - y + 15) < 200 and goblinhp > 0 then
+	    Pic.Draw (goblin -> dirImages(goblin -> dir), goblin -> xPos, goblin -> yPos, picMerge)
+	    if abs ((goblin -> xPos + 10) - x + 15) < 200 and abs ((goblin -> yPos + 15) - y + 15) < 200 and goblin -> hp > 0 then
 		drawfillbox (7, barheight - 3, 123, barheight + 53, goblinlvlcolour)
 		drawfillbox (10, barheight, 120, barheight + 50, black)
-		drawfillbox (115 - round ((goblinhp / 10) * 100), barheight + 5, 115, barheight + 15, red)
+		drawfillbox (115 - round ((goblin -> hp / 10) * 100), barheight + 5, 115, barheight + 15, red)
 		Font.Draw ("Goblin", 15, barheight + 35, font2, goblinlvlcolour)
-		Font.Draw ("Hitpoints: " + intstr (round ((goblinhp / 10) * 100)) + "%", 15, barheight + 20, font2, goblinlvlcolour)
+		Font.Draw ("Hitpoints: " + intstr (round ((goblin -> hp / 10) * 100)) + "%", 15, barheight + 20, font2, goblinlvlcolour)
 	    end if
 	end if
 	Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
-	if goblinalive = true then
-	    if xm > xgoblin and xm < xgoblin + 15 and ym > ygoblin and ym < ygoblin + 15 then
+	if goblin -> alive then
+	    if xm > goblin -> xPos and xm < goblin -> xPos + 15 and ym > goblin -> yPos and ym < goblin -> yPos + 15 then
 		Pic.Draw (cursor_attack, xm - 18, ym - 18, picMerge)
 	    end if
 	end if
@@ -4628,25 +4426,25 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		if cottagekey = true then
 		    Pic.Draw (cottagekey_pic, 119, 635, picMerge)
 		end if
-		if battleaxe = true then
-		    Pic.Draw (battleaxeinvpic, 213, 635, picMerge)
+		if battleAxe -> obtained = true then
+		    Pic.Draw (battleAxe -> invpic, 213, 635, picMerge)
 		end if
-		if twohanded = true then
-		    Pic.Draw (twohandedinvpic, 235, 635, picMerge)
+		if twoHanded -> obtained = true then
+		    Pic.Draw (twoHanded -> invpic, 235, 635, picMerge)
 		end if
-		if bow = true then
-		    Pic.Draw (bowinvpic, 258, 635, picMerge)
+		if bow -> obtained = true then
+		    Pic.Draw (bow -> invpic, 258, 635, picMerge)
 		end if
 		if grail = true then
 		    Pic.Draw (grailinvpic, 285, 636, picMerge)
 		end if
-		if weapon = "king's sword" then
+		if weapon = kingsSword then
 		    drawbox (190, 634, 212, 656, red)
-		elsif weapon = "battleaxe" then
+		elsif weapon = battleAxe then
 		    drawbox (212, 634, 234, 656, red)
-		elsif weapon = "2h" then
+		elsif weapon = twoHanded then
 		    drawbox (234, 634, 257, 656, red)
-		elsif weapon = "bow" then
+		elsif weapon = bow then
 		    drawbox (257, 634, 280, 656, red)
 		end if
 		if grail = true then
@@ -4735,7 +4533,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	else
 	    chatentry (3) := "goto: " + goto + "  scene: " + scene + "  movecharacter: false"
 	end if
-	if goblintalk = true then
+	if goblin -> talk then
 	    chatentry (4) := "goblintalk: true" + "  goblintalkcounter: " + intstr (goblintalkcounter) + "  goblintalkcountergoal: " + intstr (goblintalkcountergoal)
 	else
 	    chatentry (4) := "goblintalk: false" + "  goblintalkcounter: " + intstr (goblintalkcounter) + "  goblintalkcountergoal: " + intstr (goblintalkcountergoal)
@@ -4772,25 +4570,25 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     if cottagekey = true then
 	Pic.Draw (cottagekey_pic, 119, 635, picMerge)
     end if
-    if battleaxe = true then
-	Pic.Draw (battleaxeinvpic, 213, 635, picMerge)
+    if battleAxe -> obtained = true then
+	Pic.Draw (battleAxe -> invpic, 213, 635, picMerge)
     end if
-    if twohanded = true then
-	Pic.Draw (twohandedinvpic, 235, 635, picMerge)
+    if twoHanded -> obtained = true then
+	Pic.Draw (twoHanded -> invpic, 235, 635, picMerge)
     end if
-    if bow = true then
-	Pic.Draw (bowinvpic, 258, 635, picMerge)
+    if bow -> obtained = true then
+	Pic.Draw (bow -> invpic, 258, 635, picMerge)
     end if
     if grail = true then
 	Pic.Draw (grailinvpic, 285, 636, picMerge)
     end if
-    if weapon = "king's sword" then
+    if weapon = kingsSword then
 	drawbox (190, 634, 212, 656, red)
-    elsif weapon = "battleaxe" then
+    elsif weapon = battleAxe then
 	drawbox (212, 634, 234, 656, red)
-    elsif weapon = "2h" then
+    elsif weapon = twoHanded then
 	drawbox (234, 634, 257, 656, red)
-    elsif weapon = "bow" then
+    elsif weapon = bow then
 	drawbox (257, 634, 280, 656, red)
     end if
     Input.KeyDown (hotkey)
@@ -5089,37 +4887,37 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
 end drawscreen
 
-process goblin
-    if goblinmove = false then         %if goblin has not been assigned a movement
-	goblinmove := true
-	if goblinalive = true then
-	    if abs ((xgoblin + 10) - x + 15) >= 200 or abs ((ygoblin + 15) - y + 15) >= 200 then
-		rgoblin := Rand.Int (1, 10)
-		if rgoblin = 1 then
-		    if ygoblin < 550 then
+process goblin_proc
+    if not goblin -> move then         %if goblin has not been assigned a movement
+	goblin -> setMove(true)
+	if goblin -> alive then
+	    if abs ((goblin -> xPos + 10) - x + 15) >= 200 or abs ((goblin -> yPos + 15) - y + 15) >= 200 then
+		goblin -> setDir(Rand.Int (1, 4))
+		if goblin -> dir = 1 then
+		    if goblin -> yPos < 550 then
 			for : 1 .. 50
-			    ygoblin := ygoblin + 1
+			    goblin -> setYPos(goblin -> yPos + 1)
 			    Time.DelaySinceLast (30)
 			end for
 		    end if
-		elsif rgoblin = 2 then
-		    if ygoblin > 50 then
+		elsif goblin -> dir = 2 then
+		    if goblin -> yPos > 50 then
 			for : 1 .. 50
-			    ygoblin := ygoblin - 1
+				goblin -> setYPos(goblin -> yPos - 1)
 			    Time.DelaySinceLast (30)
 			end for
 		    end if
-		elsif rgoblin = 3 then
-		    if xgoblin > 50 then
+		elsif goblin -> dir = 3 then
+		    if goblin -> xPos > 50 then
 			for : 1 .. 50
-			    xgoblin := xgoblin - 1
+				goblin -> setXPos(goblin -> xPos - 1)
 			    Time.DelaySinceLast (30)
 			end for
 		    end if
-		elsif rgoblin = 4 then
-		    if xgoblin < 750 then
+		elsif goblin -> dir = 4 then
+		    if goblin -> xPos < 750 then
 			for : 1 .. 50
-			    xgoblin := xgoblin + 1
+				goblin -> setXPos(goblin -> xPos + 1)
 			    Time.DelaySinceLast (30)
 			end for
 		    end if
@@ -5127,29 +4925,29 @@ process goblin
 		    Time.DelaySinceLast (1500)
 		end if
 	    else
-		if ygoblin + 15 < (y + 15) - 10 then
-		    rgoblin := 1
-		    ygoblin := ygoblin + 1
+		if goblin -> yPos + 15 < (y + 15) - 10 then
+		    goblin -> setDir(1)
+			goblin -> setYPos(goblin -> yPos + 1)
 		end if
-		if ygoblin + 15 > (y + 15) + 10 then
-		    rgoblin := 2
-		    ygoblin := ygoblin - 1
+		if goblin -> yPos + 15 > (y + 15) + 10 then
+			goblin -> setDir(2)
+			goblin -> setYPos(goblin -> yPos - 1)
 		end if
-		if xgoblin + 10 < (x + 15) - 10 then
-		    rgoblin := 4
-		    xgoblin := xgoblin + 1
+		if goblin -> xPos + 10 < (x + 15) - 10 then
+			goblin -> setDir(4)
+			goblin -> setXPos(goblin -> xPos + 1)
 		end if
-		if xgoblin + 10 > (x + 15) + 10 then
-		    rgoblin := 3
-		    xgoblin := xgoblin - 1
+		if goblin -> xPos + 10 > (x + 15) + 10 then
+			goblin -> setDir(3)
+			goblin -> setXPos(goblin -> xPos - 1)
 		end if
 	    end if
 	end if
-	goblinmove := false
+	goblin -> setMove(false)
     end if
-    if goblinalive = true then
-	if goblintalk = true then
-	    chattext := goblintext (Rand.Int (1, 3))
+    if goblin -> alive then
+	if goblin -> talk then
+	    chattext := goblin -> text (Rand.Int (1, 3))
 	    if chatentry (5) not= "" and chattext not= "" then
 		for chatnum : 2 .. 5
 		    chatentry (chatnum - 1) := chatentry (chatnum)
@@ -5164,16 +4962,16 @@ process goblin
 		end for
 	    end if
 	    chattext := ""
-	    goblintalk := false
+	    goblin -> setTalk(false)
 	    goblintalkcounter := 0
 	end if
     end if
     goblintalkcounter := goblintalkcounter + 1
     if goblintalkcounter = goblintalkcountergoal then
-	goblintalk := true
+	goblin -> setTalk(true)
 	goblintalkcountergoal := Rand.Int (500, 1000)
     end if
-end goblin
+end goblin_proc
 
 process skeleton
     if skeletonmove = false then         %if skeleton has not been assigned a movement
@@ -6854,7 +6652,7 @@ proc east_of_westriver (var go_to : string)         %when east of 'west river'
 	if exitgame = true then
 	    return
 	end if
-	fork goblin
+	fork goblin_proc
 	View.Update
     end loop
 end east_of_westriver
@@ -7201,7 +6999,7 @@ loop
 	setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 	if loadnew = true then
 	    open : record2, "Newgamevars.gqr", read
-	    read : record2, grail, up, battleaxe, twohanded, bow, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive,
+	    read : record2, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive,
 		dragonhead3alive,
 		victory, music_on, stopmusic, destination, goblinmove, skeletonmove, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 		platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
@@ -7218,6 +7016,7 @@ loop
 	    exitgame := false
 	    editmodeenabled := false
 	    autosave := false
+		restoreInv()
 	    in_castle (goto)
 	end if
     end if
