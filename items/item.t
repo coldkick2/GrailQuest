@@ -1,7 +1,8 @@
 class Item
-    export description, wieldText, unobtainedText, name, cost, power, boughtpic, invpic, pic, obtained, setObtained, hitSound
+    export description, style, wieldText, unobtainedText, name, cost, power, boughtpic, invpic, pic, obtained, setObtained, hitSound
 
     var description : string
+    var style : string
     var wieldText : string
     var unobtainedText : string
     var name : string

@@ -2,6 +2,7 @@ class TwoHanded
     inherit Item
     name := "Two-Handed Sword"
     description := "This is purchased at the shop in the castle."
+    style := "combat"
     wieldText := "You wield your two-handed sword, it improves your attack force significantly."
     unobtainedText := "You don't have a two-handed sword."
     cost := 1000

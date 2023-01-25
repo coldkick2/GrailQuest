@@ -2,6 +2,7 @@ class KingsSword
     inherit Item
     name := "The King's Sword"
     description := "This sword was provided to you by your king."
+    style := "combat"
     wieldText := "You wield the sword provided by your king."
     unobtainedText := ""
     cost := 0

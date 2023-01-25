@@ -1,7 +1,8 @@
 class Enemy
-    export alive, dir, dirImages, hp, move, talk, text, xPos, yPos, dmgMin, dmgMax, combatLvl, archeryLvl, respawnCounter, totalLvl, setHp, setAlive, setRespawnCounter, setMove, setDir, setXPos, setYPos, setTalk
+    export alive, description, dir, dirImages, hp, move, talk, text, xPos, yPos, dmgMin, dmgMax, combatLvl, archeryLvl, respawnCounter, totalLvl, setHp, setAlive, setRespawnCounter, setMove, setDir, setXPos, setYPos, setTalk
 
     var alive : boolean := true
+    var description : string
     var dir : int := 2
     var dirImages : array 1 .. 4 of int
     var hp : int

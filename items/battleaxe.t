@@ -2,6 +2,7 @@ class BattleAxe
     inherit Item
     name := "Battle Axe"
     description := "This is purchased at the shop in the castle."
+    style := "combat"
     wieldText := "You wield your battleaxe, it is heavy and improves your attack force somewhat."
     unobtainedText := "You don't have a battleaxe."
     cost := 500

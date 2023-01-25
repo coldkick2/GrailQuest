@@ -2,6 +2,7 @@ class Bow
     inherit Item
     name := "Bow"
     description := "This is purchased at the shop in the castle."
+    style := "archery"
     wieldText := "You wield your bow...You can now perform ranged attacks."
     unobtainedText := "You don't have a bow."
     cost := 300

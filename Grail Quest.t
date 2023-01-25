@@ -49,6 +49,9 @@ new Bow, bow
 var goblin: ^Goblin
 new Goblin, goblin
 
+var skeleton: ^Skeleton
+new Skeleton, skeleton
+
 process loadanimation
     loop
 	drawfilloval (50, 50, 9, 9, black)
@@ -109,30 +112,7 @@ var picd : array 1 .. 3 of int
 picd (1) := Pic.FileNew ("Images/warrior_new1d.bmp")
 picd (2) := Pic.FileNew ("Images/warrior_new2d.bmp")
 picd (3) := Pic.FileNew ("Images/warrior_new3d.bmp")
-%Goblin
-var goblinpic : array 1 .. 10 of int
-goblinpic (1) := Pic.FileNew ("Images/goblinu.bmp") %up
-goblinpic (2) := Pic.FileNew ("Images/goblind.bmp") %down
-goblinpic (3) := Pic.FileNew ("Images/goblinl.bmp") %left
-goblinpic (4) := Pic.FileNew ("Images/goblinr.bmp") %right
-goblinpic (5) := Pic.FileNew ("Images/goblind.bmp") %down
-goblinpic (6) := Pic.FileNew ("Images/goblind.bmp") %down      20x29
-goblinpic (7) := Pic.FileNew ("Images/goblind.bmp") %down   
-goblinpic (8) := Pic.FileNew ("Images/goblind.bmp") %down
-goblinpic (9) := Pic.FileNew ("Images/goblind.bmp") %down
-goblinpic (10) := Pic.FileNew ("Images/goblind.bmp") %down
-%Skeleton
-var skeletonpic : array 1 .. 10 of int
-skeletonpic (1) := Pic.FileNew ("Images/skeletonu.bmp") %up
-skeletonpic (2) := Pic.FileNew ("Images/skeletond.bmp") %down
-skeletonpic (3) := Pic.FileNew ("Images/skeletonl.bmp") %left
-skeletonpic (4) := Pic.FileNew ("Images/skeletonr.bmp") %right
-skeletonpic (5) := Pic.FileNew ("Images/skeletond.bmp") %down
-skeletonpic (6) := Pic.FileNew ("Images/skeletond.bmp") %down    31x40
-skeletonpic (7) := Pic.FileNew ("Images/skeletond.bmp") %down
-skeletonpic (8) := Pic.FileNew ("Images/skeletond.bmp") %down
-skeletonpic (9) := Pic.FileNew ("Images/skeletond.bmp") %down
-skeletonpic (10) := Pic.FileNew ("Images/skeletond.bmp") %down
+
 %Ghost
 var ghostpic : array 1 .. 10 of int
 ghostpic (1) := Pic.FileNew ("Images/ghostu.bmp") %up
@@ -212,16 +192,7 @@ chatentry (2) := "Use the arrow in the top right corner of this window to toggle
 chatentry (3) := "You can store a maximum of 5 entries in the chat history at once"
 chatentry (4) := "The oldest entry will be discarded when a sixth entry is submitted"
 chatentry (5) := ""
-%Goblin text
-var goblintext : array 1 .. 3 of string
-goblintext (1) := "Goblin: *Grrrrr*"
-goblintext (2) := "Goblin: I didn't steal it!"
-goblintext (3) := "Goblin: Die human!"
-%Skeleton text
-var skeletontext : array 1 .. 3 of string
-skeletontext (1) := "Skeleton: *Creak*"
-skeletontext (2) := "Skeleton: You can't kill bones!"
-skeletontext (3) := "Skeleton: None shall pass!"
+
 %Ghost text
 var ghosttext : array 1 .. 3 of string
 ghosttext (1) := "Ghost: *o00ooo0oo*"
@@ -625,8 +596,6 @@ var twohanded : boolean := false %twohanded sword item obtained
 var bowObtained : boolean := false %bow item obtained
 var key_west_hall : boolean := false %west hall key obtained
 var cottagekey : boolean := false %cottage key obtained
-var goblinalive : boolean := true %goblin alive
-var skeletonalive : boolean := true %skeleton alive
 var ghostalive : boolean := true %ghost alive
 var zombiealive : boolean := true %zombie alive
 var trollalive : boolean := true %troll alive
@@ -642,8 +611,6 @@ var mapscalebtn_on : boolean := true %map scale can be toggled again if false
 var music_on : boolean := false %music is on if true
 var stopmusic : boolean := false %stops music when true
 var destination : boolean := false %player has a destination when true
-var goblinmove : boolean := false %goblin has been assigned a movement when true
-var skeletonmove : boolean := false %skeleton has been assigned a movement when true
 var ghostmove : boolean := false %ghost has been assigned a movement when true
 var zombiemove : boolean := false %zombie has been assigned a movement when true
 var trollmove : boolean := false %troll has been assigned a movement when true
@@ -679,8 +646,6 @@ var editmodeenabled : boolean := false %true if edit mode is enabled
 var movecharacter : boolean := false %true if a destination has been typed
 var movetopreviousscene : boolean := false %true if destination typed does not exist
 var soundhotkey : boolean := true %true if sound hotkey can be pressed
-var goblintalk : boolean := true %true if goblin can talk
-var skeletontalk : boolean := true %true if skeleton can talk
 var ghosttalk : boolean := true %true if ghost can talk
 var zombietalk : boolean := true %true if zombie can talk
 var trolltalk : boolean := true %true if troll can talk
@@ -720,12 +685,6 @@ var archeryxp : int := 0 %archer experience
 var archerylvl : int := ((round ((sqrt (archeryxp)) div 3)) + 1) %archery level
 var combatxp : int := 0 %combat experience
 var combatlvl : int := ((round ((sqrt (combatxp)) div 3)) + 1) %combat level
-var xgoblin : int := 400 %x coordinate of goblin
-var ygoblin : int := 300 %y coordinate of goblin
-var rgoblin : int := 2 %goblin picture number
-var xskeleton : int := 200 %x coordinate of skeleton
-var yskeleton : int := 400 %y coordinate of skeleton
-var rskeleton : int := 2 %skeleton picture number
 var xghost : int := 300 %x coordinate of ghost
 var yghost : int := 450 %y coordinate of ghost
 var rghost : int := 2 %ghost picture number
@@ -746,8 +705,6 @@ var ycat : int := 450 %y coordinate of cat
 var rcat : int := 2 %cat picture number
 var ycredits : int := 50 %y coordinate of credits
 var hitpoints : int := 100 %character hitpoints
-var goblinhp : int := 10 %goblin hitpoints
-var skeletonhp : int := 30 %skeleton hitpoints
 var ghosthp : int := 70 %ghost hitpoints
 var zombiehp : int := 120 %zombie hitpoints
 var trollhp : int := 180 %troll hitpoints
@@ -755,11 +712,9 @@ var dragonhead1hp : int := 300 %dragon head 1 hitpoints
 var dragonhead2hp : int := 300 %dragon head 2 hitpoints
 var dragonhead3hp : int := 300 %dragon head 3 hitpoints
 var hpcounter : int := 0 %hitpoints counter
-var goblinreturncounter : int := 0 %goblin respawn counter
 var dragonhead1returncounter : int := 0 %dragon head 1 respawn counter
 var dragonhead2returncounter : int := 0 %dragon head 2 respawn counter
 var dragonhead3returncounter : int := 0 %dragon head 3 respawn counter
-var skeletonreturncounter : int := 0 %skeleton respawn counter
 var ghostreturncounter : int := 0 %ghost respawn counter
 var zombiereturncounter : int := 0 %zombie respawn counter
 var trollreturncounter : int := 0 %troll respawn counter
@@ -768,8 +723,6 @@ var bonus : int := 0 %weapon bonus
 var healthpacks : int := 0 %number of healthpacks
 var arrownum : int := 50 %number of arrows
 var totallvl : int := round ((combatlvl + archerylvl) / 2) %total level
-var goblintotallvl : int := round ((1 + 1) / 2) %goblin total level
-var skeletontotallvl : int := round ((3 + 1) / 2) %skeleton total level
 var ghosttotallvl : int := round ((7 + 1) / 2) %ghost total level
 var zombietotallvl : int := round ((10 + 1) / 2) %zombie total level
 var trolltotallvl : int := round ((20 + 1) / 2) %zombie total level
@@ -2029,13 +1982,13 @@ proc save
 		equipped := "bow"
 	end if
     open : record1, "Grail Quest - records.gqr", write
-    write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
-	victory, music_on, stopmusic, destination, goblinmove, skeletonmove, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
+    write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
+	victory, music_on, stopmusic, destination, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
-	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xgoblin, ygoblin, rgoblin, xskeleton, yskeleton, rskeleton, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints, goblinhp,
+	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints,
 	dragonhead1hp,
-	dragonhead2hp, dragonhead3hp, hpcounter, goblinreturncounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter, skeletonreturncounter,
-	ghostreturncounter, zombiereturncounter, bonus, skeletonhp, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
+	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
+	ghostreturncounter, zombiereturncounter, bonus, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
     drawdot (793, 602, brightgreen)
@@ -2045,13 +1998,13 @@ end save
 
 proc load
     open : record1, "Grail Quest - records.gqr", read
-    read : record1, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
-	victory, music_on, stopmusic, destination, goblinmove, skeletonmove, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
+    read : record1, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
+	victory, music_on, stopmusic, destination, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
-	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xgoblin, ygoblin, rgoblin, xskeleton, yskeleton, rskeleton, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints, goblinhp,
+	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints,
 	dragonhead1hp,
-	dragonhead2hp, dragonhead3hp, hpcounter, goblinreturncounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter, skeletonreturncounter,
-	ghostreturncounter, zombiereturncounter, bonus, skeletonhp, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
+	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
+	ghostreturncounter, zombiereturncounter, bonus, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
 	restoreInv()
@@ -2090,8 +2043,8 @@ proc movement     %manipulates character movement input
 	end if
 	if destination = true then
 	    if follow = "skeleton" then
-		xdest := xskeleton
-		ydest := yskeleton
+		xdest := skeleton -> xPos
+		ydest := skeleton -> yPos
 	    elsif follow = "goblin" then
 		xdest := goblin -> xPos
 		ydest := goblin -> yPos
@@ -2637,7 +2590,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "troll"
 		end if
 	    end if
-	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((xtroll + 10) - (x + 15)) < 20 and abs ((ytroll + 15) - (y + 15)) < 20)) or (weapon = bow
+	    if ((weapon -> style = "combat") and (abs ((xtroll + 10) - (x + 15)) < 20 and abs ((ytroll + 15) - (y + 15)) < 20)) or (weapon -> style = "archery"
 		    and (abs ((xtroll + 10)
 		    - (x + 15)) < 100 and abs ((ytroll + 15) - (y + 15)) < 200)) then
 		attacking := true
@@ -2682,7 +2635,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    end if
 		    if trollhp > 0 then
 			%if using a combat attack style
-			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
+			if weapon -> style = "combat" then
 			    %inflicts damage to troll accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    trollhp := trollhp - damagedealt
@@ -2704,7 +2657,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = bow then
+			elsif weapon -> style = "archery" then
 			    %inflicts damage to troll accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
@@ -2732,7 +2685,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			    text := "You have run out of arrows!"
 			end if
 		    end if
-			if weapon = bow then
+			if weapon -> style = "archery" then
 				if arrownum > 0 then
 					hit()
 				end if
@@ -2915,26 +2868,26 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 	    key_west_hall := true
 	    text := "You find a battered iron key..."
 	end if
-	if skeletonalive = true then
-	    if xm > xskeleton - 1 and xm < xskeleton + 21 and ym > yskeleton - 1 and ym < yskeleton + 30 then
+	if skeleton -> alive then
+	    if xm > skeleton -> xPos - 1 and xm < skeleton -> xPos + 21 and ym > skeleton -> yPos - 1 and ym < skeleton -> yPos + 30 then
 		if right = 100 then
-		    text := "An undead skeleton...creepy!"
+		    text := skeleton -> description
 		elsif left = 1 then
 		    destination := true
 		    follow := "skeleton"
 		end if
 	    end if
-	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((xskeleton + 10) - (x + 15)) < 20 and abs ((yskeleton + 15) - (y + 15)) < 20)) or (weapon = bow
-		    and (abs ((xskeleton + 10)
-		    - (x + 15)) < 100 and abs ((yskeleton + 15) - (y + 15)) < 200)) then
+	    if ((weapon -> style = "combat") and (abs ((skeleton -> xPos + 10) - (x + 15)) < 20 and abs ((skeleton -> yPos + 15) - (y + 15)) < 20)) or (weapon -> style = "archery"
+		    and (abs ((skeleton -> xPos + 10)
+		    - (x + 15)) < 100 and abs ((skeleton -> yPos + 15) - (y + 15)) < 200)) then
 		attacking := true
-		if xdest = xskeleton and ydest = yskeleton then
+		if xdest = skeleton -> xPos and ydest = skeleton -> yPos then
 		    destination := false
 		end if
 		text := "You are attacking a skeleton!  Arrows left: " + intstr (arrownum) + "  Skeleton: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
 		if hpcounter = 20 or hpcounter = 40 then
 		    if hitpoints > 0 then
-			if abs ((xskeleton + 10) - (x + 15)) < 20 and abs ((yskeleton + 15) - (y + 15)) < 20 then
+			if abs ((skeleton -> xPos + 10) - (x + 15)) < 20 and abs ((skeleton -> yPos + 15) - (y + 15)) < 20 then
 			    damagetaken := Rand.Int (0, 3)
 			    if defence < damagetaken then
 				hitpoints := hitpoints - (damagetaken - defence)
@@ -2967,18 +2920,18 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			weapon := kingsSword
 			return
 		    end if
-		    if skeletonhp > 0 then
+		    if skeleton -> hp > 0 then
 			%if using a combat attack style
-			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
+			if weapon -> style = "combat" then
 			    %inflicts damage to skeleton accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
-			    skeletonhp := skeletonhp - damagedealt
-			    if skeletonhp > 0 then
-				skeletonalive := true
+			    skeleton -> setHp(skeleton -> hp - damagedealt)
+			    if skeleton -> hp > 0 then
+				skeleton -> setAlive(true)
 			    else
-				skeletonhp := 0
+				skeleton -> setHp(0)
 				text := "You defeat the skeleton and gain 30 experience and 50 gold."
-				skeletonalive := false
+				skeleton -> setAlive(false)
 				if gold <= 99949 then
 				    gold := gold + 50
 				else
@@ -2991,18 +2944,18 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = bow then
+			elsif weapon -> style = "archery" then
 			    %inflicts damage to skeleton accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
 				damagedealt := Rand.Int (0, (archerylvl + bonus))
-				skeletonhp := skeletonhp - damagedealt
-				if skeletonhp > 0 then
-				    skeletonalive := true
+				skeleton -> setHp(skeleton -> hp - damagedealt)
+				if skeleton -> hp > 0 then
+				    skeleton -> setAlive(true)
 				else
-				    skeletonhp := 0
+				    skeleton -> setHp(0)
 				    text := "You defeat the skeleton and gain 30 experience and 50 gold."
-				    skeletonalive := false
+				    skeleton -> setAlive(false)
 				    if gold <= 99949 then
 					gold := gold + 50
 				    else
@@ -3019,7 +2972,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			    text := "You have run out of arrows!"
 			end if
 		    end if
-			if weapon = bow then
+			if weapon -> style = "archery" then
 				if arrownum > 0 then
 					hit()
 				end if
@@ -3057,7 +3010,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "ghost"
 		end if
 	    end if
-	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((xghost + 10) - (x + 15)) < 20 and abs ((yghost + 15) - (y + 15)) < 20)) or (weapon = bow
+	    if ((weapon -> style = "combat") and (abs ((xghost + 10) - (x + 15)) < 20 and abs ((yghost + 15) - (y + 15)) < 20)) or (weapon -> style = "archery"
 		    and (abs ((xghost + 10) - (x + 15)) < 100 and abs ((yghost + 15) - (y + 15)) < 200)) then
 		attacking := true
 		if xdest = xghost and ydest = yghost then
@@ -3101,7 +3054,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    end if
 		    if ghosthp > 0 then
 			%if using a combat attack style
-			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
+			if weapon -> style = "combat" then
 			    %inflicts damage to ghost accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    ghosthp := ghosthp - damagedealt
@@ -3123,7 +3076,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = bow then
+			elsif weapon -> style = "archery" then
 			    %inflicts damage to ghost accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
@@ -3150,7 +3103,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You have run out of arrows!"
 			    end if
 			end if
-			if weapon = bow then
+			if weapon -> style = "archery" then
 				if arrownum > 0 then
 					hit()
 				end if
@@ -3191,7 +3144,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "zombie"
 		end if
 	    end if
-	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((xzombie + 10) - (x + 15)) < 20 and abs ((yzombie + 15) - (y + 15)) < 20)) or (weapon = bow
+	    if ((weapon -> style = "combat") and (abs ((xzombie + 10) - (x + 15)) < 20 and abs ((yzombie + 15) - (y + 15)) < 20)) or (weapon -> style = "archery"
 		    and (abs ((xzombie + 10) - (x + 15)) < 100 and abs ((yzombie + 15) - (y + 15)) < 200)) then
 		attacking := true
 		if xdest = xzombie and ydest = yzombie then
@@ -3235,7 +3188,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    end if
 		    if zombiehp > 0 then
 			%if using a combat attack style
-			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
+			if weapon -> style = "combat" then
 			    %inflicts damage to zombie accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    zombiehp := zombiehp - damagedealt
@@ -3257,7 +3210,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = bow then
+			elsif weapon -> style = "archery" then
 			    %inflicts damage to zombie accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
@@ -3284,7 +3237,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You have run out of arrows!"
 			    end if
 			end if
-			if weapon = bow then
+			if weapon -> style = "archery" then
 				if arrownum > 0 then
 					hit()
 				end if
@@ -3352,7 +3305,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    follow := "goblin"
 		end if
 	    end if
-	    if ((weapon = kingsSword or weapon = battleAxe or weapon = twoHanded) and (abs ((goblin -> xPos + 10) - (x + 15)) < 20 and abs ((goblin -> yPos + 15) - (y + 15)) < 20)) or (weapon = bow
+	    if ((weapon -> style = "combat") and (abs ((goblin -> xPos + 10) - (x + 15)) < 20 and abs ((goblin -> yPos + 15) - (y + 15)) < 20)) or (weapon -> style = "archery"
 		    and (abs ((goblin -> xPos + 10)
 		    - (x + 15)) < 100 and abs ((goblin -> yPos + 15) - (y + 15)) < 200)) then
 		attacking := true
@@ -3397,7 +3350,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    end if
 		    if goblin -> hp > 0 then
 			%if using a combat attack style
-			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
+			if weapon -> style = "combat" then
 			    %inflicts damage to goblin accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    goblin -> setHp(goblin -> hp - damagedealt)
@@ -3419,12 +3372,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			    %if using an archery attack style
-			elsif weapon = bow then
+			elsif weapon -> style = "archery" then
 			    %inflicts damage to goblin accoring to player's skill level
 			    if arrownum > 0 then
 				arrownum := arrownum - 1
 				damagedealt := Rand.Int (0, (archerylvl + bonus))
-				goblin -> setHp(goblinhp - damagedealt)
+				goblin -> setHp(goblin -> hp - damagedealt)
 				if goblin -> hp > 0 then
 				    goblin -> setAlive(true)
 				else
@@ -3446,7 +3399,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You have run out of arrows!"
 			    end if
 			end if
-			if weapon = bow then
+			if weapon -> style = "archery" then
 				if arrownum > 0 then
 					hit()
 				end if
@@ -3630,7 +3583,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    end if
 		    if dragonhead1hp > 0 then
 			%if using a combat attack style
-			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
+			if weapon -> style = "combat" then
 			    %inflicts damage to dragon accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    dragonhead1hp := dragonhead1hp - damagedealt
@@ -3646,7 +3599,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			    end if
 			end if
-			if weapon = bow then
+			if weapon -> style = "archery" then
 				if arrownum > 0 then
 					hit()
 				end if
@@ -3699,7 +3652,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    end if
 		    if dragonhead2hp > 0 then
 			%if using a combat attack style
-			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
+			if weapon -> style = "combat" then
 			    %inflicts damage to dragon accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    dragonhead2hp := dragonhead2hp - damagedealt
@@ -3715,7 +3668,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You've mastered the art of combat and cannot gain further experience."
 			    end if
 			end if
-			if weapon = bow then
+			if weapon -> style = "archery" then
 				if arrownum > 0 then
 					hit()
 				end if
@@ -3768,7 +3721,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		    end if
 		    if dragonhead3hp > 0 then
 			%if using a combat attack style
-			if weapon = kingsSword or weapon = battleAxe or weapon = twoHanded then
+			if weapon -> style = "combat" then
 			    %inflicts damage to dragon accoring to player's skill level
 			    damagedealt := Rand.Int (0, (combatlvl + bonus))
 			    dragonhead3hp := dragonhead3hp - damagedealt
@@ -3784,7 +3737,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := "You've mastered the art of combat and cannot gain further experience."
 			    end if
 			end if
-			if weapon = bow then
+			if weapon -> style = "archery" then
 				if arrownum > 0 then
 					hit()
 				end if
@@ -3834,8 +3787,6 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	armour := "You are not wearing any armour.  You can buy some at the shop."
     end if
     totallvl := round ((combatlvl + archerylvl) / 2)
-    goblintotallvl := round ((1 + 1) / 2)
-    skeletontotallvl := round ((3 + 1) / 2)
     ghosttotallvl := round ((7 + 1) / 2)
     zombietotallvl := round ((10 + 1) / 2)
     dh1totallvl := round ((10 + 1) / 2)
@@ -3866,7 +3817,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	if goblin -> hp < 10 then
 	    if hpcounter = 40 then
 		if abs ((goblin -> xPos + 10) - (x + 15)) > 19 and abs ((goblin -> yPos + 15) - (y + 15)) > 19 then
-		    goblin -> setHp(goblinhp + 1)
+		    goblin -> setHp(goblin -> hp + 1)
 		end if
 	    end if
 	end if
@@ -3880,21 +3831,21 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	end if
     end if
     %skeleton
-    if skeletonalive = true then
-	if skeletonhp < 30 then
+    if skeleton -> alive then
+	if skeleton -> hp < 30 then
 	    if hpcounter = 40 then
-		if abs ((xskeleton + 10) - (x + 15)) > 19 and abs ((yskeleton + 15) - (y + 15)) > 19 then
-		    skeletonhp := skeletonhp + 1
+		if abs ((skeleton -> xPos + 10) - (x + 15)) > 19 and abs ((skeleton -> yPos + 15) - (y + 15)) > 19 then
+		    skeleton -> setHp(skeleton -> hp + 1)
 		end if
 	    end if
 	end if
     else
-	if skeletonreturncounter = 300 then
-	    skeletonreturncounter := 0
-	    skeletonalive := true
-	    skeletonhp := 30
+	if skeleton -> respawnCounter = 300 then
+	    skeleton -> setRespawnCounter(0)
+	    skeleton -> setAlive(true)
+	    skeleton -> setHp(30)
 	else
-	    skeletonreturncounter := skeletonreturncounter + 1
+	    skeleton -> setRespawnCounter(skeleton -> respawnCounter + 1)
 	end if
     end if
     %ghost
@@ -4166,24 +4117,24 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	if key_west_hall = false then         %if key has not been taken
 	    Pic.Draw (key_wh2, 490, 35, picMerge)
 	end if
-	if skeletonalive = true then         %if skeleton is alive draw hitpoints box
-	    if totallvl > skeletontotallvl then
+	if skeleton -> alive then         %if skeleton is alive draw hitpoints box
+	    if totallvl > skeleton -> totalLvl then
 		skeletonlvlcolour := brightgreen
-	    elsif totallvl = skeletontotallvl then
+	    elsif totallvl = skeleton -> totalLvl then
 		skeletonlvlcolour := yellow
-	    elsif totallvl < skeletontotallvl then
+	    elsif totallvl < skeleton -> totalLvl then
 		skeletonlvlcolour := brightred
 	    end if
-	    if xm > xskeleton - 1 and xm < xskeleton + 32 and ym > yskeleton - 1 and ym < yskeleton + 41 then
-		Font.Draw ("Skeleton [Level " + intstr (skeletontotallvl) + "]", xskeleton, yskeleton + 41, font2, skeletonlvlcolour)
+	    if xm > skeleton -> xPos - 1 and xm < skeleton -> xPos + 32 and ym > skeleton -> yPos - 1 and ym < skeleton -> yPos + 41 then
+		Font.Draw ("Skeleton [Level " + intstr (skeleton -> totalLvl) + "]", skeleton -> xPos, skeleton -> yPos + 41, font2, skeletonlvlcolour)
 	    end if
-	    Pic.Draw (skeletonpic (rskeleton), xskeleton, yskeleton, picMerge)
-	    if abs ((xskeleton + 10) - x + 15) < 200 and abs ((yskeleton + 15) - y + 15) < 200 and skeletonhp > 0 then
+	    Pic.Draw (skeleton -> dirImages (skeleton -> dir), skeleton -> xPos, skeleton -> yPos, picMerge)
+	    if abs ((skeleton -> xPos + 10) - x + 15) < 200 and abs ((skeleton -> yPos + 15) - y + 15) < 200 and skeleton -> hp > 0 then
 		drawfillbox (7, barheight - 3, 123, barheight + 53, skeletonlvlcolour)
 		drawfillbox (10, barheight, 120, barheight + 50, black)
-		drawfillbox (115 - round ((skeletonhp / 30) * 100), barheight + 5, 115, barheight + 15, red)
+		drawfillbox (115 - round ((skeleton -> hp / 30) * 100), barheight + 5, 115, barheight + 15, red)
 		Font.Draw ("Skeleton", 15, barheight + 35, font2, skeletonlvlcolour)
-		Font.Draw ("Hitpoints: " + intstr (round ((skeletonhp / 30) * 100)) + "%", 15, barheight + 20, font2, skeletonlvlcolour)
+		Font.Draw ("Hitpoints: " + intstr (round ((skeleton -> hp / 30) * 100)) + "%", 15, barheight + 20, font2, skeletonlvlcolour)
 	    end if
 	end if
 	if key_west_hall = false then        %if key has not been taken
@@ -4194,8 +4145,8 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
 	    end if
 	end if
-	if skeletonalive = true then
-	    if xm > xskeleton and xm < xskeleton + 15 and ym > yskeleton and ym < yskeleton + 15 then
+	if skeleton -> alive then
+	    if xm > skeleton -> xPos and xm < skeleton -> xPos + 15 and ym > skeleton -> yPos and ym < skeleton -> yPos + 15 then
 		Pic.Draw (cursor_attack, xm - 18, ym - 18, picMerge)
 	    else
 		Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
@@ -4292,11 +4243,11 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     elsif scene = "east of 'west river'" then         %if east of 'west river'
 	Pic.Draw (east_of_westriver_pic, 0, 0, picMerge)
 	if goblin -> alive then
-	    if totallvl > goblintotallvl then
+	    if totallvl > goblin -> totalLvl then
 		goblinlvlcolour := brightgreen
-	    elsif totallvl = goblintotallvl then
+	    elsif totallvl = goblin -> totalLvl then
 		goblinlvlcolour := yellow
-	    elsif totallvl < goblintotallvl then
+	    elsif totallvl < goblin -> totalLvl then
 		goblinlvlcolour := brightred
 	    end if
 	    if xm > goblin -> xPos - 1 and xm < goblin -> xPos + 32 and ym > goblin -> yPos - 1 and ym < goblin -> yPos + 41 then
@@ -4973,37 +4924,37 @@ process goblin_proc
     end if
 end goblin_proc
 
-process skeleton
-    if skeletonmove = false then         %if skeleton has not been assigned a movement
-	skeletonmove := true
-	if skeletonalive = true then
-	    if abs ((xskeleton + 15) - x + 15) >= 300 or abs ((yskeleton + 20) - y + 15) >= 300 then
-		rskeleton := Rand.Int (1, 10)
-		if rskeleton = 1 then
-		    if yskeleton < 550 then
+process skeleton_proc
+    if ~ skeleton -> move then         %if skeleton has not been assigned a movement
+	skeleton -> setMove(true)
+	if skeleton -> alive then
+	    if abs ((skeleton -> xPos + 15) - x + 15) >= 300 or abs ((skeleton -> yPos + 20) - y + 15) >= 300 then
+		skeleton -> setDir(Rand.Int (1, 4))
+		if skeleton -> dir = 1 then
+		    if skeleton -> yPos < 550 then
 			for : 1 .. 50
-			    yskeleton := yskeleton + 1
+			    skeleton -> setYPos(skeleton -> yPos + 1)
 			    Time.DelaySinceLast (30)
 			end for
 		    end if
-		elsif rskeleton = 2 then
-		    if yskeleton > 50 then
+		elsif skeleton -> dir = 2 then
+		    if skeleton -> yPos > 50 then
 			for : 1 .. 50
-			    yskeleton := yskeleton - 1
+			    skeleton -> setYPos(skeleton -> yPos - 1)
 			    Time.DelaySinceLast (30)
 			end for
 		    end if
-		elsif rskeleton = 3 then
-		    if xskeleton > 0 then
+		elsif skeleton -> dir = 3 then
+		    if skeleton -> xPos > 0 then
 			for : 1 .. 50
-			    xskeleton := xskeleton - 1
+			    skeleton -> setXPos(skeleton -> xPos - 1)
 			    Time.DelaySinceLast (30)
 			end for
 		    end if
-		elsif rskeleton = 4 then
-		    if xskeleton < 190 then
+		elsif skeleton -> dir = 4 then
+		    if skeleton -> xPos < 190 then
 			for : 1 .. 50
-			    xskeleton := xskeleton + 1
+			    skeleton -> setXPos(skeleton -> xPos + 1)
 			    Time.DelaySinceLast (30)
 			end for
 		    end if
@@ -5011,31 +4962,31 @@ process skeleton
 		    Time.DelaySinceLast (1500)
 		end if
 	    else
-		if yskeleton + 20 < (y + 15) - 10 then
-		    rskeleton := 1
-		    yskeleton := yskeleton + 1
+		if skeleton -> yPos + 20 < (y + 15) - 10 then
+		    skeleton -> setDir(1)
+			skeleton -> setYPos(skeleton -> yPos + 1)
 		end if
-		if yskeleton + 20 > (y + 15) + 10 then
-		    rskeleton := 2
-		    yskeleton := yskeleton - 1
+		if skeleton -> yPos + 20 > (y + 15) + 10 then
+		    skeleton -> setDir(2)
+		    skeleton -> setYPos(skeleton -> yPos - 1)
 		end if
-		if xskeleton + 15 < (x + 15) - 10 then
-		    rskeleton := 4
-		    if xskeleton < 200 then
-			xskeleton := xskeleton + 1
+		if skeleton -> xPos + 15 < (x + 15) - 10 then
+		    skeleton -> setDir(4)
+		    if skeleton -> xPos < 200 then
+				skeleton -> setXPos(skeleton -> xPos + 1)
 		    end if
 		end if
-		if xskeleton + 15 > (x + 15) + 10 then
-		    rskeleton := 3
-		    xskeleton := xskeleton - 1
+		if skeleton -> xPos + 15 > (x + 15) + 10 then
+		    skeleton -> setDir(3)
+		    skeleton -> setXPos(skeleton -> xPos - 1)
 		end if
 	    end if
 	end if
-	skeletonmove := false
+	skeleton -> setMove(false)
     end if
-    if skeletonalive = true then
-	if skeletontalk = true then
-	    chattext := skeletontext (Rand.Int (1, 3))
+    if skeleton -> alive then
+	if skeleton -> talk then
+	    chattext := skeleton -> text (Rand.Int (1, 3))
 	    if chatentry (5) not= "" and chattext not= "" then
 		for chatnum : 2 .. 5
 		    chatentry (chatnum - 1) := chatentry (chatnum)
@@ -5050,16 +5001,16 @@ process skeleton
 		end for
 	    end if
 	    chattext := ""
-	    skeletontalk := false
+	    skeleton -> setTalk (false)
 	    skeletontalkcounter := 0
 	end if
     end if
     skeletontalkcounter := skeletontalkcounter + 1
     if skeletontalkcounter = skeletontalkcountergoal then
-	skeletontalk := true
+	skeleton -> setTalk(true)
 	skeletontalkcountergoal := Rand.Int (500, 1000)
     end if
-end skeleton
+end skeleton_proc
 
 process ghost
     if ghostmove = false then         %if ghost has not been assigned a movement
@@ -6281,7 +6232,7 @@ proc west_river (var go_to : string)         %when at west river
 	if exitgame = true then
 	    return
 	end if
-	fork skeleton
+	fork skeleton_proc
 	View.Update
     end loop
 end west_river
@@ -6506,7 +6457,7 @@ proc west_river_northcorner (var go_to : string)         %when at west river
 	if exitgame = true then
 	    return
 	end if
-	fork skeleton
+	fork skeleton_proc
 	View.Update
     end loop
 end west_river_northcorner
@@ -6999,15 +6950,14 @@ loop
 	setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 	if loadnew = true then
 	    open : record2, "Newgamevars.gqr", read
-	    read : record2, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, goblinalive, skeletonalive, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive,
+	    read : record2, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive,
 		dragonhead3alive,
-		victory, music_on, stopmusic, destination, goblinmove, skeletonmove, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
+		victory, music_on, stopmusic, destination, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 		platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
-		xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xgoblin, ygoblin, rgoblin, xskeleton, yskeleton, rskeleton, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints,
-		goblinhp,
+		xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints,
 		dragonhead1hp,
-		dragonhead2hp, dragonhead3hp, hpcounter, goblinreturncounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter, skeletonreturncounter,
-		ghostreturncounter, zombiereturncounter, bonus, skeletonhp, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
+		dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
+		ghostreturncounter, zombiereturncounter, bonus, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
 		text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
 	    close : record2
 	    loadnew := false
