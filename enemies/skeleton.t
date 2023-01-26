@@ -19,6 +19,6 @@ class Skeleton
     combatLvl := 3
     archeryLvl := 1
     dmgMin := 0
-    dmgMax := 1
+    dmgMax := 3
     totalLvl := round ((combatLvl + archeryLvl) / 2)
 end Skeleton

@@ -18,27 +18,27 @@ class Enemy
     var totalLvl : int := round ((combatLvl + archeryLvl) / 2)
     var respawnCounter : int := 0
     procedure setHp (i : int)
-	hp := i
+	    hp := i
     end setHp
     procedure setAlive(b : boolean)
-	alive := b
+	    alive := b
     end setAlive
     procedure setRespawnCounter(i : int)
-	respawnCounter := i
+	    respawnCounter := i
     end setRespawnCounter
     procedure setMove(b : boolean)
-	move := b
+	    move := b
     end setMove
     procedure setDir(i : int)
-	dir := i
+	    dir := i
     end setDir
     procedure setXPos(i : int)
-	xPos := i
+	    xPos := i
     end setXPos
     procedure setYPos(i : int)
-	yPos := i
+	    yPos := i
     end setYPos
     procedure setTalk(b : boolean)
-	talk := b
+	    talk := b
     end setTalk
 end Enemy
