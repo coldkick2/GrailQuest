@@ -1,11 +1,12 @@
 class Enemy
     import direction
-    export alive, description, dir, dirImages, hp, move, talk, text, xPos, yPos, dmgMin, dmgMax, combatLvl, archeryLvl, respawnCounter, totalLvl, setHp, setAlive, setRespawnCounter, setMove, setDir, setXPos, setYPos, setTalk
+    export alive, description, dir, dirImages, hp, maxHp, move, talk, text, xPos, yPos, dmgMin, dmgMax, combatLvl, archeryLvl, respawnCounter, totalLvl, setHp, setAlive, setRespawnCounter, setMove, setDir, setXPos, setYPos, setTalk
     var alive : boolean := true
     var description : string
     var dir : int := ord(direction.DOWN)
     var dirImages : array 0 .. 3 of int
     var hp : int
+    var maxHp : int
     var move : boolean := false
     var talk : boolean := true
     var text : array 1 .. 3 of string

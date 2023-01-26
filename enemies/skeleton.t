@@ -16,6 +16,7 @@
     yPos := 400
 
     hp := 30
+    maxHp := 30
     combatLvl := 3
     archeryLvl := 1
     dmgMin := 0

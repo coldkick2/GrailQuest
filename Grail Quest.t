@@ -54,6 +54,9 @@ new Goblin, goblin
 var skeleton: ^Skeleton
 new Skeleton, skeleton
 
+var ghost: ^Ghost
+new Ghost, ghost
+
 process loadanimation
     loop
 		drawfilloval (50, 50, 9, 9, black)
@@ -115,18 +118,6 @@ picd (1) := Pic.FileNew ("Images/warrior_new1d.bmp")
 picd (2) := Pic.FileNew ("Images/warrior_new2d.bmp")
 picd (3) := Pic.FileNew ("Images/warrior_new3d.bmp")
 
-%Ghost
-var ghostpic : array 1 .. 10 of int
-ghostpic (1) := Pic.FileNew ("Images/ghostu.bmp") %up
-ghostpic (2) := Pic.FileNew ("Images/ghostd.bmp") %down
-ghostpic (3) := Pic.FileNew ("Images/ghostl.bmp") %left
-ghostpic (4) := Pic.FileNew ("Images/ghostr.bmp") %right
-ghostpic (5) := Pic.FileNew ("Images/ghostd.bmp") %down
-ghostpic (6) := Pic.FileNew ("Images/ghostd.bmp") %down    31x40
-ghostpic (7) := Pic.FileNew ("Images/ghostd.bmp") %down
-ghostpic (8) := Pic.FileNew ("Images/ghostd.bmp") %down
-ghostpic (9) := Pic.FileNew ("Images/ghostd.bmp") %down
-ghostpic (10) := Pic.FileNew ("Images/ghostd.bmp") %down
 %Zombie
 var zombiepic : array 1 .. 10 of int
 zombiepic (1) := Pic.FileNew ("Images/zombieu.bmp") %up
@@ -195,11 +186,6 @@ chatentry (3) := "You can store a maximum of 5 entries in the chat history at on
 chatentry (4) := "The oldest entry will be discarded when a sixth entry is submitted"
 chatentry (5) := ""
 
-%Ghost text
-var ghosttext : array 1 .. 3 of string
-ghosttext (1) := "Ghost: *o00ooo0oo*"
-ghosttext (2) := "Ghost: The dead call for you!"
-ghosttext (3) := "Ghost: Leave this place mortal!"
 %Zombie text
 var zombietext : array 1 .. 3 of string
 zombietext (1) := "Zombie: *uuuurrrrggg...*"
@@ -598,7 +584,6 @@ var twohanded : boolean := false %twohanded sword item obtained
 var bowObtained : boolean := false %bow item obtained
 var key_west_hall : boolean := false %west hall key obtained
 var cottagekey : boolean := false %cottage key obtained
-var ghostalive : boolean := true %ghost alive
 var zombiealive : boolean := true %zombie alive
 var trollalive : boolean := true %troll alive
 var ratalive : boolean := true %rat alive
@@ -613,7 +598,6 @@ var mapscalebtn_on : boolean := true %map scale can be toggled again if false
 var music_on : boolean := false %music is on if true
 var stopmusic : boolean := false %stops music when true
 var destination : boolean := false %player has a destination when true
-var ghostmove : boolean := false %ghost has been assigned a movement when true
 var zombiemove : boolean := false %zombie has been assigned a movement when true
 var trollmove : boolean := false %troll has been assigned a movement when true
 var peasantmove : boolean := false %peasant has been assigned a movement when true
@@ -648,7 +632,6 @@ var editmodeenabled : boolean := false %true if edit mode is enabled
 var movecharacter : boolean := false %true if a destination has been typed
 var movetopreviousscene : boolean := false %true if destination typed does not exist
 var soundhotkey : boolean := true %true if sound hotkey can be pressed
-var ghosttalk : boolean := true %true if ghost can talk
 var zombietalk : boolean := true %true if zombie can talk
 var trolltalk : boolean := true %true if troll can talk
 var peasanttalk : boolean := true %true if peasant can talk
@@ -686,9 +669,6 @@ var archeryxp : int := 0 %archer experience
 var archerylvl : int := ((round ((sqrt (archeryxp)) div 3)) + 1) %archery level
 var combatxp : int := 0 %combat experience
 var combatlvl : int := ((round ((sqrt (combatxp)) div 3)) + 1) %combat level
-var xghost : int := 300 %x coordinate of ghost
-var yghost : int := 450 %y coordinate of ghost
-var rghost : int := 2 %ghost picture number
 var xzombie : int := 300 %x coordinate of zombie
 var yzombie : int := 400 %y coordinate of zombie
 var rzombie : int := 2 %zombie picture number
@@ -706,7 +686,6 @@ var ycat : int := 450 %y coordinate of cat
 var rcat : int := 2 %cat picture number
 var ycredits : int := 50 %y coordinate of credits
 var hitpoints : int := 100 %character hitpoints
-var ghosthp : int := 70 %ghost hitpoints
 var zombiehp : int := 120 %zombie hitpoints
 var trollhp : int := 180 %troll hitpoints
 var dragonhead1hp : int := 300 %dragon head 1 hitpoints
@@ -724,7 +703,6 @@ var bonus : int := 0 %weapon bonus
 var healthpacks : int := 0 %number of healthpacks
 var arrownum : int := 50 %number of arrows
 var totallvl : int := round ((combatlvl + archerylvl) / 2) %total level
-var ghosttotallvl : int := round ((7 + 1) / 2) %ghost total level
 var zombietotallvl : int := round ((10 + 1) / 2) %zombie total level
 var trolltotallvl : int := round ((20 + 1) / 2) %zombie total level
 var dh1totallvl : int := round ((30 + 1) / 2) %dragon head 1 total level
@@ -1980,13 +1958,13 @@ proc save
 		equipped := "bow"
 	end if
     open : record1, "Grail Quest - records.gqr", write
-    write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
-	victory, music_on, stopmusic, destination, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
+    write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
+	victory, music_on, stopmusic, destination, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
-	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints,
+	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xzombie, yzombie, rzombie, hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-	ghostreturncounter, zombiereturncounter, bonus, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
+	ghostreturncounter, zombiereturncounter, bonus, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
     drawdot (793, 602, brightgreen)
@@ -1996,13 +1974,13 @@ end save
 
 proc load
     open : record1, "Grail Quest - records.gqr", read
-    read : record1, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
-	victory, music_on, stopmusic, destination, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
+    read : record1, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, zombiealive, dragonhead1alive, dragonhead2alive, dragonhead3alive,
+	victory, music_on, stopmusic, destination, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
-	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints,
+	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xzombie, yzombie, rzombie, hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-	ghostreturncounter, zombiereturncounter, bonus, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
+	ghostreturncounter, zombiereturncounter, bonus, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
 	restoreInv()
@@ -2047,8 +2025,8 @@ proc movement     %manipulates character movement input
 				xdest := goblin -> xPos
 				ydest := goblin -> yPos
 			elsif follow = "ghost" then
-				xdest := xghost
-				ydest := yghost
+				xdest := ghost -> xPos
+				ydest := ghost -> yPos
 			elsif follow = "zombie" then
 				xdest := xzombie
 				ydest := yzombie
@@ -3005,30 +2983,30 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				y := 193
 			end if
 		end if
-		if ghostalive then
-	    	if xm > xghost - 1 and xm < xghost + 21 and ym > yghost - 1 and ym < yghost + 30 then
+		if ghost -> alive then
+	    	if xm > ghost -> xPos - 1 and xm < ghost -> xPos + 21 and ym > ghost -> yPos - 1 and ym < ghost -> yPos + 30 then
 				if right = 100 then
-		    		text := "OoOOOOooooOOooooO..."
+		    		text := ghost -> description
 				elsif left = 1 then
 		    		destination := true
 		    		follow := "ghost"
 				end if
 	    	end if
 	    	if ((weapon -> style = "combat")
-				and (abs ((xghost + 10) - (x + 15)) < 20
-				and abs ((yghost + 15) - (y + 15)) < 20))
+				and (abs ((ghost -> xPos + 10) - (x + 15)) < 20
+				and abs ((ghost -> yPos + 15) - (y + 15)) < 20))
 				or (weapon -> style = "archery"
-		    	and (abs ((xghost + 10) - (x + 15)) < 100
-				and abs ((yghost + 15) - (y + 15)) < 200)) then
+		    	and (abs ((ghost -> xPos + 10) - (x + 15)) < 100
+				and abs ((ghost -> yPos + 15) - (y + 15)) < 200)) then
 				attacking := true
-				if xdest = xghost and ydest = yghost then
+				if xdest = ghost -> xPos and ydest = ghost -> yPos then
 		    		destination := false
 				end if
 				text := "You are attacking a ghost!  Arrows left: " + intstr (arrownum) + "  Ghost: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
 				if hpcounter = 20 or hpcounter = 40 then
 		    		if hitpoints > 0 then
-						if abs ((xghost + 10) - (x + 15)) < 20 and abs ((yghost + 15) - (y + 15)) < 20 then
-			    			damagetaken := Rand.Int (0, 7)
+						if abs ((ghost -> xPos + 10) - (x + 15)) < 20 and abs ((ghost -> yPos + 15) - (y + 15)) < 20 then
+			    			damagetaken := Rand.Int (ghost -> dmgMin, ghost -> dmgMax)
 			    			if defence < damagetaken then
 								hitpoints := hitpoints - (damagetaken - defence)
 			    			end if
@@ -3060,18 +3038,18 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 						weapon := kingsSword
 						return
 		    		end if
-		    		if ghosthp > 0 then
+		    		if ghost -> hp > 0 then
 						%if using a combat attack style
 						if weapon -> style = "combat" then
 			    			%inflicts damage to ghost accoring to player's skill level
 			    			damagedealt := Rand.Int (0, (combatlvl + bonus))
-			    			ghosthp := ghosthp - damagedealt
-			    			if ghosthp > 0 then
-								ghostalive := true
+			    			ghost -> setHp(ghost -> hp - damagedealt)
+			    			if ghost -> hp > 0 then
+								ghost -> setAlive(true)
 			    			else
-								ghosthp := 0
+								ghost -> setHp(0)
 								text := "You defeat the ghost and gain 70 experience and 100 gold."
-								ghostalive := false
+								ghost -> setAlive(false)
 								if gold <= 99899 then
 				    				gold := gold + 100
 								else
@@ -3089,13 +3067,13 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			    			if arrownum > 0 then
 								arrownum := arrownum - 1
 								damagedealt := Rand.Int (0, (archerylvl + bonus))
-								ghosthp := ghosthp - damagedealt
-								if ghosthp > 0 then
-				    				ghostalive := true
+								ghost -> setHp(ghost -> hp - damagedealt)
+								if ghost -> hp > 0 then
+				    				ghost -> setAlive(true)
 								else
-				    				ghosthp := 0
+				    				ghost -> setHp(0)
 				    				text := "You defeat the ghost and gain 70 experience and 100 gold."
-				    				ghostalive := false
+				    				ghost -> setAlive(false)
 				    				if gold <= 99899 then
 										gold := gold + 100
 				    				else
@@ -3802,7 +3780,6 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		armour := "You are not wearing any armour.  You can buy some at the shop."
     end if
     totallvl := round ((combatlvl + archerylvl) / 2)
-    ghosttotallvl := round ((7 + 1) / 2)
     zombietotallvl := round ((10 + 1) / 2)
     dh1totallvl := round ((10 + 1) / 2)
     dh2totallvl := round ((10 + 1) / 2)
@@ -3829,7 +3806,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
     %goblin
     if goblin -> alive then
-		if goblin -> hp < 10 then
+		if goblin -> hp < goblin -> maxHp then
 	    	if hpcounter = 40 then
 				if abs ((goblin -> xPos + 10) - (x + 15)) > 19 and abs ((goblin -> yPos + 15) - (y + 15)) > 19 then
 		    		goblin -> setHp(goblin -> hp + 1)
@@ -3847,7 +3824,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
     %skeleton
     if skeleton -> alive then
-		if skeleton -> hp < 30 then
+		if skeleton -> hp < skeleton -> maxHp then
 	    	if hpcounter = 40 then
 				if abs ((skeleton -> xPos + 10) - (x + 15)) > 19 and abs ((skeleton -> yPos + 15) - (y + 15)) > 19 then
 		    		skeleton -> setHp(skeleton -> hp + 1)
@@ -3864,19 +3841,19 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		end if
     end if
     %ghost
-    if ghostalive then
-		if ghosthp < 70 then
+    if ghost -> alive then
+		if ghost -> hp < ghost -> maxHp then
 	    	if hpcounter = 40 then
-				if abs ((xghost + 10) - (x + 15)) > 19 and abs ((yghost + 15) - (y + 15)) > 19 then
-		    		ghosthp := ghosthp + 1
+				if abs ((ghost -> xPos + 10) - (x + 15)) > 19 and abs ((ghost -> yPos + 15) - (y + 15)) > 19 then
+		    		ghost -> setHp(ghost -> hp + 1)
 				end if
 	    	end if
 		end if
     else
 		if ghostreturncounter = 300 then
 	    	ghostreturncounter := 0
-	    	ghostalive := true
-	    	ghosthp := 70
+	    	ghost -> setAlive(true)
+	    	ghost -> setHp(70)
 		else
 	    	ghostreturncounter := ghostreturncounter + 1
 		end if
@@ -4171,24 +4148,24 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		end if
     elsif scene = "cemetery" then
 		Pic.Draw (cemetery_pic, 0, 0, picMerge)
-		if ghostalive then         %if ghost is alive then draw hitpoints box
-	    	if totallvl > ghosttotallvl then
+		if ghost -> alive then         %if ghost is alive then draw hitpoints box
+	    	if totallvl > ghost -> totalLvl then
 				ghostlvlclr := brightgreen
-	    	elsif totallvl = ghosttotallvl then
+	    	elsif totallvl = ghost -> totalLvl then
 				ghostlvlclr := yellow
-	    	elsif totallvl < ghosttotallvl then
+	    	elsif totallvl < ghost -> totalLvl then
 				ghostlvlclr := brightred
 	    	end if
-	    	if xm > xghost - 1 and xm < xghost + 32 and ym > yghost - 1 and ym < yghost + 41 then
-				Font.Draw ("Ghost [Level " + intstr (ghosttotallvl) + "]", xghost, yghost + 41, font2, ghostlvlclr)
+	    	if xm > ghost -> xPos - 1 and xm < ghost -> xPos + 32 and ym > ghost -> xPos - 1 and ym < ghost -> xPos + 41 then
+				Font.Draw ("Ghost [Level " + intstr (ghost -> totalLvl) + "]", ghost -> xPos, ghost -> yPos + 41, font2, ghostlvlclr)
 	    	end if
-	    	Pic.DrawSpecial (ghostpic (rghost), xghost, yghost, picMerge, picBlend, 1)
-	    	if abs ((xghost + 10) - x + 15) < 200 and abs ((yghost + 15) - y + 15) < 200 and ghosthp > 0 then
+	    	Pic.DrawSpecial (ghost -> dirImages (ghost -> dir), ghost -> xPos, ghost -> yPos, picMerge, picBlend, 1)
+	    	if abs ((ghost -> xPos + 10) - x + 15) < 200 and abs ((ghost -> yPos + 15) - y + 15) < 200 and ghost -> hp > 0 then
 				drawfillbox (7, barheight - 3, 123, barheight + 53, ghostlvlclr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
-				drawfillbox (115 - round ((ghosthp / 70) * 100), barheight + 5, 115, barheight + 15, red)
+				drawfillbox (115 - round ((ghost -> hp / 70) * 100), barheight + 5, 115, barheight + 15, red)
 				Font.Draw ("Ghost", 15, barheight + 35, font2, ghostlvlclr)
-				Font.Draw ("Hitpoints: " + intstr (round ((ghosthp / 70) * 100)) + "%", 15, barheight + 20, font2, ghostlvlclr)
+				Font.Draw ("Hitpoints: " + intstr (round ((ghost -> hp / 70) * 100)) + "%", 15, barheight + 20, font2, ghostlvlclr)
 	    	end if
 		end if
 		if xm > 175 and xm < 250 and ym > 200 and ym < 265 then
@@ -4196,8 +4173,8 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		else
 			Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
 		end if
-		if ghostalive then
-			if xm > xghost and xm < xghost + 15 and ym > yghost and ym < yghost + 15 then
+		if ghost -> alive then
+			if xm > ghost -> xPos and xm < ghost -> xPos + 15 and ym > ghost -> yPos and ym < ghost -> yPos + 15 then
 				Pic.Draw (cursor_attack, xm - 18, ym - 18, picMerge)
 			end if
 		end if
@@ -4858,28 +4835,28 @@ process goblin_proc
 		if goblin -> alive then
 	    	if abs ((goblin -> xPos + 10) - x + 15) >= 200 or abs ((goblin -> yPos + 15) - y + 15) >= 200 then
 				goblin -> setDir(Rand.Int (0, 3))
-				if goblin -> dir = 1 then
+				if goblin -> dir = ord(direction.UP) then
 		    		if goblin -> yPos < 550 then
 						for : 1 .. 50
 							goblin -> setYPos(goblin -> yPos + 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
-				elsif goblin -> dir = 2 then
+				elsif goblin -> dir = ord(direction.DOWN) then
 					if goblin -> yPos > 50 then
 						for : 1 .. 50
 							goblin -> setYPos(goblin -> yPos - 1)
 							Time.DelaySinceLast (30)
 						end for
 					end if
-				elsif goblin -> dir = 3 then
+				elsif goblin -> dir = ord(direction.LEFT) then
 		    		if goblin -> xPos > 50 then
 						for : 1 .. 50
 							goblin -> setXPos(goblin -> xPos - 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
-				elsif goblin -> dir = 4 then
+				elsif goblin -> dir = ord(direction.RIGHT) then
 		    		if goblin -> xPos < 750 then
 						for : 1 .. 50
 							goblin -> setXPos(goblin -> xPos + 1)
@@ -4944,28 +4921,28 @@ process skeleton_proc
 		if skeleton -> alive then
 	    	if abs ((skeleton -> xPos + 15) - x + 15) >= 300 or abs ((skeleton -> yPos + 20) - y + 15) >= 300 then
 				skeleton -> setDir(Rand.Int (0, 3))
-				if skeleton -> dir = 1 then
+				if skeleton -> dir = ord(direction.UP) then
 		    		if skeleton -> yPos < 550 then
 						for : 1 .. 50
 							skeleton -> setYPos(skeleton -> yPos + 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
-				elsif skeleton -> dir = 2 then
+				elsif skeleton -> dir = ord(direction.DOWN) then
 		    		if skeleton -> yPos > 50 then
 						for : 1 .. 50
 							skeleton -> setYPos(skeleton -> yPos - 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
-				elsif skeleton -> dir = 3 then
+				elsif skeleton -> dir = ord(direction.LEFT) then
 		    		if skeleton -> xPos > 0 then
 						for : 1 .. 50
 							skeleton -> setXPos(skeleton -> xPos - 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
-				elsif skeleton -> dir = 4 then
+				elsif skeleton -> dir = ord(direction.RIGHT) then
 		    		if skeleton -> xPos < 190 then
 						for : 1 .. 50
 							skeleton -> setXPos(skeleton -> xPos + 1)
@@ -5026,37 +5003,37 @@ process skeleton_proc
     end if
 end skeleton_proc
 
-process ghost
-    if ~ ghostmove then         %if ghost has not been assigned a movement
-		ghostmove := true
-		if ghostalive then
-	    	if abs ((xghost + 15) - x + 15) >= 500 or abs ((yghost + 20) - y + 15) >= 500 then
-				rghost := Rand.Int (1, 10)
-				if rghost = 1 then
-		    		if yghost < 550 then
+process ghost_proc
+    if ~ ghost -> move then         %if ghost has not been assigned a movement
+		ghost -> setMove(true)
+		if ghost -> alive then
+	    	if abs ((ghost -> xPos + 15) - x + 15) >= 500 or abs ((ghost -> yPos + 20) - y + 15) >= 500 then
+				ghost -> setDir(Rand.Int(0, 3))
+				if ghost -> dir = ord(direction.UP) then
+		    		if ghost -> yPos < 550 then
 						for : 1 .. 50
-							yghost := yghost + 1
+							ghost -> setYPos(ghost -> yPos + 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
-				elsif rghost = 2 then
-		    		if yghost > 0 then
+				elsif ghost -> dir = ord(direction.DOWN) then
+		    		if ghost -> yPos > 0 then
 						for : 1 .. 50
-							yghost := yghost - 1
+							ghost -> setYPos(ghost -> yPos - 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
-				elsif rghost = 3 then
-		    		if xghost > 0 then
+				elsif ghost -> dir = ord(direction.LEFT) then
+		    		if ghost -> xPos > 0 then
 						for : 1 .. 50
-							xghost := xghost - 1
+							ghost -> setXPos(ghost -> xPos - 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
-				elsif rghost = 4 then
-		    		if xghost < 210 then
+				elsif ghost -> dir = ord(direction.RIGHT) then
+		    		if ghost -> xPos < 210 then
 						for : 1 .. 50
-							xghost := xghost + 1
+							ghost -> setXPos(ghost -> xPos + 1)
 							Time.DelaySinceLast (30)
 						end for
 		    		end if
@@ -5064,29 +5041,29 @@ process ghost
 		    		Time.DelaySinceLast (1500)
 				end if
 	    	else
-				if yghost + 20 < (y + 15) - 10 then
-					rghost := 1
-					yghost := yghost + 1
+				if ghost -> yPos + 20 < (y + 15) - 10 then
+					ghost -> setDir(ord(direction.UP))
+					ghost -> setYPos(ghost -> yPos + 1)
 				end if
-				if yghost + 20 > (y + 15) + 10 then
-					rghost := 2
-					yghost := yghost - 1
+				if ghost -> yPos + 20 > (y + 15) + 10 then
+					ghost -> setDir(ord(direction.DOWN))
+					ghost -> setYPos(ghost -> yPos - 1)
 				end if
-				if xghost + 15 < (x + 15) - 10 then
-					rghost := 4
-					xghost := xghost + 1
+				if ghost -> xPos + 15 < (x + 15) - 10 then
+					ghost -> setDir(ord(direction.RIGHT))
+					ghost -> setXPos(ghost -> xPos + 1)
 				end if
-				if xghost + 15 > (x + 15) + 10 then
-					rghost := 3
-					xghost := xghost - 1
+				if ghost -> xPos + 15 > (x + 15) + 10 then
+					ghost -> setDir(ord(direction.LEFT))
+					ghost -> setXPos(ghost -> xPos - 1)
 				end if
 	    	end if
 		end if
-		ghostmove := false
+		ghost -> setMove(false)
     end if
-    if ghostalive then
-		if ghosttalk then
-	    	chattext := ghosttext (Rand.Int (1, 3))
+    if ghost -> alive then
+		if ghost -> talk then
+	    	chattext := ghost -> text (Rand.Int (1, 3))
 	    	if chatentry (5) ~= "" and chattext ~= "" then
 				for chatnum : 2 .. 5
 					chatentry (chatnum - 1) := chatentry (chatnum)
@@ -5101,16 +5078,16 @@ process ghost
 				end for
 	    	end if
 			chattext := ""
-			ghosttalk := false
+			ghost -> setTalk(false)
 			ghosttalkcounter := 0
 		end if
     end if
     ghosttalkcounter := ghosttalkcounter + 1
     if ghosttalkcounter = ghosttalkcountergoal then
-		ghosttalk := true
+		ghost -> setTalk(true)
 		ghosttalkcountergoal := Rand.Int (500, 1000)
     end if
-end ghost
+end ghost_proc
 
 process zombie
     if ~ zombiemove then         %if zombie has not been assigned a movement
@@ -6302,7 +6279,7 @@ proc cemetery (var go_to : string)         %when at west river
 		if exitgame then
 			return
 		end if
-		fork ghost
+		fork ghost_proc
 		View.Update
     end loop
 end cemetery
@@ -6964,14 +6941,14 @@ loop
 		setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 		if loadnew then
 			open : record2, "Newgamevars.gqr", read
-			read : record2, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, ghostalive, zombiealive, dragonhead1alive, dragonhead2alive,
+			read : record2, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, zombiealive, dragonhead1alive, dragonhead2alive,
 			dragonhead3alive,
-			victory, music_on, stopmusic, destination, ghostmove, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
+			victory, music_on, stopmusic, destination, zombiemove, scalehotkey, attacking, rope, songhotkey, newdest,
 			platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
-			xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xghost, yghost, rghost, xzombie, yzombie, rzombie, hitpoints,
+			xpic, ypic, xdiff, ydiff, archeryxp, combatxp, xzombie, yzombie, rzombie, hitpoints,
 			dragonhead1hp,
 			dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-			ghostreturncounter, zombiereturncounter, bonus, ghosthp, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
+			ghostreturncounter, zombiereturncounter, bonus, zombiehp, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
 			text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
 			close : record2
 			loadnew := false

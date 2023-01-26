@@ -14,6 +14,7 @@ class Goblin
     yPos := 300
 
     hp := 10
+    maxHp := 10
     combatLvl := 1
     archeryLvl := 1
     dmgMin := 0
