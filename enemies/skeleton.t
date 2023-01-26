@@ -1,12 +1,12 @@
-class Skeleton
+ class Skeleton
     inherit Enemy
 
     description := "An undead skeleton...creepy!"
 
-    dirImages (1) := Pic.FileNew ("Images/skeletonu.bmp")
-    dirImages (2) := Pic.FileNew ("Images/skeletond.bmp")
-    dirImages (3) := Pic.FileNew ("Images/skeletonl.bmp")
-    dirImages (4) := Pic.FileNew ("Images/skeletonr.bmp")
+    dirImages (ord(direction.UP)) := Pic.FileNew ("Images/skeletonu.bmp")
+    dirImages (ord(direction.DOWN)) := Pic.FileNew ("Images/skeletond.bmp")
+    dirImages (ord(direction.LEFT)) := Pic.FileNew ("Images/skeletonl.bmp")
+    dirImages (ord(direction.RIGHT)) := Pic.FileNew ("Images/skeletonr.bmp")
 
     text (1) := "Skeleton: *Creak*"
     text (2) := "Skeleton: You can't kill bones!"

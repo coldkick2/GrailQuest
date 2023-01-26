@@ -10,6 +10,8 @@
 */
 %--------------------------------------------------------------
 
+type direction : enum (UP, DOWN, LEFT, RIGHT) 
+
 include "items/index.t"
 include "enemies/index.t"
 
@@ -1115,17 +1117,17 @@ proc enterchat
 			end if
 		end if
     end if
-    if chattext not= "" then
+    if chattext ~= "" then
 		chattext := "You: " + chattext
     end if
-    if chatentry (5) not= "" and chattext not= "" then
+    if chatentry (5) ~= "" and chattext ~= "" then
 		for chatnum : 2 .. 5
 			chatentry (chatnum - 1) := chatentry (chatnum)
 		end for
 		chatentry (5) := chattext
     else
 		for chatnum : 1 .. 5
-			if chatentry (chatnum) = "" and chattext not= "" then
+			if chatentry (chatnum) = "" and chattext ~= "" then
 				chatentry (chatnum) := chattext
 				exit
 			end if
@@ -2109,7 +2111,7 @@ proc movement     %manipulates character movement input
 				elsif charlastdirection = "down" then
 					Pic.Draw (picd (1), x, y, picMerge)             %down
 				end if
-				if follow not= "peasant" then
+				if follow ~= "peasant" then
 					destination := false
 				end if
 			end if
@@ -2214,7 +2216,7 @@ end buyItem
 
 proc equipItem(item: pointer to Item)
 	if item -> obtained then
-		if weapon not= item then
+		if weapon ~= item then
 			weapon := item
 			if sfx_on then
 				fork playHitSound
@@ -2228,7 +2230,7 @@ end equipItem
 
 proc collision (var go_to : string)     %detects collisions with objects and buttons
     Input.KeyDown (hotkey)
-    if not hotkey ('n') then
+    if ~ hotkey ('n') then
 		songhotkey := true
     end if
     if hotkey ('n') and songhotkey then         %if 'n' key is pressed, stop current song (advance to next song)
@@ -2236,7 +2238,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		songhotkey := false
     elsif hotkey ('m') then
 		map         %display map
-    elsif hotkey ('p') or Window.GetActive not= -1 then
+    elsif hotkey ('p') or Window.GetActive ~= -1 then
 		Pic.Draw (info, 100, 100, picMerge)
 		Font.Draw ("Game Paused", 280, 300, font3, brightred)
 		Font.Draw ("Press 'R' to resume game...", 235, 200, font1, brightred)
@@ -3930,7 +3932,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     if dragonhead1alive then
 		if dragonhead1hp < 300 then
 	    	if hpcounter = 40 then
-				if not (x > 180 and x < 220) or not (y > 500 and y < 550) then
+				if ~ (x > 180 and x < 220) or not (y > 500 and y < 550) then
 		    		dragonhead1hp := dragonhead1hp + 1
 				end if
 	    	end if
@@ -3952,7 +3954,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     if dragonhead2alive then
 		if dragonhead2hp < 300 then
 	    	if hpcounter = 40 then
-				if not (x > 380 and x < 420) or not (y > 450 and y < 500) then
+				if ~ (x > 380 and x < 420) or not (y > 450 and y < 500) then
 		    		dragonhead2hp := dragonhead2hp + 1
 				end if
 	    	end if
@@ -3974,7 +3976,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     if dragonhead3alive then
 		if dragonhead3hp < 300 then
 	    	if hpcounter = 40 then
-				if not (x > 580 and x < 620) or not (y > 500 and y < 550) then
+				if ~ (x > 580 and x < 620) or not (y > 500 and y < 550) then
 		    		dragonhead3hp := dragonhead3hp + 1
 				end if
 	    	end if
@@ -4444,7 +4446,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 			end if
 		end if
     end if
-    if scene not= "in shop" then         %if the character is not in the shop then
+    if scene ~= "in shop" then         %if the character is not in the shop then
 		movement         %run character movement input manipulation
     end if
     %draw chat window
@@ -4568,7 +4570,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 	    	middle := (button - left) mod 100             % middle = 0 or 10
 	    	right := button - middle - left             % right = 0 or 100
 	    	if xm > 160 and xm < 640 and ym > 410 and ym < 440 then             %quit to main menu
-				if ingamemenubutton not= "quit" then
+				if ingamemenubutton ~= "quit" then
 		    		ingamemenubutton := "quit"
 		    		drawfillbox (160, 410, 640, 440, darkgrey)             %quit to main menu
 					Font.Draw ("Quit to Main Menu", 165, 415, font2, brightred)
@@ -4635,7 +4637,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		    		end loop
 				end if
 	    	elsif xm > 160 and xm < 640 and ym > 370 and ym < 400 then              %save
-				if ingamemenubutton not= "save" then
+				if ingamemenubutton ~= "save" then
 		    		ingamemenubutton := "save"
 		    		drawfillbox (160, 410, 640, 440, grey)             %quit to main menu
 					Font.Draw ("Quit to Main Menu", 165, 415, font2, black)
@@ -4743,7 +4745,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		    		end loop
 				end if
 	    	elsif xm > 160 and xm < 640 and ym > 330 and ym < 360 then              %manual
-				if ingamemenubutton not= "manual" then
+				if ingamemenubutton ~= "manual" then
 					ingamemenubutton := "manual"
 					drawfillbox (160, 410, 640, 440, grey)            %quit to main menu
 					Font.Draw ("Quit to Main Menu", 165, 415, font2, black)
@@ -4767,7 +4769,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 					exit
 				end if
 	    	elsif xm > 160 and xm < 640 and ym > 290 and ym < 320 then                  %options
-				if ingamemenubutton not= "options" then
+				if ingamemenubutton ~= "options" then
 					ingamemenubutton := "options"
 					drawfillbox (160, 410, 640, 440, grey)             %quit to main menu
 					Font.Draw ("Quit to Main Menu", 165, 415, font2, black)
@@ -4790,7 +4792,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 					returntomenu := true
 				end if
 	    	elsif xm > 160 and xm < 640 and ym > 250 and ym < 280 then              %return to game
-				if ingamemenubutton not= "return" then
+				if ingamemenubutton ~= "return" then
 					ingamemenubutton := "return"
 					drawfillbox (160, 410, 640, 440, grey)             %quit to main menu
 					Font.Draw ("Quit to Main Menu", 165, 415, font2, black)
@@ -4812,7 +4814,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 					exit
 				end if
 	    	else
-				if ingamemenubutton not= "none" then
+				if ingamemenubutton ~= "none" then
 					ingamemenubutton := "none"
 					drawfillbox (160, 410, 640, 440, grey)             %quit to main menu
 					Font.Draw ("Quit to Main Menu", 165, 415, font2, black)
@@ -4851,11 +4853,11 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 end drawscreen
 
 process goblin_proc
-    if not goblin -> move then         %if goblin has not been assigned a movement
+    if ~ goblin -> move then         %if goblin has not been assigned a movement
 		goblin -> setMove(true)
 		if goblin -> alive then
 	    	if abs ((goblin -> xPos + 10) - x + 15) >= 200 or abs ((goblin -> yPos + 15) - y + 15) >= 200 then
-				goblin -> setDir(Rand.Int (1, 4))
+				goblin -> setDir(Rand.Int (0, 3))
 				if goblin -> dir = 1 then
 		    		if goblin -> yPos < 550 then
 						for : 1 .. 50
@@ -4889,19 +4891,19 @@ process goblin_proc
 				end if
 	    	else
 				if goblin -> yPos + 15 < (y + 15) - 10 then
-					goblin -> setDir(1)
+					goblin -> setDir(ord(direction.UP))
 					goblin -> setYPos(goblin -> yPos + 1)
 				end if
 				if goblin -> yPos + 15 > (y + 15) + 10 then
-					goblin -> setDir(2)
+					goblin -> setDir(ord(direction.DOWN))
 					goblin -> setYPos(goblin -> yPos - 1)
 				end if
 				if goblin -> xPos + 10 < (x + 15) - 10 then
-					goblin -> setDir(4)
+					goblin -> setDir(ord(direction.RIGHT))
 					goblin -> setXPos(goblin -> xPos + 1)
 				end if
 				if goblin -> xPos + 10 > (x + 15) + 10 then
-					goblin -> setDir(3)
+					goblin -> setDir(ord(direction.LEFT))
 					goblin -> setXPos(goblin -> xPos - 1)
 				end if
 	    	end if
@@ -4911,14 +4913,14 @@ process goblin_proc
     if goblin -> alive then
 		if goblin -> talk then
 	    	chattext := goblin -> text (Rand.Int (1, 3))
-	    	if chatentry (5) not= "" and chattext not= "" then
+	    	if chatentry (5) ~= "" and chattext ~= "" then
 				for chatnum : 2 .. 5
 					chatentry (chatnum - 1) := chatentry (chatnum)
 				end for
 				chatentry (5) := chattext
 	    	else
 				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext not= "" then
+					if chatentry (chatnum) = "" and chattext ~= "" then
 						chatentry (chatnum) := chattext
 						exit
 					end if
@@ -4941,7 +4943,7 @@ process skeleton_proc
 		skeleton -> setMove(true)
 		if skeleton -> alive then
 	    	if abs ((skeleton -> xPos + 15) - x + 15) >= 300 or abs ((skeleton -> yPos + 20) - y + 15) >= 300 then
-				skeleton -> setDir(Rand.Int (1, 4))
+				skeleton -> setDir(Rand.Int (0, 3))
 				if skeleton -> dir = 1 then
 		    		if skeleton -> yPos < 550 then
 						for : 1 .. 50
@@ -4975,21 +4977,21 @@ process skeleton_proc
 				end if
 	    	else
 				if skeleton -> yPos + 20 < (y + 15) - 10 then
-					skeleton -> setDir(1)
+					skeleton -> setDir(ord(direction.UP))
 					skeleton -> setYPos(skeleton -> yPos + 1)
 				end if
 				if skeleton -> yPos + 20 > (y + 15) + 10 then
-					skeleton -> setDir(2)
+					skeleton -> setDir(ord(direction.DOWN))
 					skeleton -> setYPos(skeleton -> yPos - 1)
 				end if
 				if skeleton -> xPos + 15 < (x + 15) - 10 then
-					skeleton -> setDir(4)
+					skeleton -> setDir(ord(direction.RIGHT))
 					if skeleton -> xPos < 200 then
 						skeleton -> setXPos(skeleton -> xPos + 1)
 					end if
 				end if
 				if skeleton -> xPos + 15 > (x + 15) + 10 then
-					skeleton -> setDir(3)
+					skeleton -> setDir(ord(direction.LEFT))
 					skeleton -> setXPos(skeleton -> xPos - 1)
 				end if
 	    	end if
@@ -4999,14 +5001,14 @@ process skeleton_proc
     if skeleton -> alive then
 		if skeleton -> talk then
 	    	chattext := skeleton -> text (Rand.Int (1, 3))
-	    	if chatentry (5) not= "" and chattext not= "" then
+	    	if chatentry (5) ~= "" and chattext ~= "" then
 				for chatnum : 2 .. 5
 					chatentry (chatnum - 1) := chatentry (chatnum)
 				end for
 				chatentry (5) := chattext
 	    	else
 				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext not= "" then
+					if chatentry (chatnum) = "" and chattext ~= "" then
 						chatentry (chatnum) := chattext
 						exit
 					end if
@@ -5085,14 +5087,14 @@ process ghost
     if ghostalive then
 		if ghosttalk then
 	    	chattext := ghosttext (Rand.Int (1, 3))
-	    	if chatentry (5) not= "" and chattext not= "" then
+	    	if chatentry (5) ~= "" and chattext ~= "" then
 				for chatnum : 2 .. 5
 					chatentry (chatnum - 1) := chatentry (chatnum)
 				end for
 				chatentry (5) := chattext
 	    	else
 				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext not= "" then
+					if chatentry (chatnum) = "" and chattext ~= "" then
 						chatentry (chatnum) := chattext
 						exit
 					end if
@@ -5181,14 +5183,14 @@ process zombie
     if zombiealive then
 		if zombietalk then
 	    	chattext := zombietext (Rand.Int (1, 3))
-	    	if chatentry (5) not= "" and chattext not= "" then
+	    	if chatentry (5) ~= "" and chattext ~= "" then
 				for chatnum : 2 .. 5
 					chatentry (chatnum - 1) := chatentry (chatnum)
 				end for
 				chatentry (5) := chattext
 	    	else
 				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext not= "" then
+					if chatentry (chatnum) = "" and chattext ~= "" then
 						chatentry (chatnum) := chattext
 						exit
 					end if
@@ -5291,14 +5293,14 @@ process troll
     if trollalive then
 		if trolltalk then
 	    	chattext := trolltext (Rand.Int (1, 3))
-	    	if chatentry (5) not= "" and chattext not= "" then
+	    	if chatentry (5) ~= "" and chattext ~= "" then
 				for chatnum : 2 .. 5
 					chatentry (chatnum - 1) := chatentry (chatnum)
 				end for
 				chatentry (5) := chattext
 	    	else
 				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext not= "" then
+					if chatentry (chatnum) = "" and chattext ~= "" then
 						chatentry (chatnum) := chattext
 						exit
 					end if
@@ -5507,14 +5509,14 @@ process peasant
     end if
     if peasanttalk then
 		chattext := peasanttext (Rand.Int (1, 3))
-		if chatentry (5) not= "" and chattext not= "" then
+		if chatentry (5) ~= "" and chattext ~= "" then
 	    	for chatnum : 2 .. 5
 				chatentry (chatnum - 1) := chatentry (chatnum)
 	    	end for
 	    	chatentry (5) := chattext
 		else
 	    	for chatnum : 1 .. 5
-				if chatentry (chatnum) = "" and chattext not= "" then
+				if chatentry (chatnum) = "" and chattext ~= "" then
 		    		chatentry (chatnum) := chattext
 		    		exit
 				end if
@@ -5618,14 +5620,14 @@ process rat
     if ratalive then
 		if rattalk then
 	    	chattext := rattext (Rand.Int (1, 3))
-	    	if chatentry (5) not= "" and chattext not= "" then
+	    	if chatentry (5) ~= "" and chattext ~= "" then
 				for chatnum : 2 .. 5
 					chatentry (chatnum - 1) := chatentry (chatnum)
 				end for
 				chatentry (5) := chattext
 	    	else
 				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext not= "" then
+					if chatentry (chatnum) = "" and chattext ~= "" then
 						chatentry (chatnum) := chattext
 						exit
 					end if
@@ -5711,14 +5713,14 @@ process cat
     end if
     if cattalk then
 		chattext := cattext (Rand.Int (1, 3))
-		if chatentry (5) not= "" and chattext not= "" then
+		if chatentry (5) ~= "" and chattext ~= "" then
 			for chatnum : 2 .. 5
 				chatentry (chatnum - 1) := chatentry (chatnum)
 			end for
 	    	chatentry (5) := chattext
 		else
 	    	for chatnum : 1 .. 5
-				if chatentry (chatnum) = "" and chattext not= "" then
+				if chatentry (chatnum) = "" and chattext ~= "" then
 					chatentry (chatnum) := chattext
 					exit
 				end if
@@ -6557,7 +6559,7 @@ proc cottage (var go_to : string)         %when east of 'west river'
 		right := button - middle - left         % right = 0 or 100
 		drawscreen (goto)         %run graphical output
 		fork peasant
-		if not (x > 505 and y > 53 and y < 180) then         %if not in cottage
+		if ~ (x > 505 and y > 53 and y < 180) then         %if not in cottage
 			Pic.Draw (thatchroof, 519, 149, picCopy)
 		end if
 		if movecharacter then
@@ -6714,7 +6716,7 @@ proc openingscreen
 			middle := (button - left) mod 100         % middle = 0 or 10
 			right := button - middle - left         % right = 0 or 100
 	    	if xm > 94 and xm < 161 and ym > 174 and ym < 226 then         %play
-				if menubutton not= "play" then
+				if menubutton ~= "play" then
 					Pic.Draw (playpic, 0, 0, picCopy)
 					Font.Draw ("G r a i l   Q u e s t", 105, 140, font3, brightgreen)
 					Font.Draw (version, 170, 50, font5, yellow)
@@ -6810,7 +6812,7 @@ proc openingscreen
 		    		backtomenu := false
 				end if
 	    	elsif xm > 339 and xm < 405 and ym > 174 and ym < 226 then         %credits
-				if menubutton not= "credits" then
+				if menubutton ~= "credits" then
 					Pic.Draw (creditspic, 0, 0, picCopy)
 					Font.Draw ("G r a i l   Q u e s t", 105, 140, font3, brightblue)
 					Font.Draw (version, 170, 50, font5, yellow)
@@ -6836,7 +6838,7 @@ proc openingscreen
 					fork menumusic
 				end if
 	    	elsif xm > 214 and xm < 286 and ym > 74 and ym < 126 then         %exit
-				if menubutton not= "exit" then
+				if menubutton ~= "exit" then
 					Pic.Draw (exitpic, 0, 0, picCopy)
 					Font.Draw ("G r a i l   Q u e s t", 105, 140, font3, brightred)
 					Font.Draw (version, 170, 50, font5, yellow)
@@ -6856,7 +6858,7 @@ proc openingscreen
 					exit
 				end if
 	   		elsif xm > 0 and xm < 500 and ym > 0 and ym < 50 then         %link
-				if menubutton not= "link" then
+				if menubutton ~= "link" then
 					Pic.Draw (intro, 0, 0, picCopy)
 					Font.Draw ("G r a i l   Q u e s t", 105, 140, font3, grey)
 					Font.Draw (version, 170, 50, font5, yellow)
@@ -6872,14 +6874,14 @@ proc openingscreen
 				end if
 				if left = 1 and ~ linkfollowed then
 					menubutton := ""
-					if not Sys.Exec ("http://sites.google.com/site/seanscomputerscience/games/grail-quest") then
+					if ~ Sys.Exec ("http://sites.google.com/site/seanscomputerscience/games/grail-quest") then
 					end if
 					linkfollowed := true
 				elsif left = 0 then
 					linkfollowed := false
 				end if
 	    	else
-				if menubutton not= "intro" then
+				if menubutton ~= "intro" then
 					Pic.Draw (intro, 0, 0, picCopy)
 					Font.Draw ("G r a i l   Q u e s t", 105, 140, font3, grey)
 					Font.Draw (version, 170, 50, font5, yellow)

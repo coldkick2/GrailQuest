@@ -1,10 +1,10 @@
 class Goblin
     inherit Enemy
 
-    dirImages (1) := Pic.FileNew ("Images/goblinu.bmp")
-    dirImages (2) := Pic.FileNew ("Images/goblind.bmp")
-    dirImages (3) := Pic.FileNew ("Images/goblinl.bmp")
-    dirImages (4) := Pic.FileNew ("Images/goblinr.bmp")
+    dirImages (ord(direction.UP)) := Pic.FileNew ("Images/goblinu.bmp")
+    dirImages (ord(direction.DOWN)) := Pic.FileNew ("Images/goblind.bmp")
+    dirImages (ord(direction.LEFT)) := Pic.FileNew ("Images/goblinl.bmp")
+    dirImages (ord(direction.RIGHT)) := Pic.FileNew ("Images/goblinr.bmp")
 
     text (1) := "Goblin: *Grrrrr*"
     text (2) := "Goblin: I didn't steal it!"
