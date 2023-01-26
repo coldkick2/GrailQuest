@@ -3,17 +3,17 @@ class Ghost
 
     description := "OoOOOOooooOOooooO..."
 
-    dirImages (ord(direction.UP)) := Pic.FileNew ("Images/ghostu.bmp")
-    dirImages (ord(direction.DOWN)) := Pic.FileNew ("Images/ghostd.bmp")
-    dirImages (ord(direction.LEFT)) := Pic.FileNew ("Images/ghostl.bmp")
-    dirImages (ord(direction.RIGHT)) := Pic.FileNew ("Images/ghostr.bmp")
+    dirImages (ord(Direction.UP)) := Pic.FileNew ("Images/ghostu.bmp")
+    dirImages (ord(Direction.DOWN)) := Pic.FileNew ("Images/ghostd.bmp")
+    dirImages (ord(Direction.LEFT)) := Pic.FileNew ("Images/ghostl.bmp")
+    dirImages (ord(Direction.RIGHT)) := Pic.FileNew ("Images/ghostr.bmp")
 
-    text (1) := "Ghost: *o00ooo0oo*"
-    text (2) := "Ghost: The dead call for you!"
-    text (3) := "Ghost: Leave this place mortal!"
+    text (0) := "Ghost: *o00ooo0oo*"
+    text (1) := "Ghost: The dead call for you!"
+    text (2) := "Ghost: Leave this place mortal!"
 
-    xPos := 200
-    yPos := 400
+    xPos := 300
+    yPos := 450
 
     hp := 70
     maxHp := 70

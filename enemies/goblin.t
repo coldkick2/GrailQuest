@@ -1,14 +1,14 @@
 class Goblin
     inherit Enemy
 
-    dirImages (ord(direction.UP)) := Pic.FileNew ("Images/goblinu.bmp")
-    dirImages (ord(direction.DOWN)) := Pic.FileNew ("Images/goblind.bmp")
-    dirImages (ord(direction.LEFT)) := Pic.FileNew ("Images/goblinl.bmp")
-    dirImages (ord(direction.RIGHT)) := Pic.FileNew ("Images/goblinr.bmp")
+    dirImages (ord(Direction.UP)) := Pic.FileNew ("Images/goblinu.bmp")
+    dirImages (ord(Direction.DOWN)) := Pic.FileNew ("Images/goblind.bmp")
+    dirImages (ord(Direction.LEFT)) := Pic.FileNew ("Images/goblinl.bmp")
+    dirImages (ord(Direction.RIGHT)) := Pic.FileNew ("Images/goblinr.bmp")
 
-    text (1) := "Goblin: *Grrrrr*"
-    text (2) := "Goblin: I didn't steal it!"
-    text (3) := "Goblin: Die human!"
+    text (0) := "Goblin: *Grrrrr*"
+    text (1) := "Goblin: I didn't steal it!"
+    text (2) := "Goblin: Die human!"
 
     xPos := 400
     yPos := 300
