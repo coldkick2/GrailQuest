@@ -1044,7 +1044,7 @@ process purchase
 end purchase
 
 process creditsmusic
-    Music.PlayFile ("Music/NightFallsOnLondon.wav")
+    Music.PlayFile ("Music/NightFallsOnLondon.mp3")
 end creditsmusic
 
 process portcullis
@@ -1060,62 +1060,26 @@ process stonedoor
 end stonedoor
 
 process music
+    if stopmusic then
+		  music_on := false
+		  stopmusic := false
+		  return
+    end if
+
     music_on := true
+
     if victory then
-		Music.PlayFile ("Music/WON1.mp3")
-    else
+		  Music.PlayFile ("Music/WON1.mp3")
+      return
+    end if
+
 		Music.PlayFile ("Music/(fine layers of) slaysenflite.mp3")
-    end if
-    if stopmusic then
-		music_on := false
-		stopmusic := false
-		return
-    end if
-    if victory then
-		Music.PlayFile ("Music/WON1.mp3")
-    else
 		Music.PlayFile ("Music/chocolate outline.mp3")
-    end if
-    if stopmusic then
-		music_on := false
-		stopmusic := false
-		return
-    end if
-    if victory then
-		Music.PlayFile ("Music/WON1.mp3")
-    else
-	Music.PlayFile ("Music/hoping for real betterness.mp3")
-    end if
-    if stopmusic then
-		music_on := false
-		stopmusic := false
-		return
-    end if
-    if victory then
-		Music.PlayFile ("Music/WON1.mp3")
-    else
+	  Music.PlayFile ("Music/hoping for real betterness.mp3")
 		Music.PlayFile ("Music/never mind the slacks and bashers.mp3")
-    end if
-    if stopmusic then
-		music_on := false
-		stopmusic := false
-		return
-    end if
-    if victory then
-		Music.PlayFile ("Music/WON1.mp3")
-    else
 		Music.PlayFile ("Music/the ballad of ace lebaron.mp3")
-    end if
-    if stopmusic then
-		music_on := false
-		stopmusic := false
-		return
-    end if
-    if victory then
-		Music.PlayFile ("Music/WON1.mp3")
-    else
 		Music.PlayFile ("Music/eat your potatoes.mp3")
-    end if
+  
     music_on := false
 end music
 
