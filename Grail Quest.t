@@ -14,7 +14,7 @@ type Direction : enum (UP, DOWN, LEFT, RIGHT)
 
 include "scenes/index.t"
 include "items/index.t"
-include "enemies/index.t"
+include "actors/index.t"
 
 setscreen ("position:middle,centre,graphics:500;400,offscreenonly,nobuttonbar,nocursor")
 var loadpic : int := Pic.FileNew ("Images/opening screen - loading.bmp") %loading screen
@@ -63,6 +63,9 @@ new Zombie, zombie
 
 var troll: ^Troll
 new Troll, troll
+
+var peasant: ^Peasant
+new Peasant, peasant
 
 process loadanimation
     loop
@@ -125,18 +128,6 @@ picd (1) := Pic.FileNew ("Images/warrior_new1d.bmp")
 picd (2) := Pic.FileNew ("Images/warrior_new2d.bmp")
 picd (3) := Pic.FileNew ("Images/warrior_new3d.bmp")
 
-%Peasant
-var peasantpic : array 1 .. 10 of int
-peasantpic (1) := Pic.FileNew ("Images/peasantu.bmp") %up
-peasantpic (2) := Pic.FileNew ("Images/peasantd.bmp") %down
-peasantpic (3) := Pic.FileNew ("Images/peasantl.bmp") %left
-peasantpic (4) := Pic.FileNew ("Images/peasantr.bmp") %right
-peasantpic (5) := Pic.FileNew ("Images/peasantd.bmp") %down
-peasantpic (6) := Pic.FileNew ("Images/peasantd.bmp") %down    31x40
-peasantpic (7) := Pic.FileNew ("Images/peasantd.bmp") %down
-peasantpic (8) := Pic.FileNew ("Images/peasantd.bmp") %down
-peasantpic (9) := Pic.FileNew ("Images/peasantd.bmp") %down
-peasantpic (10) := Pic.FileNew ("Images/peasantd.bmp") %down
 %Rat
 var ratpic : array 1 .. 10 of int
 ratpic (1) := Pic.FileNew ("Images/ratu.bmp") %up
@@ -169,11 +160,6 @@ chatentry (3) := "You can store a maximum of 5 entries in the chat history at on
 chatentry (4) := "The oldest entry will be discarded when a sixth entry is submitted"
 chatentry (5) := ""
 
-%Peasant text
-var peasanttext : array 1 .. 3 of string
-peasanttext (1) := "Peasant: *sigh*"
-peasanttext (2) := "Peasant: Nice day ain't it?"
-peasanttext (3) := "Peasant: ...might do some fishin' t'day..."
 %Cat text
 var cattext : array 1 .. 3 of string
 cattext (1) := "Cat: *Hisssss!*"
@@ -569,7 +555,6 @@ var mapscalebtn_on : boolean := true %map scale can be toggled again if false
 var music_on : boolean := false %music is on if true
 var stopmusic : boolean := false %stops music when true
 var destination : boolean := false %player has a destination when true
-var peasantmove : boolean := false %peasant has been assigned a movement when true
 var ratmove : boolean := false %rat has been assigned a movement when true
 var catmove : boolean := false %cat has been assigned a movement when true
 var scalehotkey : boolean := true %scale hotkey can be pressed again when true
@@ -593,7 +578,6 @@ var lowerchatwindow : boolean := false %chat window will drop down if true
 var slaycutsceneviewed : boolean := false %true if dragon slaying cutscene has been viewed
 var introplayed : boolean := false %true if 'Grail Quest' word animation has been viewed
 var playerincottage : boolean := false %player is in cottage if true
-var peasantincottage : boolean := false %peasant is in cottage if true
 var returntomenu : boolean := false %return to in-game menu if true (after viewing user manual through in-game menu)
 var loadsavedgame : boolean := false %true when user decides to load a saved game
 var linkfollowed : boolean := false %true if link on opening screen has been followed
@@ -601,7 +585,6 @@ var editmodeenabled : boolean := false %true if edit mode is enabled
 var movecharacter : boolean := false %true if a destination has been typed
 var movetopreviousscene : boolean := false %true if destination typed does not exist
 var soundhotkey : boolean := true %true if sound hotkey can be pressed
-var peasanttalk : boolean := true %true if peasant can talk
 var cattalk : boolean := true %true if cat can talk
 var rattalk : boolean := true %true if rat can talk
 var toggleready : boolean := true %true if mousebutton lifted
@@ -636,9 +619,6 @@ var archeryxp : int := 0 %archer experience
 var archerylvl : int := ((round ((sqrt (archeryxp)) div 3)) + 1) %archery level
 var combatxp : int := 0 %combat experience
 var combatlvl : int := ((round ((sqrt (combatxp)) div 3)) + 1) %combat level
-var xpeasant : int := 660 %x coordinate of peasant
-var ypeasant : int := 100 %y coordinate of peasant
-var rpeasant : int := 2 %peasant picture number
 var xrat : int := 300 %x coordinate of rat
 var yrat : int := 300 %y coordinate of rat
 var rrat : int := 2 %rat picture number
@@ -671,8 +651,6 @@ var defence : int := 0 %player defence
 var ychat : int := 0 %y coordiante of chat window
 var xgrail : int := -50 %x coordinate of 'Grail' intro text
 var xquest : int := 501 %x coordinate of 'Quest' intro text
-var peasanttalkcounter : int := 0 %counts to peasanttalkcountergoal to make peasanttalk true
-var peasanttalkcountergoal : int := Rand.Int (500, 1000) %the number peasanttalkcounter must reach to make peasanttalk true
 var cattalkcounter : int := 0 %counts to cattalkcountergoal to make cattalk true
 var cattalkcountergoal : int := Rand.Int (500, 1000) %the number cattalkcounter must reach to make cattalk true
 var rattalkcounter : int := 0 %counts to rattalkcountergoal to make rattalk true
@@ -703,7 +681,7 @@ var goto : string := "" %scene redirection
 var text : string := "Your quest begins...you seek the Holy Grail." %top bar text
 var mapscale : string := "50" %map scale
 var menubutton : string := "" %highlighted main menu button
-var follow : string := "" %NPC the character is following
+var follow : pointer to Enemy %NPC the character is following
 var armour : string := "" %armour worn by player
 var chatchar : string (1) := "" %entered chat character
 var chattext : string := "" %chat entry text (combination of entered chat characters)
@@ -1976,7 +1954,7 @@ proc movement     %manipulates character movement input
 					destination := true
 					xdest := xm - 7
 					ydest := ym
-					follow := ""
+					follow := nil
 					newdest := false
 				elsif left = 0 then
 					newdest := true
@@ -1984,21 +1962,21 @@ proc movement     %manipulates character movement input
 			end if
 		end if
 		if destination then
-			if follow = "skeleton" then
+			if follow = skeleton then
 				xdest := skeleton -> xPos
 				ydest := skeleton -> yPos
-			elsif follow = "goblin" then
+			elsif follow = goblin then
 				xdest := goblin -> xPos
 				ydest := goblin -> yPos
-			elsif follow = "ghost" then
+			elsif follow = ghost then
 				xdest := ghost -> xPos
 				ydest := ghost -> yPos
-			elsif follow = "zombie" then
+			elsif follow = zombie then
 				xdest := zombie -> xPos
 				ydest := zombie -> yPos
-			elsif follow = "peasant" then
-				xdest := xpeasant
-				ydest := ypeasant
+			elsif follow = peasant then
+				xdest := peasant -> xPos
+				ydest := peasant -> yPos
 			end if
 			drawbox (xdest - 1, ydest - 8, xdest + 15, ydest + 8, brightred)
 			if x + 8 > xdest + 3 and y > ydest + 3 then             %left/down
@@ -2055,7 +2033,7 @@ proc movement     %manipulates character movement input
 				elsif charlastdirection = "down" then
 					Pic.Draw (picd (1), x, y, picMerge)             %down
 				end if
-				if follow ~= "peasant" then
+				if follow ~= peasant then
 					destination := false
 				end if
 			end if
@@ -2529,7 +2507,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 					text := troll -> description
 				elsif left = 1 then
 					destination := true
-					follow := "troll"
+					follow := troll
 				end if
 			end if
 			if ((weapon -> style = "combat")
@@ -2796,7 +2774,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 					text := skeleton -> description
 				elsif left = 1 then
 					destination := true
-					follow := "skeleton"
+					follow := skeleton
 				end if
 			end if
 			if ((weapon -> style = "combat")
@@ -2909,7 +2887,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := ghost -> description
 			elsif left = 1 then
 				destination := true
-				follow := "ghost"
+				follow := ghost
 			end if
 		end if
 		if ((weapon -> style = "combat")
@@ -3024,7 +3002,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := zombie -> description
 				elsif left = 1 then
 				destination := true
-				follow := "zombie"
+				follow := zombie
 				end if
 			end if
 		if ((weapon -> style = "combat")
@@ -3166,7 +3144,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := goblin -> description
 			elsif left = 1 then
 				destination := true
-				follow := "goblin"
+				follow := goblin
 			end if
 		end if
 		if ((weapon -> style = "combat")
@@ -3314,10 +3292,10 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		else
 			playerincottage := false
 		end if
-		if xpeasant > 505 and ypeasant > 66 and ypeasant < 168 then         %if peasant is in cottage
-			peasantincottage := true
+		if peasant -> xPos > 505 and peasant -> yPos > 66 and peasant -> yPos < 168 then         %if peasant is in cottage
+			peasant -> setInCottage(true)
 		else
-			peasantincottage := false
+			peasant -> setInCottage(false)
 		end if
 		if x > 360 and x < 400 and (y < 75 or (y > 120 and y < 490)) then
 			x := 360
@@ -3350,12 +3328,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		if (x > 515 and x < 533 and y > 56 and y < 76) or (x > 515 and x < 533 and y > 111 and y < 180) then
 			x := 533
 		end if
-		if xm > xpeasant - 1 and xm < xpeasant + 30 and ym > ypeasant - 1 and ym < ypeasant + 30 then
+		if xm > peasant -> xPos - 1 and xm < peasant -> xPos + 30 and ym > peasant -> yPos - 1 and ym < peasant -> yPos + 30 then
 			if right = 100 then
-				text := "A humble peasant."
+				text := peasant -> description
 			elsif left = 1 then
 				destination := true
-				follow := "peasant"
+				follow := peasant
 			end if
 		end if
     elsif scene = "dragon's lair" then
@@ -3963,24 +3941,24 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		drawoval (xsplash1, ysplash1, round (splashradius1), round (splashradius1), 55)
 		drawoval (xsplash2, ysplash2, round (splashradius2), round (splashradius2), 55)
 		drawoval (xsplash3, ysplash3, round (splashradius3), round (splashradius3), 55)
-		if xpeasant > 505 and ypeasant > 53 and ypeasant < 180 then
+		if peasant -> xPos > 505 and peasant -> yPos > 53 and peasant -> yPos < 180 then
 			if x > 505 and y > 53 and y < 180 then
-				if xm > xpeasant - 1 and xm < xpeasant + 21 and ym > ypeasant - 1 and ym < ypeasant + 30 then
-					Font.Draw ("Peasant", xpeasant, ypeasant + 30, font2, white)
+				if xm > peasant -> xPos - 1 and xm < peasant -> xPos + 21 and ym > peasant -> yPos - 1 and ym < peasant -> yPos + 30 then
+					Font.Draw ("Peasant", peasant -> xPos, peasant -> yPos + 30, font2, white)
 				end if
-				Pic.Draw (peasantpic (rpeasant), xpeasant, ypeasant, picMerge)
+				Pic.Draw (peasant -> dirImages (peasant -> dir), peasant -> xPos, peasant -> yPos, picMerge)
 			end if
 		else
-			if xm > xpeasant - 1 and xm < xpeasant + 21 and ym > ypeasant - 1 and ym < ypeasant + 30 then
-				Font.Draw ("Peasant", xpeasant, ypeasant + 30, font2, white)
+			if xm > peasant -> xPos - 1 and xm < peasant -> xPos + 21 and ym > peasant -> yPos - 1 and ym < peasant -> yPos + 30 then
+				Font.Draw ("Peasant", peasant -> xPos, peasant -> yPos + 30, font2, white)
 			end if
-			Pic.Draw (peasantpic (rpeasant), xpeasant, ypeasant, picMerge)
+			Pic.Draw (peasant -> dirImages (peasant -> dir), peasant -> xPos, peasant -> yPos, picMerge)
 		end if
-		if abs ((xpeasant + 10) - x + 15) < 200 and abs ((ypeasant + 15) - y + 15) < 200 then
+		if abs ((peasant -> xPos + 10) - x + 15) < 200 and abs ((peasant -> yPos + 15) - y + 15) < 200 then
 		drawfillbox (7, barheight - 3, 123, barheight + 53, grey)             %barheight = 540
 		drawfillbox (10, barheight, 120, barheight + 50, black)
 		Font.Draw ("Peasant", 15, barheight + 35, font2, grey)
-		if playerincottage = peasantincottage then
+		if playerincottage = peasant -> inCottage then
 				if xm > 13 and xm < 117 and ym > barheight + 3 and ym < barheight + 32 then
 				drawfillbox (13, barheight + 3, 117, barheight + 32, brightgreen)
 				Font.Draw ("Talk", 15, barheight + 5, font2, green)
@@ -4940,220 +4918,70 @@ process troll_proc
     end if
 end troll_proc
 
-process peasant
-    if ~ peasantmove then         %if peasant has not been assigned a movement
-		peasantmove := true
-		rpeasant := Rand.Int (1, 10)
-		if rpeasant = 1 then
-		for : 1 .. 30
-				ypeasant := ypeasant + 1
-				if ypeasant > 250 and ypeasant < 280 then
-					ypeasant := 250
-				elsif ypeasant > 490 and ypeasant < 520 then
-					ypeasant := 520
-				elsif ypeasant < 30 and xpeasant > 420 then
-					ypeasant := 30
-				elsif ypeasant > 570 then
-					ypeasant := 570
-				end if
-				if xpeasant > 765 then
-					xpeasant := 765
-				end if
-				if xpeasant > 360 and xpeasant < 400 and (ypeasant < 75 or (ypeasant > 120 and ypeasant < 490)) then
-					xpeasant := 360
-				elsif xpeasant > 399 and xpeasant < 439 and (ypeasant < 75 or (ypeasant > 120 and ypeasant < 490)) then
-					xpeasant := 439
-				end if
-				if (ypeasant > 56 and ypeasant < 76 and xpeasant > 495 and xpeasant < 515) or (ypeasant > 111 and ypeasant < 180 and xpeasant > 495 and xpeasant < 515) then
-					xpeasant := 495
-				end if
-				if xpeasant > 495 then
-					if ypeasant > 53 and ypeasant < 58 then                     %if south of cottage
-						ypeasant := 53
-					elsif ypeasant > 175 and ypeasant < 180 then                     %if north of cottage
-						ypeasant := 180
-					end if
-				end if
-				if xpeasant > 495 then
-					if ypeasant > 58 and ypeasant < 67 then                     %if inside at south wall
-						ypeasant := 67
-					end if
-					if ypeasant > 167 and ypeasant < 175 then                     %if inside at north wall
-						ypeasant := 167
-					end if
-				end if
-				if (xpeasant > 515 and xpeasant < 533 and ypeasant > 56 and ypeasant < 76) or (xpeasant > 515 and xpeasant < 533 and ypeasant > 111 and ypeasant < 180) then
-					xpeasant := 533
-				end if
-				if xpeasant < 30 then
-					xpeasant := 30
-				elsif xpeasant > 770 then
-					xpeasant := 770
-				end if
-				if ypeasant < 30 then
-					ypeasant := 30
-				end if
-				Time.DelaySinceLast (10)
-		end for
-		elsif rpeasant = 2 then
-		for : 1 .. 30
-				ypeasant := ypeasant - 1
-				if ypeasant > 250 and ypeasant < 280 then
-					ypeasant := 250
-				elsif ypeasant > 490 and ypeasant < 520 then
-					ypeasant := 520
-				elsif ypeasant < 30 and xpeasant > 420 then
-					ypeasant := 30
-				elsif ypeasant > 570 then
-					ypeasant := 570
-				end if
-				if xpeasant > 765 then
-					xpeasant := 765
-				end if
-				if xpeasant > 360 and xpeasant < 400 and (ypeasant < 75 or (ypeasant > 120 and ypeasant < 490)) then
-					xpeasant := 360
-				elsif xpeasant > 399 and xpeasant < 439 and (ypeasant < 75 or (ypeasant > 120 and ypeasant < 490)) then
-					xpeasant := 439
-				end if
-				if (ypeasant > 56 and ypeasant < 76 and xpeasant > 495 and xpeasant < 515) or (ypeasant > 111 and ypeasant < 180 and xpeasant > 495 and xpeasant < 515) then
-					xpeasant := 495
-				end if
-				if xpeasant > 495 then
-					if ypeasant > 53 and ypeasant < 58 then                     %if south of cottage
-						ypeasant := 53
-					elsif ypeasant > 175 and ypeasant < 180 then                     %if north of cottage
-						ypeasant := 180
-					end if
-				end if
-				if xpeasant > 495 then
-					if ypeasant > 58 and ypeasant < 67 then                     %if inside at south wall
-						ypeasant := 67
-					end if
-					if ypeasant > 167 and ypeasant < 175 then                     %if inside at north wall
-						ypeasant := 167
-					end if
-				end if
-				if (xpeasant > 515 and xpeasant < 533 and ypeasant > 56 and ypeasant < 76) or (xpeasant > 515 and xpeasant < 533 and ypeasant > 111 and ypeasant < 180) then
-					xpeasant := 533
-				end if
-				Time.DelaySinceLast (10)
-		end for
-		elsif rpeasant = 3 then
-		for : 1 .. 30
-				xpeasant := xpeasant - 1
-				if ypeasant > 250 and ypeasant < 280 then
-					ypeasant := 250
-				elsif ypeasant > 490 and ypeasant < 520 then
-					ypeasant := 520
-				elsif ypeasant < 30 and xpeasant > 420 then
-					ypeasant := 30
-				elsif ypeasant > 570 then
-					ypeasant := 570
-				end if
-				if xpeasant > 765 then
-					xpeasant := 765
-				end if
-				if xpeasant > 360 and xpeasant < 400 and (ypeasant < 75 or (ypeasant > 120 and ypeasant < 490)) then
-					xpeasant := 360
-				elsif xpeasant > 399 and xpeasant < 439 and (ypeasant < 75 or (ypeasant > 120 and ypeasant < 490)) then
-					xpeasant := 439
-				end if
-				if (ypeasant > 56 and ypeasant < 76 and xpeasant > 495 and xpeasant < 515) or (ypeasant > 111 and ypeasant < 180 and xpeasant > 495 and xpeasant < 515) then
-					xpeasant := 495
-				end if
-				if xpeasant > 495 then
-					if ypeasant > 53 and ypeasant < 58 then                     %if south of cottage
-						ypeasant := 53
-					elsif ypeasant > 175 and ypeasant < 180 then                     %if north of cottage
-						ypeasant := 180
-					end if
-				end if
-				if xpeasant > 495 then
-					if ypeasant > 58 and ypeasant < 67 then                     %if inside at south wall
-						ypeasant := 67
-					end if
-					if ypeasant > 167 and ypeasant < 175 then                     %if inside at north wall
-						ypeasant := 167
-					end if
-				end if
-				if (xpeasant > 515 and xpeasant < 533 and ypeasant > 56 and ypeasant < 76) or (xpeasant > 515 and xpeasant < 533 and ypeasant > 111 and ypeasant < 180) then
-					xpeasant := 533
-				end if
-				Time.DelaySinceLast (10)
-		end for
-		elsif rpeasant = 4 then
-		for : 1 .. 30
-				xpeasant := xpeasant + 1
-				if ypeasant > 250 and ypeasant < 280 then
-					ypeasant := 250
-				elsif ypeasant > 490 and ypeasant < 520 then
-					ypeasant := 520
-				elsif ypeasant < 30 and xpeasant > 420 then
-					ypeasant := 30
-				elsif ypeasant > 570 then
-					ypeasant := 570
-				end if
-				if xpeasant > 765 then
-					xpeasant := 765
-				end if
-				if xpeasant > 360 and xpeasant < 400 and (ypeasant < 75 or (ypeasant > 120 and ypeasant < 490)) then
-					xpeasant := 360
-				elsif xpeasant > 399 and xpeasant < 439 and (ypeasant < 75 or (ypeasant > 120 and ypeasant < 490)) then
-					xpeasant := 439
-				end if
-				if (ypeasant > 56 and ypeasant < 76 and xpeasant > 495 and xpeasant < 515) or (ypeasant > 111 and ypeasant < 180 and xpeasant > 495 and xpeasant < 515) then
-					xpeasant := 495
-				end if
-				if xpeasant > 495 then
-					if ypeasant > 53 and ypeasant < 58 then                     %if south of cottage
-						ypeasant := 53
-					elsif ypeasant > 175 and ypeasant < 180 then                     %if north of cottage
-						ypeasant := 180
-					end if
-				end if
-				if xpeasant > 495 then
-					if ypeasant > 58 and ypeasant < 67 then                     %if inside at south wall
-						ypeasant := 67
-					end if
-					if ypeasant > 167 and ypeasant < 175 then                     %if inside at north wall
-						ypeasant := 167
-					end if
-				end if
-				if (xpeasant > 515 and xpeasant < 533 and ypeasant > 56 and ypeasant < 76) or (xpeasant > 515 and xpeasant < 533 and ypeasant > 111 and ypeasant < 180) then
-					xpeasant := 533
-				end if
-				Time.DelaySinceLast (10)
-		end for
-		else
-		Time.DelaySinceLast (500)
-		end if
-		peasantmove := false
+process peasant_proc
+    if ~ peasant -> move then         %if peasant has not been assigned a movement
+      peasant -> setMove(true)
+      peasant -> setDir(Rand.Int(0, 3))
+      for : 1 .. 30
+        case peasant -> dir of 
+          label ord(Direction.UP): peasant -> setXPos(peasant -> xPos + 1)
+          label ord(Direction.DOWN): peasant -> setXPos(peasant -> xPos - 1)
+          label ord(Direction.LEFT): peasant -> setYPos(peasant -> yPos - 1)
+          label ord(Direction.RIGHT): peasant -> setYPos(peasant -> yPos + 1)
+        end case
+        if peasant -> yPos > 250 and peasant -> yPos < 280 then
+          peasant -> setYPos(250)
+        elsif peasant -> yPos > 490 and peasant -> yPos < 520 then
+          peasant -> setYPos(520)
+        elsif peasant -> yPos < 30 and peasant -> xPos > 420 then
+          peasant -> setYPos(30)
+        elsif peasant -> yPos > 570 then
+          peasant -> setYPos(570)
+        end if
+        if peasant -> xPos > 765 then
+          peasant -> setXPos(765)
+        end if
+        if peasant -> xPos > 360 and peasant -> xPos < 400 and (peasant -> yPos < 75 or (peasant -> yPos > 120 and peasant -> yPos < 490)) then
+          peasant -> setXPos(360)
+        elsif peasant -> xPos > 399 and peasant -> xPos < 439 and (peasant -> yPos < 75 or (peasant -> yPos > 120 and peasant -> yPos < 490)) then
+          peasant -> setXPos(439)
+        end if
+        if (peasant -> yPos > 56 and peasant -> yPos < 76 and peasant -> xPos > 495 and peasant -> xPos < 515) or (peasant -> yPos > 111 and peasant -> yPos < 180 and peasant -> xPos > 495 and peasant -> xPos < 515) then
+          peasant -> setXPos(495)
+        end if
+        if peasant -> xPos > 495 then
+          if peasant -> yPos > 53 and peasant -> yPos < 58 then                     %if south of cottage
+            peasant -> setYPos(53)
+          elsif peasant -> yPos > 175 and peasant -> yPos < 180 then                     %if north of cottage
+            peasant -> setYPos(180)
+          end if
+        end if
+        if peasant -> xPos > 495 then
+          if peasant -> yPos > 58 and peasant -> yPos < 67 then                     %if inside at south wall
+            peasant -> setYPos(67)
+          end if
+          if peasant -> yPos > 167 and peasant -> yPos < 175 then                     %if inside at north wall
+            peasant -> setYPos(167)
+          end if
+        end if
+        if (peasant -> xPos > 515 and peasant -> xPos < 533 and peasant -> yPos > 56 and peasant -> yPos < 76) or (peasant -> xPos > 515 and peasant -> xPos < 533 and peasant -> yPos > 111 and peasant -> yPos < 180) then
+          peasant -> setXPos(533)
+        end if
+        if peasant -> dir = ord(Direction.UP) then
+          if peasant -> xPos < 30 then
+            peasant -> setXPos(30)
+          elsif peasant -> xPos > 770 then
+            peasant -> setXPos(770)
+          end if
+          if peasant -> yPos < 30 then
+            peasant -> setYPos(30)
+          end if
+        end if
+        Time.DelaySinceLast (10)
+      end for
+      peasant -> setMove(false)
     end if
-    if peasanttalk then
-		chattext := peasanttext (Rand.Int (1, 3))
-		if chatentry (5) ~= "" and chattext ~= "" then
-		for chatnum : 2 .. 5
-				chatentry (chatnum - 1) := chatentry (chatnum)
-		end for
-		chatentry (5) := chattext
-		else
-		for chatnum : 1 .. 5
-				if chatentry (chatnum) = "" and chattext ~= "" then
-				chatentry (chatnum) := chattext
-				exit
-				end if
-		end for
-		end if
-		chattext := ""
-		peasanttalk := false
-		peasanttalkcounter := 0
-    end if
-    peasanttalkcounter := peasanttalkcounter + 1
-    if peasanttalkcounter = peasanttalkcountergoal then
-		peasanttalk := true
-		peasanttalkcountergoal := Rand.Int (500, 1000)
-    end if
-end peasant
+end peasant_proc
 
 process rat
     if ~ ratmove then         %if rat has not been assigned a movement
@@ -6185,7 +6013,8 @@ proc cottage (var go_to : string)         %when east of 'west river'
 		middle := (button - left) mod 100         % middle = 0 or 10
 		right := button - middle - left         % right = 0 or 100
 		drawscreen (goto)         %run graphical output
-		fork peasant
+		fork peasant_proc
+    fork talk_enemy(peasant)
 		if ~ (x > 505 and y > 53 and y < 180) then         %if not in cottage
 			Pic.Draw (thatchroof, 519, 149, picCopy)
 		end if
