@@ -1,4 +1,4 @@
- class Skeleton
+class Skeleton
     inherit Enemy
 
     description := "An undead skeleton...creepy!"
@@ -15,8 +15,13 @@
     xPos := 200
     yPos := 400
 
+    xRad := 15
+    yRad := 20
+
     hp := 30
     maxHp := 30
+    xpGain := 30
+    goldGain := 50
     combatLvl := 3
     archeryLvl := 1
     dmgMin := 0

@@ -15,8 +15,13 @@ class Ghost
     xPos := 300
     yPos := 450
 
+    xRad := 10
+    yRad := 15
+
     hp := 70
     maxHp := 70
+    xpGain := 70
+    goldGain := 100
     combatLvl := 7
     archeryLvl := 1
     dmgMin := 0

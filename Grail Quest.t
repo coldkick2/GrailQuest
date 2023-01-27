@@ -12,6 +12,7 @@
 
 type Direction : enum (UP, DOWN, LEFT, RIGHT) 
 
+include "scenes/index.t"
 include "items/index.t"
 include "enemies/index.t"
 
@@ -60,31 +61,34 @@ new Ghost, ghost
 var zombie: ^Zombie
 new Zombie, zombie
 
+var troll: ^Troll
+new Troll, troll
+
 process loadanimation
     loop
-		drawfilloval (50, 50, 9, 9, black)
-		drawfilloval (50, 75, 9, 9, black)
-		drawfilloval (50, 100, 9, 9, black)
-		drawfilloval (75, 100, 9, 9, black)
-		drawfilloval (100, 100, 9, 9, black)
-		drawfilloval (100, 75, 9, 9, black)
-		drawfilloval (100, 50, 9, 9, black)
-		drawfilloval (75, 50, 9, 9, black)
-		for d : 1 .. 9
-			drawfilloval (xloadanimation, yloadanimation, loaddotsize (d), loaddotsize (d), red)
-			if yloadanimation > 25 and yloadanimation < 100 and xloadanimation = 50 then
-				yloadanimation := yloadanimation + 25
-			elsif yloadanimation = 100 and xloadanimation > 25 and xloadanimation < 100 then
-				xloadanimation := xloadanimation + 25
-			elsif yloadanimation > 50 and xloadanimation > 75 then
-				yloadanimation := yloadanimation - 25
-			elsif yloadanimation = 50 and xloadanimation > 50 then
-				xloadanimation := xloadanimation - 25
-			end if
-			View.Update
-		end for
-		Time.DelaySinceLast (50)
-		exit when finishedloading
+      drawfilloval (50, 50, 9, 9, black)
+      drawfilloval (50, 75, 9, 9, black)
+      drawfilloval (50, 100, 9, 9, black)
+      drawfilloval (75, 100, 9, 9, black)
+      drawfilloval (100, 100, 9, 9, black)
+      drawfilloval (100, 75, 9, 9, black)
+      drawfilloval (100, 50, 9, 9, black)
+      drawfilloval (75, 50, 9, 9, black)
+      for d : 1 .. 9
+	drawfilloval (xloadanimation, yloadanimation, loaddotsize (d), loaddotsize (d), red)
+	if yloadanimation > 25 and yloadanimation < 100 and xloadanimation = 50 then
+	  yloadanimation := yloadanimation + 25
+	elsif yloadanimation = 100 and xloadanimation > 25 and xloadanimation < 100 then
+	  xloadanimation := xloadanimation + 25
+	elsif yloadanimation > 50 and xloadanimation > 75 then
+	  yloadanimation := yloadanimation - 25
+	elsif yloadanimation = 50 and xloadanimation > 50 then
+	  xloadanimation := xloadanimation - 25
+	end if
+	View.Update
+      end for
+      Time.DelaySinceLast (50)
+      exit when finishedloading
     end loop
 end loadanimation
 
@@ -121,18 +125,6 @@ picd (1) := Pic.FileNew ("Images/warrior_new1d.bmp")
 picd (2) := Pic.FileNew ("Images/warrior_new2d.bmp")
 picd (3) := Pic.FileNew ("Images/warrior_new3d.bmp")
 
-%Troll
-var trollpic : array 1 .. 10 of int
-trollpic (1) := Pic.FileNew ("Images/trollu.bmp") %up
-trollpic (2) := Pic.FileNew ("Images/trolld.bmp") %down
-trollpic (3) := Pic.FileNew ("Images/trolll.bmp") %left
-trollpic (4) := Pic.FileNew ("Images/trollr.bmp") %right
-trollpic (5) := Pic.FileNew ("Images/trolld.bmp") %down
-trollpic (6) := Pic.FileNew ("Images/trolld.bmp") %down    31x40
-trollpic (7) := Pic.FileNew ("Images/trolld.bmp") %down
-trollpic (8) := Pic.FileNew ("Images/trolld.bmp") %down
-trollpic (9) := Pic.FileNew ("Images/trolld.bmp") %down
-trollpic (10) := Pic.FileNew ("Images/trolld.bmp") %down
 %Peasant
 var peasantpic : array 1 .. 10 of int
 peasantpic (1) := Pic.FileNew ("Images/peasantu.bmp") %up
@@ -177,11 +169,6 @@ chatentry (3) := "You can store a maximum of 5 entries in the chat history at on
 chatentry (4) := "The oldest entry will be discarded when a sixth entry is submitted"
 chatentry (5) := ""
 
-%Troll text
-var trolltext : array 1 .. 3 of string
-trolltext (1) := "Troll: *grunt*"
-trolltext (2) := "Troll: Crush human!"
-trolltext (3) := "Troll: Cook human!"
 %Peasant text
 var peasanttext : array 1 .. 3 of string
 peasanttext (1) := "Peasant: *sigh*"
@@ -570,7 +557,6 @@ var twohanded : boolean := false %twohanded sword item obtained
 var bowObtained : boolean := false %bow item obtained
 var key_west_hall : boolean := false %west hall key obtained
 var cottagekey : boolean := false %cottage key obtained
-var trollalive : boolean := true %troll alive
 var ratalive : boolean := true %rat alive
 var dragonhead1alive : boolean := true %dragon head 1 alive
 var dragonhead2alive : boolean := true %dragon head 2 alive
@@ -583,7 +569,6 @@ var mapscalebtn_on : boolean := true %map scale can be toggled again if false
 var music_on : boolean := false %music is on if true
 var stopmusic : boolean := false %stops music when true
 var destination : boolean := false %player has a destination when true
-var trollmove : boolean := false %troll has been assigned a movement when true
 var peasantmove : boolean := false %peasant has been assigned a movement when true
 var ratmove : boolean := false %rat has been assigned a movement when true
 var catmove : boolean := false %cat has been assigned a movement when true
@@ -616,7 +601,6 @@ var editmodeenabled : boolean := false %true if edit mode is enabled
 var movecharacter : boolean := false %true if a destination has been typed
 var movetopreviousscene : boolean := false %true if destination typed does not exist
 var soundhotkey : boolean := true %true if sound hotkey can be pressed
-var trolltalk : boolean := true %true if troll can talk
 var peasanttalk : boolean := true %true if peasant can talk
 var cattalk : boolean := true %true if cat can talk
 var rattalk : boolean := true %true if rat can talk
@@ -652,9 +636,6 @@ var archeryxp : int := 0 %archer experience
 var archerylvl : int := ((round ((sqrt (archeryxp)) div 3)) + 1) %archery level
 var combatxp : int := 0 %combat experience
 var combatlvl : int := ((round ((sqrt (combatxp)) div 3)) + 1) %combat level
-var xtroll : int := 300 %x coordinate of zombie
-var ytroll : int := 400 %y coordinate of zombie
-var rtroll : int := 2 %zombie picture number
 var xpeasant : int := 660 %x coordinate of peasant
 var ypeasant : int := 100 %y coordinate of peasant
 var rpeasant : int := 2 %peasant picture number
@@ -666,7 +647,6 @@ var ycat : int := 450 %y coordinate of cat
 var rcat : int := 2 %cat picture number
 var ycredits : int := 50 %y coordinate of credits
 var hitpoints : int := 100 %character hitpoints
-var trollhp : int := 180 %troll hitpoints
 var dragonhead1hp : int := 300 %dragon head 1 hitpoints
 var dragonhead2hp : int := 300 %dragon head 2 hitpoints
 var dragonhead3hp : int := 300 %dragon head 3 hitpoints
@@ -674,23 +654,14 @@ var hpcounter : int := 0 %hitpoints counter
 var dragonhead1returncounter : int := 0 %dragon head 1 respawn counter
 var dragonhead2returncounter : int := 0 %dragon head 2 respawn counter
 var dragonhead3returncounter : int := 0 %dragon head 3 respawn counter
-var ghostreturncounter : int := 0 %ghost respawn counter
-var zombiereturncounter : int := 0 %zombie respawn counter
-var trollreturncounter : int := 0 %troll respawn counter
 var ratreturncounter : int := 0 %rat respawn counter
 var bonus : int := 0 %weapon bonus
 var healthpacks : int := 0 %number of healthpacks
 var arrownum : int := 50 %number of arrows
-var totallvl : int := round ((combatlvl + archerylvl) / 2) %total level
-var trolltotallvl : int := round ((20 + 1) / 2) %zombie total level
+var totalLvl : int := round ((combatlvl + archerylvl) / 2) %total level
 var dh1totallvl : int := round ((30 + 1) / 2) %dragon head 1 total level
 var dh2totallvl : int := round ((30 + 1) / 2) %dragon head 2 total level
 var dh3totallvl : int := round ((30 + 1) / 2) %dragon head 3 total level
-var goblinlvlcolour : int %goblin level colour
-var skeletonlvlcolour : int %skeleton level colour
-var ghostlvlclr : int %ghost level colour
-var zombielvlclr : int %zombie level colour
-var trolllvlcolour : int %troll level colour
 var dh1lvlclr : int %dragon head 1 level colour
 var dh2lvlclr : int %dragon head 2 level colour
 var dh3lvlclr : int %dragon head 3 level colour
@@ -700,16 +671,6 @@ var defence : int := 0 %player defence
 var ychat : int := 0 %y coordiante of chat window
 var xgrail : int := -50 %x coordinate of 'Grail' intro text
 var xquest : int := 501 %x coordinate of 'Quest' intro text
-var goblintalkcounter : int := 0 %counts to goblintalkcountergoal to make goblintalk true
-var goblintalkcountergoal : int := Rand.Int (500, 1000) %the number goblintalkcounter must reach to make goblintalk true
-var skeletontalkcounter : int := 0 %counts to skeletontalkcountergoal to make skeletontalk true
-var skeletontalkcountergoal : int := Rand.Int (500, 1000) %the number skeletontalkcounter must reach to make skeletontalk true
-var ghosttalkcounter : int := 0 %counts to ghosttalkcountergoal to make ghosttalk true
-var ghosttalkcountergoal : int := Rand.Int (500, 1000) %the number ghosttalkcounter must reach to make ghosttalk true
-var zombietalkcounter : int := 0 %counts to zombietalkcountergoal to make zombietalk true
-var zombietalkcountergoal : int := Rand.Int (500, 1000) %the number zombietalkcounter must reach to make zombietalk true
-var trolltalkcounter : int := 0 %counts to trolltalkcountergoal to make trolltalk true
-var trolltalkcountergoal : int := Rand.Int (500, 1000) %the number trolltalkcounter must reach to make trolltalk true
 var peasanttalkcounter : int := 0 %counts to peasanttalkcountergoal to make peasanttalk true
 var peasanttalkcountergoal : int := Rand.Int (500, 1000) %the number peasanttalkcounter must reach to make peasanttalk true
 var cattalkcounter : int := 0 %counts to cattalkcountergoal to make cattalk true
@@ -764,21 +725,21 @@ View.Update
 
 proc getInfo(item : pointer to Item)
     loop
-		Pic.Draw (info, 100, 100, picMerge)
-		drawfillbox (150, 150, 650, 450, black)
-		Font.Draw (item -> name, 150, 420, font3, brightred)
-		Font.Draw (item -> description, 150, 390, font1, brightred)
-		Font.Draw ("Attack advantage: +" + intstr(item -> power), 150, 360, font1, brightred)
-		Pic.Draw (returnbtn, 630, 100, picMerge)
-		buttonchoose ("multibutton")
-		mousewhere (xm, ym, button)
-		left := button mod 10         % left = 0 or 1
-		middle := (button - left) mod 100         % middle = 0 or 10
-		right := button - middle - left         % right = 0 or 100
-		if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
-			return
-		end if
-		View.Update
+      Pic.Draw (info, 100, 100, picMerge)
+      drawfillbox (150, 150, 650, 450, black)
+      Font.Draw (item -> name, 150, 420, font3, brightred)
+      Font.Draw (item -> description, 150, 390, font1, brightred)
+      Font.Draw ("Attack advantage: +" + intstr(item -> power), 150, 360, font1, brightred)
+      Pic.Draw (returnbtn, 630, 100, picMerge)
+      buttonchoose ("multibutton")
+      mousewhere (xm, ym, button)
+      left := button mod 10         % left = 0 or 1
+      middle := (button - left) mod 100         % middle = 0 or 10
+      right := button - middle - left         % right = 0 or 100
+      if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
+	return
+      end if
+      View.Update
     end loop
 end getInfo
 
@@ -786,51 +747,51 @@ proc usermanual
     colourback (black)
     cls
     loop
-		Font.Draw ("User Manual", 10, 630, font3, yellow)
-		Font.Draw ("-=Hotkeys=-", 10, 600, font6, yellow)
-		Font.Draw ("n - next song", 20, 580, font6, grey)
-		Font.Draw ("m - open world map", 20, 560, font6, grey)
-		drawline (25, 500, 25, 555, grey)
-		drawline (20, 555, 25, 555, grey)
-		Font.Draw ("s - toggle scale 50%/100%", 30, 540, font6, grey)
-		Font.Draw ("c - centre map", 30, 520, font6, grey)
-		Font.Draw ("r - return to game", 30, 500, font6, grey)
-		Font.Draw ("p - pause", 20, 480, font6, grey)
-		Font.Draw ("r - resume game (if paused)", 20, 460, font6, grey)
-		Font.Draw ("h - heal (uses player's healthpacks)", 20, 440, font6, grey)
-		Font.Draw ("i - information/user manual (current page)", 20, 420, font6, grey)
-		Font.Draw ("s - toggle sound effects and music", 20, 400, font6, grey)
-		Font.Draw ("Shift - enter chat text", 350, 580, font6, grey)
-		Font.Draw ("Esc - menu", 350, 560, font6, grey)
-		Font.Draw ("-=Movement=-", 10, 380, font6, yellow)
-		Font.Draw ("-Mouse" + "(click to set destination)", 20, 360, font6, grey)
-		Font.Draw ("-Arrow keys (use combinations of horizontal and vertical to move diagonally)", 20, 340, font6, grey)
-		Font.Draw ("-=Attacking=-", 10, 320, font6, yellow)
-		Font.Draw ("-Automatic when in range of attacking (this range is larger when bow is equipped).", 20, 300, font6, grey)
-		Font.Draw ("-Maximum Damage = skill level (of skill in use) + bonus of weapon used.", 20, 280, font6, grey)
-		Font.Draw ("-=Levelling=-", 10, 260, font6, yellow)
-		Font.Draw ("-Skill level = [square root (Exp) / 3] + 1", 20, 240, font6, grey)
-		Font.Draw ("-Total level = [(archery + combat) / 2]", 20, 220, font6, grey)
-		Font.Draw ("-=Buying Items=-", 10, 200, font6, yellow)
-		Font.Draw ("-There is a shop in the west wing of the castle.", 20, 180, font6, grey)
-		Font.Draw ("-Click the buy button next to an item to buy it...some items, such as weapons,", 20, 160, font6, grey)
-		Font.Draw (" have only a single supply - if you die they return to the shop's stock.", 20, 140, font6, grey)
-		Font.Draw ("-=World Map=-", 10, 120, font6, yellow)
-		Font.Draw ("-You can scroll across the map by moving your mouse to the edges/corners of the map,", 20, 100, font6, grey)
-		Font.Draw (" using the arrow keys (8 directions possible - see 'Movement'), or clicking and dragging the map.", 20, 80, font6, grey)
-		Font.Draw ("-" + "(See above for map hotkeys)", 20, 60, font6, grey)
-		Font.Draw ("-=Completing the Game=-", 10, 40, font6, yellow)
-		Font.Draw ("-After obtaining the grail you must bring it to the king who is at the castle entrance.", 20, 20, font6, grey)
-		Pic.Draw (returnbtn, 720, 10, picMerge)
-		buttonchoose ("multibutton")
-		mousewhere (xm, ym, button)
-		left := button mod 10         % left = 0 or 1
-		middle := (button - left) mod 100         % middle = 0 or 10
-		right := button - middle - left         % right = 0 or 100
-		if xm > 719 and xm < 791 and ym > 9 and ym < 71 and left = 1 then
-			return
-		end if
-		View.Update
+      Font.Draw ("User Manual", 10, 630, font3, yellow)
+      Font.Draw ("-=Hotkeys=-", 10, 600, font6, yellow)
+      Font.Draw ("n - next song", 20, 580, font6, grey)
+      Font.Draw ("m - open world map", 20, 560, font6, grey)
+      drawline (25, 500, 25, 555, grey)
+      drawline (20, 555, 25, 555, grey)
+      Font.Draw ("s - toggle scale 50%/100%", 30, 540, font6, grey)
+      Font.Draw ("c - centre map", 30, 520, font6, grey)
+      Font.Draw ("r - return to game", 30, 500, font6, grey)
+      Font.Draw ("p - pause", 20, 480, font6, grey)
+      Font.Draw ("r - resume game (if paused)", 20, 460, font6, grey)
+      Font.Draw ("h - heal (uses player's healthpacks)", 20, 440, font6, grey)
+      Font.Draw ("i - information/user manual (current page)", 20, 420, font6, grey)
+      Font.Draw ("s - toggle sound effects and music", 20, 400, font6, grey)
+      Font.Draw ("Shift - enter chat text", 350, 580, font6, grey)
+      Font.Draw ("Esc - menu", 350, 560, font6, grey)
+      Font.Draw ("-=Movement=-", 10, 380, font6, yellow)
+      Font.Draw ("-Mouse" + "(click to set destination)", 20, 360, font6, grey)
+      Font.Draw ("-Arrow keys (use combinations of horizontal and vertical to move diagonally)", 20, 340, font6, grey)
+      Font.Draw ("-=Attacking=-", 10, 320, font6, yellow)
+      Font.Draw ("-Automatic when in range of attacking (this range is larger when bow is equipped).", 20, 300, font6, grey)
+      Font.Draw ("-Maximum Damage = skill level (of skill in use) + bonus of weapon used.", 20, 280, font6, grey)
+      Font.Draw ("-=Levelling=-", 10, 260, font6, yellow)
+      Font.Draw ("-Skill level = [square root (Exp) / 3] + 1", 20, 240, font6, grey)
+      Font.Draw ("-Total level = [(archery + combat) / 2]", 20, 220, font6, grey)
+      Font.Draw ("-=Buying Items=-", 10, 200, font6, yellow)
+      Font.Draw ("-There is a shop in the west wing of the castle.", 20, 180, font6, grey)
+      Font.Draw ("-Click the buy button next to an item to buy it...some items, such as weapons,", 20, 160, font6, grey)
+      Font.Draw (" have only a single supply - if you die they return to the shop's stock.", 20, 140, font6, grey)
+      Font.Draw ("-=World Map=-", 10, 120, font6, yellow)
+      Font.Draw ("-You can scroll across the map by moving your mouse to the edges/corners of the map,", 20, 100, font6, grey)
+      Font.Draw (" using the arrow keys (8 directions possible - see 'Movement'), or clicking and dragging the map.", 20, 80, font6, grey)
+      Font.Draw ("-" + "(See above for map hotkeys)", 20, 60, font6, grey)
+      Font.Draw ("-=Completing the Game=-", 10, 40, font6, yellow)
+      Font.Draw ("-After obtaining the grail you must bring it to the king who is at the castle entrance.", 20, 20, font6, grey)
+      Pic.Draw (returnbtn, 720, 10, picMerge)
+      buttonchoose ("multibutton")
+      mousewhere (xm, ym, button)
+      left := button mod 10         % left = 0 or 1
+      middle := (button - left) mod 100         % middle = 0 or 10
+      right := button - middle - left         % right = 0 or 100
+      if xm > 719 and xm < 791 and ym > 9 and ym < 71 and left = 1 then
+	return
+      end if
+      View.Update
     end loop
 end usermanual
 
@@ -847,34 +808,34 @@ proc talk
     Font.Draw ("x " + intstr (healthpacks), 169, 636, font4, black)
     Font.Draw (mapscale + "%", 545, 535, font2, blue)
     if key_west_hall then             %if the player has the key to the door in the 2nd west hall
-		Pic.Draw (key_wh2, 97, 636, picMerge)
+      Pic.Draw (key_wh2, 97, 636, picMerge)
     end if
     if cottagekey then
-		Pic.Draw (cottagekey_pic, 119, 635, picMerge)
+      Pic.Draw (cottagekey_pic, 119, 635, picMerge)
     end if
     if battleAxe -> obtained then
-		Pic.Draw (battleAxe -> invpic, 213, 635, picMerge)
+      Pic.Draw (battleAxe -> invpic, 213, 635, picMerge)
     end if
     if twoHanded -> obtained then
-		Pic.Draw (twoHanded -> invpic, 235, 635, picMerge)
+      Pic.Draw (twoHanded -> invpic, 235, 635, picMerge)
     end if
     if bow -> obtained then
-		Pic.Draw (bow -> invpic, 258, 635, picMerge)
+      Pic.Draw (bow -> invpic, 258, 635, picMerge)
     end if
     if grail then
-		Pic.Draw (grailinvpic, 285, 636, picMerge)
+      Pic.Draw (grailinvpic, 285, 636, picMerge)
     end if
     if weapon = kingsSword then
-		drawbox (190, 634, 212, 656, red)
+      drawbox (190, 634, 212, 656, red)
     elsif weapon = battleAxe then
-		drawbox (212, 634, 234, 656, red)
+      drawbox (212, 634, 234, 656, red)
     elsif weapon = twoHanded then
-		drawbox (234, 634, 257, 656, red)
+      drawbox (234, 634, 257, 656, red)
     elsif weapon = bow then
-		drawbox (257, 634, 280, 656, red)
+      drawbox (257, 634, 280, 656, red)
     end if
     if grail then
-		Pic.Draw (grailinvpic, 285, 636, picMerge)
+      Pic.Draw (grailinvpic, 285, 636, picMerge)
     end if
     Pic.Draw (info, 100, 100, picMerge)
     %conversation
@@ -1910,6 +1871,33 @@ proc map
     end loop
 end map
 
+proc reset(var go_to : string)
+	setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
+	Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
+	Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
+	Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
+	Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
+	setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
+	attacking := false
+	text := "You die...a monk resurrects you and warns you to be more careful..."
+	go_to := "castle entrance"
+	battleAxe -> setObtained(false)
+	twoHanded -> setObtained(false)
+	bow -> setObtained(false)
+	platebody := false
+	platelegs := false
+	fullhelm := false
+	key_west_hall := false
+	cottagekey := false
+	x := 400
+	y := 100
+	arrownum := 0
+	gold := 0
+	hitpoints := 25
+	healthpacks := 0
+	weapon := kingsSword
+end reset
+
 proc restoreInv
 	battleAxe -> setObtained(battleaxe)
 	twoHanded -> setObtained(twohanded)
@@ -1942,7 +1930,7 @@ proc save
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp,  hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-	ghostreturncounter, zombiereturncounter, bonus, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
+	bonus, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
     drawdot (793, 602, brightgreen)
@@ -1958,7 +1946,7 @@ proc load
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-	ghostreturncounter, zombiereturncounter, bonus, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
+	bonus, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
 	restoreInv()
@@ -1980,7 +1968,7 @@ end picture
 proc movement     %manipulates character movement input
     if ~ victory then
 		if xm > x - 1 and xm < x + 21 and ym > y - 1 and ym < y + 30 then
-			Font.Draw ("You [Level " + intstr (totallvl) + "]", x, y + 30, font2, white)
+			Font.Draw ("You [Level " + intstr (totalLvl) + "]", x, y + 30, font2, white)
 		end if
 		if ym < 601 and ym > -1 and xm > -1 and xm < 801 then         %if mouse in playing screen then move character
 			if xm < 787 or xm > 793 or ym < 585 or ym > 595 then
@@ -2535,80 +2523,57 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				y := 390
 			end if
 		end if
-		if trollalive then
-			if xm > xtroll - 1 and xm < xtroll + 21 and ym > ytroll - 1 and ym < ytroll + 30 then
+		if troll -> alive then
+			if xm > troll -> xPos - 1 and xm < troll -> xPos + 21 and ym > troll -> yPos - 1 and ym < troll -> yPos + 30 then
 				if right = 100 then
-					text := "...looks hungry..."
+					text := troll -> description
 				elsif left = 1 then
 					destination := true
 					follow := "troll"
 				end if
 			end if
 			if ((weapon -> style = "combat")
-				and (abs ((xtroll + 10) - (x + 15)) < 20
-				and abs ((ytroll + 15) - (y + 15)) < 20))
+				and (abs ((troll -> xPos + 10) - (x + 15)) < 20
+				and abs ((troll -> yPos + 15) - (y + 15)) < 20))
 				or (weapon -> style = "archery"
-				and (abs ((xtroll + 10) - (x + 15)) < 100
-				and abs ((ytroll + 15) - (y + 15)) < 200)) then
+				and (abs ((troll -> xPos + 10) - (x + 15)) < 100
+				and abs ((troll -> yPos + 15) - (y + 15)) < 200)) then
 				attacking := true
-				if xdest = xtroll and ydest = ytroll then
+				if xdest = troll -> xPos and ydest = troll -> yPos then
 					destination := false
 				end if
 				text := "You are attacking a troll!  Arrows left: " + intstr (arrownum) + "  Troll: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
 				if hpcounter = 20 or hpcounter = 40 then
 					if hitpoints > 0 then
-						if abs ((xtroll + 10) - (x + 15)) < 20 and abs ((ytroll + 15) - (y + 15)) < 20 then
-							damagetaken := Rand.Int (0, 20)
+						if abs ((troll -> xPos + 10) - (x + 15)) < 20 and abs ((troll -> yPos + 15) - (y + 15)) < 20 then
+							damagetaken := Rand.Int (troll -> dmgMin, troll -> dmgMax)
 							if defence < damagetaken then
 								hitpoints := hitpoints - (damagetaken - defence)
 							end if
 						end if
 					else
-						setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
-						Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
-						Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
-						setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-						attacking := false
-						text := "You die...a monk resurrects you and warns you to be more careful..."
-						go_to := "castle entrance"
-						battleAxe -> setObtained(false)
-						twoHanded -> setObtained(false)
-						bow -> setObtained(false)
-						platebody := false
-						platelegs := false
-						fullhelm := false
-						key_west_hall := false
-						cottagekey := false
-						x := 400
-						y := 100
-						arrownum := 0
-						gold := 0
-						hitpoints := 25
-						healthpacks := 0
-						weapon := kingsSword
+						reset(go_to)
 						return
 					end if
-					if trollhp > 0 then
+					if troll -> hp > 0 then
 						%if using a combat attack style
 						if weapon -> style = "combat" then
 							%inflicts damage to troll accoring to player's skill level
 							damagedealt := Rand.Int (0, (combatlvl + bonus))
-							trollhp := trollhp - damagedealt
-							if trollhp > 0 then
-								trollalive := true
+              troll -> setHp(troll -> hp - damagedealt)
+							if troll -> hp > 0 then
+								troll -> setAlive(true)
 							else
-								trollhp := 0
+								troll -> setHp(0)
 								text := "You defeat the troll and gain 180 experience and 300 gold."
-								trollalive := false
+								troll -> setAlive(false)
 								if gold <= 99699 then
-									gold := gold + 300
+									gold := gold + troll -> goldGain
 								else
 									text := "You do not have room to carry any more gold!"
 								end if
 								if combatlvl < 99 then
-									combatxp := combatxp + 180
+									combatxp := combatxp + troll -> xpGain
 								else
 									text := "You've mastered the art of combat and cannot gain further experience."
 								end if
@@ -2619,20 +2584,20 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 							if arrownum > 0 then
 								arrownum := arrownum - 1
 								damagedealt := Rand.Int (0, (archerylvl + bonus))
-								trollhp := trollhp - damagedealt
-								if trollhp > 0 then
-									trollalive := true
+								troll -> setHp(troll -> hp - damagedealt)
+								if troll -> hp > 0 then
+									troll -> setAlive(true)
 								else
-									trollhp := 0
+									troll -> setHp(0)
 									text := "You defeat the troll and gain 180 experience and 300 gold."
-									trollalive := false
+									troll -> setAlive(false)
 									if gold <= 99699 then
-										gold := gold + 300
+										gold := gold + troll -> goldGain
 									else
 										text := "You do not have room to carry any more gold!"
 									end if
 									if archerylvl < 97 then
-										archeryxp := archeryxp + 180
+										archeryxp := archeryxp + troll -> xpGain
 									else
 										text := "You've mastered the art of archery and cannot gain further experience."
 									end if
@@ -2848,36 +2813,13 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				if hpcounter = 20 or hpcounter = 40 then
 					if hitpoints > 0 then
 						if abs ((skeleton -> xPos + 10) - (x + 15)) < 20 and abs ((skeleton -> yPos + 15) - (y + 15)) < 20 then
-							damagetaken := Rand.Int (0, 3)
+							damagetaken := Rand.Int (skeleton -> dmgMin, skeleton -> dmgMax)
 							if defence < damagetaken then
 								hitpoints := hitpoints - (damagetaken - defence)
 							end if
 						end if
 					else
-						setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
-						Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
-						Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
-						setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-						attacking := false
-						text := "You die...a monk resurrects you and warns you to be more careful..."
-						go_to := "castle entrance"
-						battleAxe -> setObtained(false)
-						twoHanded -> setObtained(false)
-						bow -> setObtained(false)
-						platebody := false
-						platelegs := false
-						fullhelm := false
-						key_west_hall := false
-						cottagekey := false
-						x := 400
-						y := 100
-						arrownum := 0
-						gold := 0
-						hitpoints := 25
-						healthpacks := 0
-						weapon := kingsSword
+						reset(go_to)
 						return
 					end if
 					if skeleton -> hp > 0 then
@@ -2890,15 +2832,15 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 								skeleton -> setAlive(true)
 							else
 								skeleton -> setHp(0)
-								text := "You defeat the skeleton and gain 30 experience and 50 gold."
+								text := "You defeat the skeleton and gain " + intstr(skeleton -> xpGain) + " experience and " + intstr(skeleton -> goldGain) + " gold."
 								skeleton -> setAlive(false)
 								if gold <= 99949 then
-									gold := gold + 50
+									gold := gold + skeleton -> goldGain
 								else
 									text := "You do not have room to carry any more gold!"
 								end if
 								if combatlvl < 100 then
-									combatxp := combatxp + 30
+									combatxp := combatxp + skeleton -> xpGain
 								else
 									text := "You've mastered the art of combat and cannot gain further experience."
 								end if
@@ -2914,15 +2856,15 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 									skeleton -> setAlive(true)
 								else
 									skeleton -> setHp(0)
-									text := "You defeat the skeleton and gain 30 experience and 50 gold."
+									text := "You defeat the skeleton and gain " + intstr(skeleton -> xpGain) + " experience and " + intstr(skeleton -> goldGain) + " gold."
 									skeleton -> setAlive(false)
 									if gold <= 99949 then
-										gold := gold + 50
+										gold := gold + skeleton -> goldGain
 									else
 										text := "You do not have room to carry any more gold!"
 									end if
 									if archerylvl < 100 then
-										archeryxp := archeryxp + 30
+										archeryxp := archeryxp + skeleton -> xpGain
 									else
 										text := "You've mastered the art of archery and cannot gain further experience."
 									end if
@@ -2963,80 +2905,57 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		end if
 		if ghost -> alive then
 		if xm > ghost -> xPos - 1 and xm < ghost -> xPos + 21 and ym > ghost -> yPos - 1 and ym < ghost -> yPos + 30 then
-				if right = 100 then
+			if right = 100 then
 				text := ghost -> description
-				elsif left = 1 then
+			elsif left = 1 then
 				destination := true
 				follow := "ghost"
-				end if
+			end if
 		end if
 		if ((weapon -> style = "combat")
 				and (abs ((ghost -> xPos + 10) - (x + 15)) < 20
 				and abs ((ghost -> yPos + 15) - (y + 15)) < 20))
 				or (weapon -> style = "archery"
-			and (abs ((ghost -> xPos + 10) - (x + 15)) < 100
+				and (abs ((ghost -> xPos + 10) - (x + 15)) < 100
 				and abs ((ghost -> yPos + 15) - (y + 15)) < 200)) then
 				attacking := true
 				if xdest = ghost -> xPos and ydest = ghost -> yPos then
-				destination := false
+					destination := false
 				end if
 				text := "You are attacking a ghost!  Arrows left: " + intstr (arrownum) + "  Ghost: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
 				if hpcounter = 20 or hpcounter = 40 then
-				if hitpoints > 0 then
+					if hitpoints > 0 then
 						if abs ((ghost -> xPos + 10) - (x + 15)) < 20 and abs ((ghost -> yPos + 15) - (y + 15)) < 20 then
-						damagetaken := Rand.Int (ghost -> dmgMin, ghost -> dmgMax)
-						if defence < damagetaken then
+							damagetaken := Rand.Int (ghost -> dmgMin, ghost -> dmgMax)
+							if defence < damagetaken then
 								hitpoints := hitpoints - (damagetaken - defence)
+							end if
 						end if
-						end if
-				else
-						setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
-						Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
-						Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
-						setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-						attacking := false
-						text := "You die...a monk resurrects you and warns you to be more careful..."
-						go_to := "castle entrance"
-						battleAxe -> setObtained(false)
-						twoHanded -> setObtained(false)
-						bow -> setObtained(false)
-						platebody := false
-						platelegs := false
-						fullhelm := false
-						key_west_hall := false
-						cottagekey := false
-						x := 400
-						y := 100
-						arrownum := 0
-						gold := 0
-						hitpoints := 25
-						healthpacks := 0
-						weapon := kingsSword
+					else
+						reset(go_to)
 						return
-				end if
-				if ghost -> hp > 0 then
+					end if
+					if ghost -> hp > 0 then
 						%if using a combat attack style
 						if weapon -> style = "combat" then
-						%inflicts damage to ghost accoring to player's skill level
-						damagedealt := Rand.Int (0, (combatlvl + bonus))
-						ghost -> setHp(ghost -> hp - damagedealt)
-						if ghost -> hp > 0 then
+							%inflicts damage to ghost accoring to player's skill level
+							damagedealt := Rand.Int (0, (combatlvl + bonus))
+							ghost -> setHp(ghost -> hp - damagedealt)
+							if ghost -> hp > 0 then
 								ghost -> setAlive(true)
-						else
+							else
 								ghost -> setHp(0)
 								text := "You defeat the ghost and gain 70 experience and 100 gold."
 								ghost -> setAlive(false)
 								if gold <= 99899 then
-								gold := gold + 100
+									gold := gold + 100
 								else
-								text := "You do not have room to carry any more gold!"
+									text := "You do not have room to carry any more gold!"
 								end if
 								if combatlvl < 100 then
-								combatxp := combatxp + 70
+									combatxp := combatxp + 70
 								else
-								text := "You've mastered the art of combat and cannot gain further experience."
+									text := "You've mastered the art of combat and cannot gain further experience."
 								end if
 						end if
 						%if using an archery attack style
@@ -3128,30 +3047,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 						end if
 						end if
 				else
-						setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
-						Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
-						Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
-						setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-						attacking := false
-						text := "You die...a monk resurrects you and warns you to be more careful..."
-						go_to := "castle entrance"
-						battleAxe -> setObtained(false)
-						twoHanded -> setObtained(false)
-						bow -> setObtained(false)
-						platebody := false
-						platelegs := false
-						fullhelm := false
-						key_west_hall := false
-						cottagekey := false
-						x := 400
-						y := 100
-						arrownum := 0
-						gold := 0
-						hitpoints := 25
-						healthpacks := 0
-						weapon := kingsSword
+						reset(go_to)
 						return
 				end if
 				if zombie -> hp > 0 then
@@ -3266,12 +3162,12 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		end if  
 		if goblin -> alive then
 		if xm > goblin -> xPos - 1 and xm < goblin -> xPos + 21 and ym > goblin -> yPos - 1 and ym < goblin -> yPos + 30 then
-				if right = 100 then
-				text := "Eww, it's a goblin!"
-				elsif left = 1 then
+			if right = 100 then
+				text := goblin -> description
+			elsif left = 1 then
 				destination := true
 				follow := "goblin"
-				end if
+			end if
 		end if
 		if ((weapon -> style = "combat")
 				and (abs ((goblin -> xPos + 10) - (x + 15)) < 20
@@ -3293,30 +3189,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 						end if
 						end if
 				else
-						setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
-						Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
-						Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
-						setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-						attacking := false
-						text := "You die...a monk resurrects you and warns you to be more careful..."
-						go_to := "castle entrance"
-						battleAxe -> setObtained(false)
-						twoHanded -> setObtained(false)
-						bow -> setObtained(false)
-						platebody := false
-						platelegs := false
-						fullhelm := false
-						key_west_hall := false
-						cottagekey := false
-						x := 400
-						y := 100
-						arrownum := 0
-						gold := 0
-						hitpoints := 25
-						healthpacks := 0
-						weapon := kingsSword
+						reset(go_to)
 						return
 				end if
 				if goblin -> hp > 0 then
@@ -3526,30 +3399,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 						hitpoints := hitpoints - (damagetaken - defence)
 						end if
 				else
-						setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
-						Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
-						Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
-						setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-						attacking := false
-						text := "You die...a monk resurrects you and warns you to be more careful..."
-						go_to := "castle entrance"
-						battleAxe -> setObtained(false)
-						twoHanded -> setObtained(false)
-						bow -> setObtained(false)
-						platebody := false
-						platelegs := false
-						fullhelm := false
-						key_west_hall := false
-						cottagekey := false
-						x := 400
-						y := 100
-						arrownum := 0
-						gold := 0
-						hitpoints := 25
-						healthpacks := 0
-						weapon := kingsSword
+						reset(go_to)
 						return
 				end if
 				if dragonhead1hp > 0 then
@@ -3595,30 +3445,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 						hitpoints := hitpoints - (damagetaken - defence)
 						end if
 				else
-						setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
-						Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
-						Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
-						setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-						attacking := false
-						text := "You die...a monk resurrects you and warns you to be more careful..."
-						go_to := "castle entrance"
-						battleAxe -> setObtained(false)
-						twoHanded -> setObtained(false)
-						bow -> setObtained(false)
-						platebody := false
-						platelegs := false
-						fullhelm := false
-						key_west_hall := false
-						cottagekey := false
-						x := 400
-						y := 100
-						arrownum := 0
-						gold := 0
-						hitpoints := 25
-						healthpacks := 0
-						weapon := kingsSword
+						reset(go_to)
 						return
 				end if
 				if dragonhead2hp > 0 then
@@ -3664,30 +3491,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 						hitpoints := hitpoints - (damagetaken - defence)
 						end if
 				else
-						setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
-						Pic.Draw (warriordeadgreypic, 0, 0, picCopy)
-						Pic.DrawSpecial (warriordeadblackpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
-						Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
-						setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-						attacking := false
-						text := "You die...a monk resurrects you and warns you to be more careful..."
-						go_to := "castle entrance"
-						battleAxe -> setObtained(false)
-						twoHanded -> setObtained(false)
-						bow -> setObtained(false)
-						platebody := false
-						platelegs := false
-						fullhelm := false
-						key_west_hall := false
-						cottagekey := false
-						x := 400
-						y := 100
-						arrownum := 0
-						gold := 0
-						hitpoints := 25
-						healthpacks := 0
-						weapon := kingsSword
+						reset(go_to)
 						return
 				end if
 				if dragonhead3hp > 0 then
@@ -3726,6 +3530,26 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     end if
 end collision
 
+process regenEnemy(enemy : pointer to Enemy)
+  if enemy -> alive then
+    if enemy -> hp < enemy -> maxHp then
+      if hpcounter = 40 then
+        if abs ((enemy -> xPos + 10) - (x + 15)) > 19 and abs ((enemy -> yPos + 15) - (y + 15)) > 19 then
+          enemy -> setHp(enemy -> hp + 1)
+        end if
+      end if
+    end if
+  else
+    if enemy -> respawnCounter = 300 then
+      enemy -> setRespawnCounter(0)
+      enemy -> setAlive(true)
+      enemy -> setHp(enemy -> maxHp)
+    else
+      enemy -> setRespawnCounter(enemy -> respawnCounter + 1)
+    end if
+  end if
+end regenEnemy
+
 proc drawscreen (var goto : string)         %generates graphics according to scene and conditions
     cls
     if gold > 99999 then         %if gold exceeds maximum amount
@@ -3757,13 +3581,13 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		defence := 0         %0
 		armour := "You are not wearing any armour.  You can buy some at the shop."
     end if
-    totallvl := round ((combatlvl + archerylvl) / 2)
+    totalLvl := round ((combatlvl + archerylvl) / 2)
     dh1totallvl := round ((10 + 1) / 2)
     dh2totallvl := round ((10 + 1) / 2)
     dh3totallvl := round ((10 + 1) / 2)
     if playmusic_on then
 		if ~ music_on then         %if music has finished, turn back on
-		fork music
+			fork music
 		end if
     end if
     if hpcounter = 40 then
@@ -3774,103 +3598,18 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     %character
     if hitpoints < 100 then
 		if hpcounter = 40 then
-		if ~ attacking then
-				hitpoints := hitpoints + 1
-				damagedealt := 0
-				damagetaken := 0
-		end if
-		end if
-    end if
-    %goblin
-    if goblin -> alive then
-		if goblin -> hp < goblin -> maxHp then
-		if hpcounter = 40 then
-				if abs ((goblin -> xPos + 10) - (x + 15)) > 19 and abs ((goblin -> yPos + 15) - (y + 15)) > 19 then
-				goblin -> setHp(goblin -> hp + 1)
-				end if
-		end if
-		end if
-    else
-		if goblin -> respawnCounter = 300 then
-		goblin -> setRespawnCounter(0)
-		goblin -> setAlive(true)
-		goblin -> setHp(goblin -> maxHp)
-		else
-		goblin -> setRespawnCounter(goblin -> respawnCounter + 1)
+			if ~ attacking then
+					hitpoints := hitpoints + 1
+					damagedealt := 0
+					damagetaken := 0
+			end if
 		end if
     end if
-    %skeleton
-    if skeleton -> alive then
-		if skeleton -> hp < skeleton -> maxHp then
-		if hpcounter = 40 then
-				if abs ((skeleton -> xPos + 10) - (x + 15)) > 19 and abs ((skeleton -> yPos + 15) - (y + 15)) > 19 then
-				skeleton -> setHp(skeleton -> hp + 1)
-				end if
-		end if
-		end if
-    else
-		if skeleton -> respawnCounter = 300 then
-		skeleton -> setRespawnCounter(0)
-		skeleton -> setAlive(true)
-		skeleton -> setHp(skeleton -> maxHp)
-		else
-		skeleton -> setRespawnCounter(skeleton -> respawnCounter + 1)
-		end if
-    end if
-    %ghost
-    if ghost -> alive then
-		if ghost -> hp < ghost -> maxHp then
-		if hpcounter = 40 then
-				if abs ((ghost -> xPos + 10) - (x + 15)) > 19 and abs ((ghost -> yPos + 15) - (y + 15)) > 19 then
-				ghost -> setHp(ghost -> hp + 1)
-				end if
-		end if
-		end if
-    else
-		if ghostreturncounter = 300 then
-		ghostreturncounter := 0
-		ghost -> setAlive(true)
-		ghost -> setHp(ghost -> maxHp)
-		else
-		ghostreturncounter := ghostreturncounter + 1
-		end if
-    end if
-    %zombie
-    if zombie -> alive then
-		if zombie -> hp < zombie -> maxHp then
-		if hpcounter = 40 then
-				if abs ((zombie -> xPos + 10) - (x + 15)) > 19 and abs ((zombie -> yPos + 15) - (y + 15)) > 19 then
-					zombie -> setHp(zombie -> hp + 1)
-				end if
-		end if
-		end if
-    else
-		if zombiereturncounter = 300 then
-		zombiereturncounter := 0
-		zombie -> setAlive(true)
-		zombie -> setHp(zombie -> maxHp)
-		else
-		zombiereturncounter := zombiereturncounter + 1
-		end if
-    end if
-    %troll
-    if trollalive then
-		if trollhp < 180 then
-		if hpcounter = 40 then
-				if abs ((xtroll + 10) - (x + 15)) > 19 and abs ((ytroll + 15) - (y + 15)) > 19 then
-				trollhp := trollhp + 1
-				end if
-		end if
-		end if
-    else
-		if trollreturncounter = 300 then
-		trollreturncounter := 0
-		trollalive := true
-		trollhp := 180
-		else
-		trollreturncounter := trollreturncounter + 1
-		end if
-    end if
+    fork regenEnemy(goblin)
+    fork regenEnemy(skeleton)
+    fork regenEnemy(ghost)
+    fork regenEnemy(zombie)
+    fork regenEnemy(troll)
     %rat
     if ~ ratalive then
 		if ratreturncounter = 300 then
@@ -3979,28 +3718,22 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     elsif scene = "troll dungeon" then                         %if outside entrance
 		Pic.Draw (trolldungeon_pic, 0, 0, picMerge)
 		Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
-		if trollalive then         %if troll is alive draw hitpoints box
-		if totallvl > trolltotallvl then
-				trolllvlcolour := brightgreen
-		elsif totallvl = trolltotallvl then
-				trolllvlcolour := yellow
-		elsif totallvl < trolltotallvl then
-				trolllvlcolour := brightred
+		if troll -> alive then         %if troll is alive draw hitpoints box
+		troll -> setLvlClr(totalLvl)
+		if xm > troll -> xPos - 1 and xm < troll -> xPos + 32 and ym > troll -> yPos - 1 and ym < troll -> yPos + 41 then
+				Font.Draw ("Troll [Level " + intstr (troll -> totalLvl) + "]", troll -> xPos, troll -> yPos + 67, font2, troll -> lvlClr)
 		end if
-		if xm > xtroll - 1 and xm < xtroll + 32 and ym > ytroll - 1 and ym < ytroll + 41 then
-				Font.Draw ("Troll [Level " + intstr (trolltotallvl) + "]", xtroll, ytroll + 67, font2, trolllvlcolour)
-		end if
-		Pic.Draw (trollpic (rtroll), xtroll, ytroll, picMerge)
-		if abs ((xtroll + 10) - x + 15) < 200 and abs ((ytroll + 15) - y + 15) < 200 and trollhp > 0 then
-				drawfillbox (7, barheight - 3, 123, barheight + 53, trolllvlcolour)
+		Pic.Draw (troll -> dirImages (troll -> dir), troll -> xPos, troll -> yPos, picMerge)
+		if abs ((troll -> xPos + 10) - x + 15) < 200 and abs ((troll -> yPos + 15) - y + 15) < 200 and troll -> hp > 0 then
+				drawfillbox (7, barheight - 3, 123, barheight + 53, troll -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
-				drawfillbox (115 - round ((trollhp / 180) * 100), barheight + 5, 115, barheight + 15, red)
-				Font.Draw ("Troll", 15, barheight + 35, font2, trolllvlcolour)
-				Font.Draw ("Hitpoints: " + intstr (round ((trollhp / 180) * 100)) + "%", 15, barheight + 20, font2, trolllvlcolour)
+				drawfillbox (115 - round ((troll -> hp / troll -> maxHp) * 100), barheight + 5, 115, barheight + 15, red)
+				Font.Draw ("Troll", 15, barheight + 35, font2, troll -> lvlClr)
+				Font.Draw ("Hitpoints: " + intstr (round ((troll -> hp / troll -> maxHp) * 100)) + "%", 15, barheight + 20, font2, troll -> lvlClr)
 		end if
 		end if
-		if trollalive then
-		if xm > xtroll and xm < xtroll + 15 and ym > ytroll and ym < ytroll + 15 then
+		if troll -> alive then
+		if xm > troll -> xPos and xm < troll -> xPos + 15 and ym > troll -> yPos and ym < troll -> yPos + 15 then
 				Pic.Draw (cursor_attack, xm - 18, ym - 18, picMerge)
 		end if
 		end if
@@ -4087,23 +3820,17 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		Pic.Draw (key_wh2, 490, 35, picMerge)
 		end if
 		if skeleton -> alive then         %if skeleton is alive draw hitpoints box
-		if totallvl > skeleton -> totalLvl then
-				skeletonlvlcolour := brightgreen
-		elsif totallvl = skeleton -> totalLvl then
-				skeletonlvlcolour := yellow
-		elsif totallvl < skeleton -> totalLvl then
-				skeletonlvlcolour := brightred
-		end if
+			skeleton -> setLvlClr(totalLvl)
 		if xm > skeleton -> xPos - 1 and xm < skeleton -> xPos + 32 and ym > skeleton -> yPos - 1 and ym < skeleton -> yPos + 41 then
-				Font.Draw ("Skeleton [Level " + intstr (skeleton -> totalLvl) + "]", skeleton -> xPos, skeleton -> yPos + 41, font2, skeletonlvlcolour)
+				Font.Draw ("Skeleton [Level " + intstr (skeleton -> totalLvl) + "]", skeleton -> xPos, skeleton -> yPos + 41, font2, skeleton -> lvlClr)
 		end if
 		Pic.Draw (skeleton -> dirImages (skeleton -> dir), skeleton -> xPos, skeleton -> yPos, picMerge)
 		if abs ((skeleton -> xPos + 10) - x + 15) < 200 and abs ((skeleton -> yPos + 15) - y + 15) < 200 and skeleton -> hp > 0 then
-				drawfillbox (7, barheight - 3, 123, barheight + 53, skeletonlvlcolour)
+				drawfillbox (7, barheight - 3, 123, barheight + 53, skeleton -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((skeleton -> hp / 30) * 100), barheight + 5, 115, barheight + 15, red)
-				Font.Draw ("Skeleton", 15, barheight + 35, font2, skeletonlvlcolour)
-				Font.Draw ("Hitpoints: " + intstr (round ((skeleton -> hp / 30) * 100)) + "%", 15, barheight + 20, font2, skeletonlvlcolour)
+				Font.Draw ("Skeleton", 15, barheight + 35, font2, skeleton -> lvlClr)
+				Font.Draw ("Hitpoints: " + intstr (round ((skeleton -> hp / 30) * 100)) + "%", 15, barheight + 20, font2, skeleton -> lvlClr)
 		end if
 		end if
 		if ~ key_west_hall then        %if key has not been taken
@@ -4126,23 +3853,17 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     elsif scene = "cemetery" then
 		Pic.Draw (cemetery_pic, 0, 0, picMerge)
 		if ghost -> alive then         %if ghost is alive then draw hitpoints box
-		if totallvl > ghost -> totalLvl then
-				ghostlvlclr := brightgreen
-		elsif totallvl = ghost -> totalLvl then
-				ghostlvlclr := yellow
-		elsif totallvl < ghost -> totalLvl then
-				ghostlvlclr := brightred
-		end if
+			ghost -> setLvlClr(totalLvl)
 		if xm > ghost -> xPos - 1 and xm < ghost -> xPos + 32 and ym > ghost -> xPos - 1 and ym < ghost -> xPos + 41 then
-				Font.Draw ("Ghost [Level " + intstr (ghost -> totalLvl) + "]", ghost -> xPos, ghost -> yPos + 41, font2, ghostlvlclr)
+				Font.Draw ("Ghost [Level " + intstr (ghost -> totalLvl) + "]", ghost -> xPos, ghost -> yPos + 41, font2, ghost -> lvlClr)
 		end if
 		Pic.DrawSpecial (ghost -> dirImages (ghost -> dir), ghost -> xPos, ghost -> yPos, picMerge, picBlend, 1)
 		if abs ((ghost -> xPos + 10) - x + 15) < 200 and abs ((ghost -> yPos + 15) - y + 15) < 200 and ghost -> hp > 0 then
-				drawfillbox (7, barheight - 3, 123, barheight + 53, ghostlvlclr)
+				drawfillbox (7, barheight - 3, 123, barheight + 53, ghost -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((ghost -> hp / 70) * 100), barheight + 5, 115, barheight + 15, red)
-				Font.Draw ("Ghost", 15, barheight + 35, font2, ghostlvlclr)
-				Font.Draw ("Hitpoints: " + intstr (round ((ghost -> hp / 70) * 100)) + "%", 15, barheight + 20, font2, ghostlvlclr)
+				Font.Draw ("Ghost", 15, barheight + 35, font2, ghost -> lvlClr)
+				Font.Draw ("Hitpoints: " + intstr (round ((ghost -> hp / 70) * 100)) + "%", 15, barheight + 20, font2, ghost -> lvlClr)
 		end if
 		end if
 		if xm > 175 and xm < 250 and ym > 200 and ym < 265 then
@@ -4162,24 +3883,18 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 			Pic.Draw (crypt_rope_pic, 0, 0, picCopy)
 		end if
 		if zombie -> alive then
-		if totallvl > zombie -> totalLvl then
-				zombielvlclr := brightgreen
-		elsif totallvl = zombie -> totalLvl then
-				zombielvlclr := yellow
-		elsif totallvl < zombie -> totalLvl then
-				zombielvlclr := brightred
-		end if
+			zombie -> setLvlClr(totalLvl)
 		if xm > zombie -> xPos - 1 and xm < zombie -> xPos + 32 and ym > zombie -> yPos - 1 and ym < zombie -> yPos + 41 then
-				Font.Draw ("Zombie [Level " + intstr (zombie -> totalLvl) + "]", zombie -> xPos, zombie -> yPos + 41, font2, zombielvlclr)
+				Font.Draw ("Zombie [Level " + intstr (zombie -> totalLvl) + "]", zombie -> xPos, zombie -> yPos + 41, font2, zombie -> lvlClr)
 		end if
 			Pic.DrawSpecial (darkoverlay, x - 790, y - 590, picMerge, picBlend, 1)
 			Pic.Draw (zombie -> dirImages (zombie -> dir), zombie -> xPos, zombie -> yPos, picMerge)
 		if abs ((zombie -> xPos + 10) - x + 15) < 200 and abs ((zombie -> yPos + 15) - y + 15) < 200 and zombie -> hp > 0 then
-				drawfillbox (7, barheight - 3, 123, barheight + 53, zombielvlclr)
+				drawfillbox (7, barheight - 3, 123, barheight + 53, zombie -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((zombie -> hp / 120) * 100), barheight + 5, 115, barheight + 15, red)
-				Font.Draw ("Zombie", 15, barheight + 35, font2, zombielvlclr)
-				Font.Draw ("Hitpoints: " + intstr (round ((zombie -> hp / 120) * 100)) + "%", 15, barheight + 20, font2, zombielvlclr)
+				Font.Draw ("Zombie", 15, barheight + 35, font2, zombie -> lvlClr)
+				Font.Draw ("Hitpoints: " + intstr (round ((zombie -> hp / 120) * 100)) + "%", 15, barheight + 20, font2, zombie -> lvlClr)
 		end if
 		else
 		Pic.DrawSpecial (darkoverlay, x - 790, y - 590, picMerge, picBlend, 1)
@@ -4212,23 +3927,17 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     elsif scene = "east of 'west river'" then         %if east of 'west river'
 		Pic.Draw (east_of_westriver_pic, 0, 0, picMerge)
 		if goblin -> alive then
-			if totallvl > goblin -> totalLvl then
-				goblinlvlcolour := brightgreen
-			elsif totallvl = goblin -> totalLvl then
-				goblinlvlcolour := yellow
-			elsif totallvl < goblin -> totalLvl then
-				goblinlvlcolour := brightred
-			end if
+			goblin -> setLvlClr(totalLvl)
 		if xm > goblin -> xPos - 1 and xm < goblin -> xPos + 32 and ym > goblin -> yPos - 1 and ym < goblin -> yPos + 41 then
-				Font.Draw ("Goblin [Level " + intstr (goblin -> totalLvl) + "]", goblin -> xPos, goblin -> yPos + 30, font2, goblinlvlcolour)
+				Font.Draw ("Goblin [Level " + intstr (goblin -> totalLvl) + "]", goblin -> xPos, goblin -> yPos + 30, font2, goblin -> lvlClr)
 		end if
 		Pic.Draw (goblin -> dirImages(goblin -> dir), goblin -> xPos, goblin -> yPos, picMerge)
 		if abs ((goblin -> xPos + 10) - x + 15) < 200 and abs ((goblin -> yPos + 15) - y + 15) < 200 and goblin -> hp > 0 then
-				drawfillbox (7, barheight - 3, 123, barheight + 53, goblinlvlcolour)
+				drawfillbox (7, barheight - 3, 123, barheight + 53, goblin -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((goblin -> hp / 10) * 100), barheight + 5, 115, barheight + 15, red)
-				Font.Draw ("Goblin", 15, barheight + 35, font2, goblinlvlcolour)
-				Font.Draw ("Hitpoints: " + intstr (round ((goblin -> hp / 10) * 100)) + "%", 15, barheight + 20, font2, goblinlvlcolour)
+				Font.Draw ("Goblin", 15, barheight + 35, font2, goblin -> lvlClr)
+				Font.Draw ("Hitpoints: " + intstr (round ((goblin -> hp / 10) * 100)) + "%", 15, barheight + 20, font2, goblin -> lvlClr)
 		end if
 		end if
 		Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
@@ -4454,9 +4163,9 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		chatentry (3) := "goto: " + goto + "  scene: " + scene + "  movecharacter: false"
 		end if
 		if goblin -> talk then
-		chatentry (4) := "goblintalk: true" + "  goblintalkcounter: " + intstr (goblintalkcounter) + "  goblintalkcountergoal: " + intstr (goblintalkcountergoal)
+		chatentry (4) := "goblintalk: true" + "  goblintalkcounter: " + intstr (goblin -> talkCounter) + "  goblintalkcountergoal: " + intstr (goblin -> talkCounterGoal)
 		else
-		chatentry (4) := "goblintalk: false" + "  goblintalkcounter: " + intstr (goblintalkcounter) + "  goblintalkcountergoal: " + intstr (goblintalkcountergoal)
+		chatentry (4) := "goblintalk: false" + "  goblintalkcounter: " + intstr (goblin -> talkCounter) + "  goblintalkcountergoal: " + intstr (goblin -> talkCounterGoal)
 		end if
 		if sfx_on and playmusic_on then
 		chatentry (5) := "sfx_on: true" + "playmusic_on: true"
@@ -4806,19 +4515,108 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
 end drawscreen
 
+process move_enemy(enemy : pointer to Enemy)
+  if ~ enemy -> move then         %if enemy has not been assigned a movement
+    enemy -> setMove(true)
+    if enemy -> alive then
+      if abs ((enemy -> xPos + enemy -> xRad) - x + 15) >= 200 or abs ((enemy -> yPos + enemy -> yRad) - y + 15) >= 200 then
+	enemy -> setDir(Rand.Int (0, 3))
+	if enemy -> dir = ord(Direction.UP) then
+	  if enemy -> yPos < 550 then
+	    for : 1 .. 50
+	      enemy -> setYPos(enemy -> yPos + 1)
+	      Time.DelaySinceLast (30)
+	    end for
+	  end if
+	elsif enemy -> dir = ord(Direction.DOWN) then
+	  if enemy -> yPos > 50 then
+	    for : 1 .. 50
+	      enemy -> setYPos(enemy -> yPos - 1)
+	      Time.DelaySinceLast (30)
+	    end for
+	  end if
+	elsif enemy -> dir = ord(Direction.LEFT) then
+	  if enemy -> xPos > 50 then
+	    for : 1 .. 50
+	      enemy -> setXPos(enemy -> xPos - 1)
+	      Time.DelaySinceLast (30)
+	    end for
+	  end if
+	elsif enemy -> dir = ord(Direction.RIGHT) then
+	  if enemy -> xPos < 750 then
+	    for : 1 .. 50
+	      enemy -> setXPos(enemy -> xPos + 1)
+	      Time.DelaySinceLast (30)
+	    end for
+	  end if
+	else
+	  Time.DelaySinceLast (1500)
+	end if
+      else
+	if enemy -> yPos + enemy -> yRad < (y + 15) - 10 then
+	  enemy -> setDir(ord(Direction.UP))
+	  enemy -> setYPos(enemy -> yPos + 1)
+	end if
+	if enemy -> yPos + enemy -> yRad > (y + 15) + 10 then
+	  enemy -> setDir(ord(Direction.DOWN))
+	  enemy -> setYPos(enemy -> yPos - 1)
+	end if
+	if goblin -> xPos + enemy -> xRad < (x + 15) - 10 then
+	  enemy -> setDir(ord(Direction.RIGHT))
+	  enemy -> setXPos(enemy -> xPos + 1)
+	end if
+	if enemy -> xPos + enemy -> xRad > (x + 15) + 10 then
+	  enemy -> setDir(ord(Direction.LEFT))
+	  enemy -> setXPos(enemy -> xPos - 1)
+	end if
+      end if
+    end if
+    enemy -> setMove(false)
+  end if
+end move_enemy
+
+process talk_enemy(enemy : pointer to Enemy)
+  if enemy -> alive then
+    if enemy -> talk then
+      chattext := enemy -> text (Rand.Int (0, 2))
+      if chatentry (5) ~= "" and chattext ~= "" then
+	for chatnum : 2 .. 5
+	  chatentry (chatnum - 1) := chatentry (chatnum)
+	end for
+	chatentry (5) := chattext
+      else
+	for chatnum : 1 .. 5
+	  if chatentry (chatnum) = "" and chattext ~= "" then
+	    chatentry (chatnum) := chattext
+	    exit
+	  end if
+	end for
+      end if
+      chattext := ""
+      enemy -> setTalk(false)
+      enemy -> setTalkCounter(0)
+    end if
+  end if
+  enemy -> setTalkCounter(enemy -> talkCounter + 1)
+  if enemy -> talkCounter = enemy -> talkCounterGoal then
+    enemy -> setTalk(true)
+    enemy -> newTalkCounterGoal()
+  end if
+end talk_enemy
+
 process goblin_proc
-    if ~ goblin -> move then         %if goblin has not been assigned a movement
+  if ~ goblin -> move then         %if goblin has not been assigned a movement
 		goblin -> setMove(true)
 		if goblin -> alive then
-		if abs ((goblin -> xPos + 10) - x + 15) >= 200 or abs ((goblin -> yPos + 15) - y + 15) >= 200 then
+		  if abs ((goblin -> xPos + goblin -> xRad) - x + 15) >= 200 or abs ((goblin -> yPos + goblin -> yRad) - y + 15) >= 200 then
 				goblin -> setDir(Rand.Int (0, 3))
 				if goblin -> dir = ord(Direction.UP) then
-				if goblin -> yPos < 550 then
+				  if goblin -> yPos < 550 then
 						for : 1 .. 50
 							goblin -> setYPos(goblin -> yPos + 1)
 							Time.DelaySinceLast (30)
 						end for
-				end if
+				  end if
 				elsif goblin -> dir = ord(Direction.DOWN) then
 					if goblin -> yPos > 50 then
 						for : 1 .. 50
@@ -4827,76 +4625,50 @@ process goblin_proc
 						end for
 					end if
 				elsif goblin -> dir = ord(Direction.LEFT) then
-				if goblin -> xPos > 50 then
+				  if goblin -> xPos > 50 then
 						for : 1 .. 50
 							goblin -> setXPos(goblin -> xPos - 1)
 							Time.DelaySinceLast (30)
 						end for
-				end if
+				  end if
 				elsif goblin -> dir = ord(Direction.RIGHT) then
-				if goblin -> xPos < 750 then
+				  if goblin -> xPos < 750 then
 						for : 1 .. 50
 							goblin -> setXPos(goblin -> xPos + 1)
 							Time.DelaySinceLast (30)
 						end for
-				end if
+				  end if
 				else
-				Time.DelaySinceLast (1500)
+				  Time.DelaySinceLast (1500)
 				end if
-		else
-				if goblin -> yPos + 15 < (y + 15) - 10 then
+		  else
+				if goblin -> yPos + goblin -> yRad < (y + 15) - 10 then
 					goblin -> setDir(ord(Direction.UP))
 					goblin -> setYPos(goblin -> yPos + 1)
 				end if
-				if goblin -> yPos + 15 > (y + 15) + 10 then
+				if goblin -> yPos + goblin -> yRad > (y + 15) + 10 then
 					goblin -> setDir(ord(Direction.DOWN))
 					goblin -> setYPos(goblin -> yPos - 1)
 				end if
-				if goblin -> xPos + 10 < (x + 15) - 10 then
+				if goblin -> xPos + goblin -> xRad < (x + 15) - 10 then
 					goblin -> setDir(ord(Direction.RIGHT))
 					goblin -> setXPos(goblin -> xPos + 1)
 				end if
-				if goblin -> xPos + 10 > (x + 15) + 10 then
+				if goblin -> xPos + goblin -> xRad > (x + 15) + 10 then
 					goblin -> setDir(ord(Direction.LEFT))
 					goblin -> setXPos(goblin -> xPos - 1)
 				end if
-		end if
+		  end if
 		end if
 		goblin -> setMove(false)
-    end if
-    if goblin -> alive then
-		if goblin -> talk then
-		chattext := goblin -> text (Rand.Int (0, 2))
-		if chatentry (5) ~= "" and chattext ~= "" then
-				for chatnum : 2 .. 5
-					chatentry (chatnum - 1) := chatentry (chatnum)
-				end for
-				chatentry (5) := chattext
-		else
-				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext ~= "" then
-						chatentry (chatnum) := chattext
-						exit
-					end if
-				end for
-		end if
-			chattext := ""
-			goblin -> setTalk(false)
-			goblintalkcounter := 0
-		end if
-    end if
-    goblintalkcounter := goblintalkcounter + 1
-    if goblintalkcounter = goblintalkcountergoal then
-		goblin -> setTalk(true)
-		goblintalkcountergoal := Rand.Int (500, 1000)
-    end if
+  end if
 end goblin_proc
 
 process skeleton_proc
     if ~ skeleton -> move then         %if skeleton has not been assigned a movement
 		skeleton -> setMove(true)
 		if skeleton -> alive then
-		if abs ((skeleton -> xPos + 15) - x + 15) >= 300 or abs ((skeleton -> yPos + 20) - y + 15) >= 300 then
+		if abs ((skeleton -> xPos + skeleton -> xRad) - x + 15) >= 300 or abs ((skeleton -> yPos + skeleton -> yRad) - y + 15) >= 300 then
 				skeleton -> setDir(Rand.Int (0, 3))
 				if skeleton -> dir = ord(Direction.UP) then
 				if skeleton -> yPos < 550 then
@@ -4930,53 +4702,27 @@ process skeleton_proc
 				Time.DelaySinceLast (1500)
 				end if
 		else
-				if skeleton -> yPos + 20 < (y + 15) - 10 then
+				if skeleton -> yPos + skeleton -> yRad < (y + 15) - 10 then
 					skeleton -> setDir(ord(Direction.UP))
 					skeleton -> setYPos(skeleton -> yPos + 1)
 				end if
-				if skeleton -> yPos + 20 > (y + 15) + 10 then
+				if skeleton -> yPos + skeleton -> yRad > (y + 15) + 10 then
 					skeleton -> setDir(ord(Direction.DOWN))
 					skeleton -> setYPos(skeleton -> yPos - 1)
 				end if
-				if skeleton -> xPos + 15 < (x + 15) - 10 then
+				if skeleton -> xPos + skeleton -> xRad < (x + 15) - 10 then
 					skeleton -> setDir(ord(Direction.RIGHT))
 					if skeleton -> xPos < 200 then
 						skeleton -> setXPos(skeleton -> xPos + 1)
 					end if
 				end if
-				if skeleton -> xPos + 15 > (x + 15) + 10 then
+				if skeleton -> xPos + skeleton -> xRad > (x + 15) + 10 then
 					skeleton -> setDir(ord(Direction.LEFT))
 					skeleton -> setXPos(skeleton -> xPos - 1)
 				end if
 		end if
 		end if
 		skeleton -> setMove(false)
-    end if
-    if skeleton -> alive then
-		if skeleton -> talk then
-		chattext := skeleton -> text (Rand.Int (0, 2))
-		if chatentry (5) ~= "" and chattext ~= "" then
-				for chatnum : 2 .. 5
-					chatentry (chatnum - 1) := chatentry (chatnum)
-				end for
-				chatentry (5) := chattext
-		else
-				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext ~= "" then
-						chatentry (chatnum) := chattext
-						exit
-					end if
-				end for
-		end if
-			chattext := ""
-			skeleton -> setTalk (false)
-			skeletontalkcounter := 0
-		end if
-    end if
-    skeletontalkcounter := skeletontalkcounter + 1
-    if skeletontalkcounter = skeletontalkcountergoal then
-		skeleton -> setTalk(true)
-		skeletontalkcountergoal := Rand.Int (500, 1000)
     end if
 end skeleton_proc
 
@@ -5037,32 +4783,6 @@ process ghost_proc
 		end if
 		end if
 		ghost -> setMove(false)
-    end if
-    if ghost -> alive then
-		if ghost -> talk then
-		chattext := ghost -> text (Rand.Int (0, 2))
-		if chatentry (5) ~= "" and chattext ~= "" then
-				for chatnum : 2 .. 5
-					chatentry (chatnum - 1) := chatentry (chatnum)
-				end for
-				chatentry (5) := chattext
-		else
-				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext ~= "" then
-						chatentry (chatnum) := chattext
-						exit
-					end if
-				end for
-		end if
-			chattext := ""
-			ghost -> setTalk(false)
-			ghosttalkcounter := 0
-		end if
-    end if
-    ghosttalkcounter := ghosttalkcounter + 1
-    if ghosttalkcounter = ghosttalkcountergoal then
-		ghost -> setTalk(true)
-		ghosttalkcountergoal := Rand.Int (500, 1000)
     end if
 end ghost_proc
 
@@ -5134,65 +4854,39 @@ process zombie_proc
 		end if
 		zombie -> setMove(false)
     end if
-    if zombie -> alive then
-		if zombie -> talk then
-		chattext := zombie -> text (Rand.Int (0, 2))
-		if chatentry (5) ~= "" and chattext ~= "" then
-				for chatnum : 2 .. 5
-					chatentry (chatnum - 1) := chatentry (chatnum)
-				end for
-				chatentry (5) := chattext
-		else
-				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext ~= "" then
-						chatentry (chatnum) := chattext
-						exit
-					end if
-				end for
-		end if
-		end if
-		chattext := ""
-		zombie -> setTalk(false)
-		zombietalkcounter := 0
-    end if
-    zombietalkcounter := zombietalkcounter + 1
-    if zombietalkcounter = zombietalkcountergoal then
-		zombie -> setTalk(true)
-		zombietalkcountergoal := Rand.Int (500, 1000)
-    end if
 end zombie_proc
 
-process troll
-    if ~ trollmove then         %if troll has not been assigned a movement
-		trollmove := true
-		if trollalive then
-		if abs ((xtroll + 15) - x + 15) >= 500 or abs ((ytroll + 20) - y + 15) >= 500 then
-				rtroll := Rand.Int (1, 10)
-				if rtroll = 1 then
-				if ytroll < 550 then
+process troll_proc
+    if ~ troll -> move then         %if troll has not been assigned a movement
+		troll -> setMove(true)
+		if troll -> alive then
+		if abs ((troll -> xPos + 15) - x + 15) >= 500 or abs ((troll -> yPos + 20) - y + 15) >= 500 then
+				troll -> setDir(Rand.Int (0, 3))
+				if troll -> dir = ord(Direction.UP) then
+				if troll -> yPos < 550 then
 						for : 1 .. 50
-							ytroll := ytroll + 1
+              troll -> setYPos(troll -> yPos + 1)
 							Time.DelaySinceLast (30)
 						end for
 				end if
-				elsif rtroll = 2 then
-					if ytroll > 0 then
+				elsif troll -> dir = ord(Direction.DOWN) then
+					if troll -> yPos > 0 then
 						for : 1 .. 50
-							ytroll := ytroll - 1
+							troll -> setYPos(troll -> yPos - 1)
 							Time.DelaySinceLast (30)
 						end for
 					end if
-				elsif rtroll = 3 then
-					if xtroll > 0 then
+				elsif troll -> dir = ord(Direction.LEFT) then
+					if troll -> xPos > 0 then
 						for : 1 .. 50
-							xtroll := xtroll - 1
+							troll -> setXPos(troll -> xPos - 1)
 							Time.DelaySinceLast (30)
 						end for
 					end if
-				elsif rtroll = 4 then
-					if xtroll < 210 then
+				elsif troll -> dir = ord(Direction.RIGHT) then
+					if troll -> xPos < 210 then
 						for : 1 .. 50
-							xtroll := xtroll + 1
+							troll -> setXPos(troll -> xPos + 1)
 							Time.DelaySinceLast (30)
 						end for
 					end if
@@ -5200,77 +4894,51 @@ process troll
 					Time.DelaySinceLast (1500)
 				end if
 		else
-				if ytroll + 20 < (y + 15) - 10 then
-					rtroll := 1
-					ytroll := ytroll + 1
+				if troll -> yPos + 20 < (y + 15) - 10 then
+					troll -> setDir(ord(Direction.UP))
+          troll -> setYPos(troll -> yPos + 1)
 				end if
-				if ytroll + 20 > (y + 15) + 10 then
-					rtroll := 2
-					ytroll := ytroll - 1
+				if troll -> yPos + 20 > (y + 15) + 10 then
+					troll -> setDir(ord(Direction.DOWN))
+          troll -> setYPos(troll -> yPos - 1)
 				end if
-				if xtroll + 15 < (x + 15) - 10 then
-					rtroll := 4
-					xtroll := xtroll + 1
+				if troll -> xPos + 15 < (x + 15) - 10 then
+					troll -> setDir(ord(Direction.RIGHT))
+          troll -> setXPos(troll -> xPos + 1)
 				end if
-				if xtroll + 15 > (x + 15) + 10 then
-					rtroll := 3
-					xtroll := xtroll - 1
+				if troll -> xPos + 15 > (x + 15) + 10 then
+					troll -> setDir(ord(Direction.LEFT))
+          troll -> setXPos(troll -> xPos - 1)
 				end if
 		end if
-			if xtroll > 650 then
-				xtroll := 650
-			elsif xtroll < 30 then
-				xtroll := 30
+			if troll -> xPos > 650 then
+        troll -> setXPos(650)
+			elsif troll -> xPos < 30 then
+				troll -> setXPos(30)
 			end if
-			if ytroll < 30 then
-				ytroll := 30
-			elsif ytroll > 570 then
-				ytroll := 570
+			if troll -> yPos < 30 then
+				troll -> setYPos(30)
+			elsif troll -> yPos > 570 then
+				troll -> setYPos(570)
 			end if
-		if ytroll > 280 and ytroll < 390 then
-				if xtroll > 315 and xtroll < 320 then     %if approaching fire from left
-				xtroll := 315
-				elsif xtroll < 455 and xtroll > 450 then     %if approaching fire from right
-				xtroll := 455
+		if troll -> yPos > 280 and troll -> yPos < 390 then
+				if troll -> xPos > 315 and troll -> xPos < 320 then     %if approaching fire from left
+          troll -> setXPos(315)
+				elsif troll -> xPos < 455 and troll -> xPos > 450 then     %if approaching fire from right
+				  troll -> setXPos(455)
 				end if
 		end if
-		if xtroll > 315 and xtroll < 455 then
-				if ytroll > 280 and ytroll < 285 then     %if approaching fire from bottom
-				ytroll := 280
-				elsif ytroll < 390 and ytroll > 385 then     %if approaching fire from top
-				ytroll := 390
+		if troll -> xPos > 315 and troll -> xPos < 455 then
+				if troll -> yPos > 280 and troll -> yPos < 285 then     %if approaching fire from bottom
+				  troll -> setYPos(280)
+				elsif troll -> yPos < 390 and troll -> yPos > 385 then     %if approaching fire from top
+				  troll -> setYPos(390)
 				end if
 		end if
 		end if
-		trollmove := false
+		troll -> setMove(false)
     end if
-    if trollalive then
-		if trolltalk then
-		chattext := trolltext (Rand.Int (1, 3))
-		if chatentry (5) ~= "" and chattext ~= "" then
-				for chatnum : 2 .. 5
-					chatentry (chatnum - 1) := chatentry (chatnum)
-				end for
-				chatentry (5) := chattext
-		else
-				for chatnum : 1 .. 5
-					if chatentry (chatnum) = "" and chattext ~= "" then
-						chatentry (chatnum) := chattext
-						exit
-					end if
-				end for
-		end if
-		chattext := ""
-		trolltalk := false
-		trolltalkcounter := 0
-		end if
-    end if
-    trolltalkcounter := trolltalkcounter + 1
-    if trolltalkcounter = trolltalkcountergoal then
-		trolltalk := true
-		trolltalkcountergoal := Rand.Int (500, 1000)
-    end if
-end troll
+end troll_proc
 
 process peasant
     if ~ peasantmove then         %if peasant has not been assigned a movement
@@ -5971,7 +5639,8 @@ proc troll_dungeon (var go_to : string)         %when in the castle
 		if exitgame then
 			return
 		end if
-		fork troll
+		fork troll_proc
+    fork talk_enemy(troll)
 		View.Update
     end loop
 end troll_dungeon
@@ -6201,6 +5870,7 @@ proc west_river (var go_to : string)         %when at west river
 			return
 		end if
 		fork skeleton_proc
+    fork talk_enemy(skeleton)
 		View.Update
     end loop
 end west_river
@@ -6257,6 +5927,7 @@ proc cemetery (var go_to : string)         %when at west river
 			return
 		end if
 		fork ghost_proc
+    fork talk_enemy(ghost)
 		View.Update
     end loop
 end cemetery
@@ -6379,6 +6050,7 @@ proc crypt (var go_to : string)         %when at west river
 			return
 		end if
 		fork zombie_proc
+    fork talk_enemy(zombie)
 		View.Update
     end loop
 end crypt
@@ -6426,6 +6098,7 @@ proc west_river_northcorner (var go_to : string)         %when at west river
 			return
 		end if
 		fork skeleton_proc
+    fork talk_enemy(skeleton)
 		View.Update
     end loop
 end west_river_northcorner
@@ -6572,6 +6245,7 @@ proc east_of_westriver (var go_to : string)         %when east of 'west river'
 			return
 		end if
 		fork goblin_proc
+    fork talk_enemy(goblin)
 		View.Update
     end loop
 end east_of_westriver
@@ -6925,7 +6599,7 @@ loop
 			xpic, ypic, xdiff, ydiff, archeryxp, combatxp, hitpoints,
 			dragonhead1hp,
 			dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-			ghostreturncounter, zombiereturncounter, bonus, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
+			bonus, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
 			text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
 			close : record2
 			loadnew := false

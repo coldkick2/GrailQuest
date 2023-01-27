@@ -15,8 +15,13 @@ class Zombie
     xPos := 300
     yPos := 400
 
+    xRad := 15
+    yRad := 20
+
     hp := 120
     maxHp := 120
+    xpGain := 120
+    goldGain := 250
     combatLvl := 10
     archeryLvl := 1
     dmgMin := 0
