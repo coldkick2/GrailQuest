@@ -1,6 +1,8 @@
 class Goblin
     inherit Enemy
 
+    name := "goblin"
+
     description := "Eww, it's a goblin!"
 
     dirImages (ord(Direction.UP)) := Pic.FileNew ("Images/goblinu.bmp")

@@ -2,6 +2,8 @@ class Peasant
     inherit Enemy
     export inCottage, setInCottage
 
+    name := "peasant"
+
     description := "A humble peasant."
 
     dirImages (ord(Direction.UP)) := Pic.FileNew ("Images/peasantu.bmp")

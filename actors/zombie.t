@@ -1,6 +1,8 @@
 class Zombie
     inherit Enemy
 
+    name := "zombie"
+
     description := "Run! It's a zombie!"
 
     dirImages (ord(Direction.UP)) := Pic.FileNew ("Images/zombieu.bmp")

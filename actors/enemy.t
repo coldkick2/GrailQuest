@@ -1,7 +1,8 @@
 class Enemy
     import Direction
-    export alive, description, detectCollision, dir, dirImages, goldGain, lvlClr, xpGain, hp, maxHp, move, talk, talkCounter, talkCounterGoal, text, xPos, yPos, xRad, yRad, dmgMin, dmgMax, combatLvl, archeryLvl, respawnCounter, totalLvl, newTalkCounterGoal, setHp, setAlive, setRespawnCounter, setMove, setDir, setXPos, setYPos, setTalk, setTalkCounter, setLvlClr
+    export alive, name, description, detectCollision, dir, dirImages, goldGain, lvlClr, xpGain, hp, maxHp, move, talk, talkCounter, talkCounterGoal, text, xPos, yPos, xRad, yRad, dmgMin, dmgMax, combatLvl, archeryLvl, respawnCounter, totalLvl, newTalkCounterGoal, setHp, setAlive, setRespawnCounter, setMove, setDir, setXPos, setYPos, setTalk, setTalkCounter, setLvlClr
     var alive : boolean := true
+    var name : string
     var description : string
     var dir : int := ord(Direction.DOWN)
     var dirImages : array 0 .. 3 of int

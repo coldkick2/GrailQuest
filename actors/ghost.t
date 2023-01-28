@@ -1,6 +1,8 @@
 class Ghost
     inherit Enemy
 
+    name := "ghost"
+
     description := "OoOOOOooooOOooooO..."
 
     dirImages (ord(Direction.UP)) := Pic.FileNew ("Images/ghostu.bmp")

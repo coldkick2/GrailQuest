@@ -1,6 +1,8 @@
 class Skeleton
     inherit Enemy
 
+    name := "skeleton"
+
     description := "An undead skeleton...creepy!"
 
     dirImages (ord(Direction.UP)) := Pic.FileNew ("Images/skeletonu.bmp")

@@ -1,6 +1,8 @@
 class Troll
     inherit Enemy
 
+    name := "troll"
+
     description := "...looks hungry..."
 
     dirImages (ord(Direction.UP)) := Pic.FileNew ("Images/trollu.bmp")

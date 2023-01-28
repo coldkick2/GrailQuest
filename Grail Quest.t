@@ -2041,6 +2041,107 @@ proc equipItem(item: pointer to Item)
 	end if
 end equipItem
 
+proc attack_enemy(enemy : pointer to Enemy, var go_to : string)
+  if enemy -> alive then
+    if xm > enemy -> xPos - 1 and xm < enemy -> xPos + 21 and ym > enemy -> yPos - 1 and ym < enemy -> yPos + 30 then
+      if right = 100 then
+        text := enemy -> description
+      elsif left = 1 then
+        destination := true
+        follow := enemy
+      end if
+    end if
+    if ((weapon -> style = "combat")
+      and (abs ((enemy -> xPos + enemy -> xRad) - (x + 15)) < 20
+      and abs ((enemy -> yPos + enemy -> yRad) - (y + 15)) < 20))
+      or (weapon -> style = "archery"
+      and (abs ((enemy -> xPos + enemy -> xRad) - (x + 15)) < 100
+      and abs ((enemy -> yPos + enemy -> yRad) - (y + 15)) < 200)) then
+      attacking := true
+      if xdest = enemy -> xPos and ydest = enemy -> yPos then
+        destination := false
+      end if
+      text := "You are attacking a " + enemy -> name + "!  Arrows left: " + intstr (arrownum) + "  Goblin: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
+      if hpcounter = 20 or hpcounter = 40 then
+        if hitpoints > 0 then
+          if abs ((enemy -> xPos + enemy -> xRad) - (x + 15)) < 20 and abs ((enemy -> yPos + enemy -> yRad) - (y + 15)) < 20 then
+            damagetaken := Rand.Int (enemy -> dmgMin, enemy -> dmgMax)
+            if defence < damagetaken then
+              hitpoints := hitpoints - (damagetaken - defence)
+            end if
+          end if
+        else
+          reset(go_to)
+          return
+        end if
+        if enemy -> hp > 0 then
+          %if using a combat attack style
+          if weapon -> style = "combat" then
+            %inflicts damage to enemy accoring to player's skill level
+            damagedealt := Rand.Int (0, (combatlvl + bonus))
+            enemy -> setHp(enemy -> hp - damagedealt)
+            if enemy -> hp > 0 then
+              enemy -> setAlive(true)
+            else
+              enemy -> setHp(0)
+              text := "You defeat the " + enemy -> name + " and gain " + intstr(enemy -> xpGain) + " experience and " + intstr(enemy -> goldGain) + " gold."
+              enemy -> setAlive(false)
+              if gold <= 99989 then
+                gold := gold + enemy -> goldGain
+              else
+                text := "You do not have room to carry any more gold!"
+              end if
+              if combatlvl < 100 then
+                combatxp := combatxp + enemy -> xpGain
+              else
+                text := "You've mastered the art of combat and cannot gain further experience."
+              end if
+            end if
+          %if using an archery attack style
+          elsif weapon -> style = "archery" then
+            %inflicts damage to enemy accoring to player's skill level
+            if arrownum > 0 then
+              arrownum := arrownum - 1
+              damagedealt := Rand.Int (0, (archerylvl + bonus))
+              enemy -> setHp(enemy -> hp - damagedealt)
+              if enemy -> hp > 0 then
+                enemy -> setAlive(true)
+              else
+                enemy -> setHp(0)
+                text := "You defeat the " + enemy -> name + " and gain " + intstr(enemy -> xpGain) + " experience and " + intstr(enemy -> goldGain) + " gold."
+                enemy -> setAlive(false)
+                if gold <= 99989 then
+                  gold := gold + enemy -> goldGain
+                else
+                  text := "You do not have room to carry any more gold!"
+                end if
+                if archerylvl < 100 then
+                  archeryxp := archeryxp + enemy -> xpGain
+                else
+                  text := "You've mastered the art of archery and cannot gain further experience."
+                end if
+              end if
+            else
+              text := "You have run out of arrows!"
+            end if
+          end if
+          if weapon -> style = "archery" then
+            if arrownum > 0 then
+              fork playHitSound
+            end if
+          else
+            fork playHitSound
+          end if
+        end if
+      end if
+    else
+      attacking := false
+    end if
+  else
+    attacking := false
+  end if
+end attack_enemy
+
 proc collision (var go_to : string)     %detects collisions with objects and buttons
     Input.KeyDown (hotkey)
     if ~ hotkey ('n') then
@@ -2392,104 +2493,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				y := 390
 			end if
 		end if
-		if troll -> alive then
-			if xm > troll -> xPos - 1 and xm < troll -> xPos + 21 and ym > troll -> yPos - 1 and ym < troll -> yPos + 30 then
-				if right = 100 then
-					text := troll -> description
-				elsif left = 1 then
-					destination := true
-					follow := troll
-				end if
-			end if
-			if ((weapon -> style = "combat")
-				and (abs ((troll -> xPos + 10) - (x + 15)) < 20
-				and abs ((troll -> yPos + 15) - (y + 15)) < 20))
-				or (weapon -> style = "archery"
-				and (abs ((troll -> xPos + 10) - (x + 15)) < 100
-				and abs ((troll -> yPos + 15) - (y + 15)) < 200)) then
-				attacking := true
-				if xdest = troll -> xPos and ydest = troll -> yPos then
-					destination := false
-				end if
-				text := "You are attacking a troll!  Arrows left: " + intstr (arrownum) + "  Troll: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
-				if hpcounter = 20 or hpcounter = 40 then
-					if hitpoints > 0 then
-						if abs ((troll -> xPos + 10) - (x + 15)) < 20 and abs ((troll -> yPos + 15) - (y + 15)) < 20 then
-							damagetaken := Rand.Int (troll -> dmgMin, troll -> dmgMax)
-							if defence < damagetaken then
-								hitpoints := hitpoints - (damagetaken - defence)
-							end if
-						end if
-					else
-						reset(go_to)
-						return
-					end if
-					if troll -> hp > 0 then
-						%if using a combat attack style
-						if weapon -> style = "combat" then
-							%inflicts damage to troll accoring to player's skill level
-							damagedealt := Rand.Int (0, (combatlvl + bonus))
-	      troll -> setHp(troll -> hp - damagedealt)
-							if troll -> hp > 0 then
-								troll -> setAlive(true)
-							else
-								troll -> setHp(0)
-								text := "You defeat the troll and gain 180 experience and 300 gold."
-								troll -> setAlive(false)
-								if gold <= 99699 then
-									gold := gold + troll -> goldGain
-								else
-									text := "You do not have room to carry any more gold!"
-								end if
-								if combatlvl < 99 then
-									combatxp := combatxp + troll -> xpGain
-								else
-									text := "You've mastered the art of combat and cannot gain further experience."
-								end if
-							end if
-							%if using an archery attack style
-						elsif weapon -> style = "archery" then
-							%inflicts damage to troll accoring to player's skill level
-							if arrownum > 0 then
-								arrownum := arrownum - 1
-								damagedealt := Rand.Int (0, (archerylvl + bonus))
-								troll -> setHp(troll -> hp - damagedealt)
-								if troll -> hp > 0 then
-									troll -> setAlive(true)
-								else
-									troll -> setHp(0)
-									text := "You defeat the troll and gain 180 experience and 300 gold."
-									troll -> setAlive(false)
-									if gold <= 99699 then
-										gold := gold + troll -> goldGain
-									else
-										text := "You do not have room to carry any more gold!"
-									end if
-									if archerylvl < 97 then
-										archeryxp := archeryxp + troll -> xpGain
-									else
-										text := "You've mastered the art of archery and cannot gain further experience."
-									end if
-								end if
-							end if
-						else
-							text := "You have run out of arrows!"
-						end if
-					end if
-					if weapon -> style = "archery" then
-						if arrownum > 0 then
-							fork playHitSound
-						end if
-					else
-						fork playHitSound
-					end if
-				end if
-			else
-				attacking := false
-			end if
-		else
-			attacking := false
-		end if
+      attack_enemy(troll, go_to)
     elsif scene = "outside entrance" then         %if outside entrance
 		%tree1
 		if x > 100 and x < 110 and y > 65 and y < 120 then         % if coming from the left
@@ -2648,343 +2652,52 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			x := 30
 		end if
     elsif scene = "west river" then
-		if x > 210 and x < 220 then         %"west river"'s west edge
-			x := 210
-		end if
-		if x > 480 and x < 490 then         %"west river"'s east edge
-			x := 490
-		end if
-		%key west hall
-		if x > xkey_west_hall - 5 and x < xkey_west_hall + 26 and y > ykey_west_hall - 5 and y < ykey_west_hall + 26 then
-			key_west_hall := true
-			text := "You find a battered iron key..."
-		end if
-		if skeleton -> alive then
-			if xm > skeleton -> xPos - 1 and xm < skeleton -> xPos + 21 and ym > skeleton -> yPos - 1 and ym < skeleton -> yPos + 30 then
-				if right = 100 then
-					text := skeleton -> description
-				elsif left = 1 then
-					destination := true
-					follow := skeleton
-				end if
-			end if
-			if ((weapon -> style = "combat")
-				and (abs ((skeleton -> xPos + 10) - (x + 15)) < 20
-				and abs ((skeleton -> yPos + 15) - (y + 15)) < 20))
-				or (weapon -> style = "archery"
-				and (abs ((skeleton -> xPos + 10) - (x + 15)) < 100
-				and abs ((skeleton -> yPos + 15) - (y + 15)) < 200)) then
-				attacking := true
-				if xdest = skeleton -> xPos and ydest = skeleton -> yPos then
-					destination := false
-				end if
-				text := "You are attacking a skeleton!  Arrows left: " + intstr (arrownum) + "  Skeleton: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
-				if hpcounter = 20 or hpcounter = 40 then
-					if hitpoints > 0 then
-						if abs ((skeleton -> xPos + 10) - (x + 15)) < 20 and abs ((skeleton -> yPos + 15) - (y + 15)) < 20 then
-							damagetaken := Rand.Int (skeleton -> dmgMin, skeleton -> dmgMax)
-							if defence < damagetaken then
-								hitpoints := hitpoints - (damagetaken - defence)
-							end if
-						end if
-					else
-						reset(go_to)
-						return
-					end if
-					if skeleton -> hp > 0 then
-						%if using a combat attack style
-						if weapon -> style = "combat" then
-							%inflicts damage to skeleton accoring to player's skill level
-							damagedealt := Rand.Int (0, (combatlvl + bonus))
-							skeleton -> setHp(skeleton -> hp - damagedealt)
-							if skeleton -> hp > 0 then
-								skeleton -> setAlive(true)
-							else
-								skeleton -> setHp(0)
-								text := "You defeat the skeleton and gain " + intstr(skeleton -> xpGain) + " experience and " + intstr(skeleton -> goldGain) + " gold."
-								skeleton -> setAlive(false)
-								if gold <= 99949 then
-									gold := gold + skeleton -> goldGain
-								else
-									text := "You do not have room to carry any more gold!"
-								end if
-								if combatlvl < 100 then
-									combatxp := combatxp + skeleton -> xpGain
-								else
-									text := "You've mastered the art of combat and cannot gain further experience."
-								end if
-							end if
-							%if using an archery attack style
-						elsif weapon -> style = "archery" then
-							%inflicts damage to skeleton accoring to player's skill level
-							if arrownum > 0 then
-								arrownum := arrownum - 1
-								damagedealt := Rand.Int (0, (archerylvl + bonus))
-								skeleton -> setHp(skeleton -> hp - damagedealt)
-								if skeleton -> hp > 0 then
-									skeleton -> setAlive(true)
-								else
-									skeleton -> setHp(0)
-									text := "You defeat the skeleton and gain " + intstr(skeleton -> xpGain) + " experience and " + intstr(skeleton -> goldGain) + " gold."
-									skeleton -> setAlive(false)
-									if gold <= 99949 then
-										gold := gold + skeleton -> goldGain
-									else
-										text := "You do not have room to carry any more gold!"
-									end if
-									if archerylvl < 100 then
-										archeryxp := archeryxp + skeleton -> xpGain
-									else
-										text := "You've mastered the art of archery and cannot gain further experience."
-									end if
-								end if
-							end if
-						else
-							text := "You have run out of arrows!"
-						end if
-					end if
-					if weapon -> style = "archery" then
-						if arrownum > 0 then
-							fork playHitSound
-						end if
-					else
-						fork playHitSound
-					end if
-				end if
-			else
-				attacking := false
-			end if
-		else
-			attacking := false
-		end if
+      if x > 210 and x < 220 then         %"west river"'s west edge
+        x := 210
+      end if
+      if x > 480 and x < 490 then         %"west river"'s east edge
+        x := 490
+      end if
+      %key west hall
+      if x > xkey_west_hall - 5 and x < xkey_west_hall + 26 and y > ykey_west_hall - 5 and y < ykey_west_hall + 26 then
+        key_west_hall := true
+        text := "You find a battered iron key..."
+      end if
+      attack_enemy(skeleton, go_to)
     elsif scene = "cemetery" then
-		if x > 530 and x < 548 and (y < 193 or y > 273) then         %if colliding with trees
-			x := 548
-		else         %if not within cemetery
-			if y < 30 then             %if at bottom of scene
-				y := 30
-			end if
-		end if
-		if (y > 273 or y < 193) and x < 548 then
-			if y > 273 then
-				y := 273
-			elsif y < 193 then
-				y := 193
-			end if
-		end if
-		if ghost -> alive then
-		if xm > ghost -> xPos - 1 and xm < ghost -> xPos + 21 and ym > ghost -> yPos - 1 and ym < ghost -> yPos + 30 then
-			if right = 100 then
-				text := ghost -> description
-			elsif left = 1 then
-				destination := true
-				follow := ghost
-			end if
-		end if
-		if ((weapon -> style = "combat")
-				and (abs ((ghost -> xPos + 10) - (x + 15)) < 20
-				and abs ((ghost -> yPos + 15) - (y + 15)) < 20))
-				or (weapon -> style = "archery"
-				and (abs ((ghost -> xPos + 10) - (x + 15)) < 100
-				and abs ((ghost -> yPos + 15) - (y + 15)) < 200)) then
-				attacking := true
-				if xdest = ghost -> xPos and ydest = ghost -> yPos then
-					destination := false
-				end if
-				text := "You are attacking a ghost!  Arrows left: " + intstr (arrownum) + "  Ghost: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
-				if hpcounter = 20 or hpcounter = 40 then
-					if hitpoints > 0 then
-						if abs ((ghost -> xPos + 10) - (x + 15)) < 20 and abs ((ghost -> yPos + 15) - (y + 15)) < 20 then
-							damagetaken := Rand.Int (ghost -> dmgMin, ghost -> dmgMax)
-							if defence < damagetaken then
-								hitpoints := hitpoints - (damagetaken - defence)
-							end if
-						end if
-					else
-						reset(go_to)
-						return
-					end if
-					if ghost -> hp > 0 then
-						%if using a combat attack style
-						if weapon -> style = "combat" then
-							%inflicts damage to ghost accoring to player's skill level
-							damagedealt := Rand.Int (0, (combatlvl + bonus))
-							ghost -> setHp(ghost -> hp - damagedealt)
-							if ghost -> hp > 0 then
-								ghost -> setAlive(true)
-							else
-								ghost -> setHp(0)
-								text := "You defeat the ghost and gain 70 experience and 100 gold."
-								ghost -> setAlive(false)
-								if gold <= 99899 then
-									gold := gold + 100
-								else
-									text := "You do not have room to carry any more gold!"
-								end if
-								if combatlvl < 100 then
-									combatxp := combatxp + 70
-								else
-									text := "You've mastered the art of combat and cannot gain further experience."
-								end if
-						end if
-						%if using an archery attack style
-						elsif weapon -> style = "archery" then
-						%inflicts damage to ghost accoring to player's skill level
-						if arrownum > 0 then
-								arrownum := arrownum - 1
-								damagedealt := Rand.Int (0, (archerylvl + bonus))
-								ghost -> setHp(ghost -> hp - damagedealt)
-								if ghost -> hp > 0 then
-								ghost -> setAlive(true)
-								else
-								ghost -> setHp(0)
-								text := "You defeat the ghost and gain 70 experience and 100 gold."
-								ghost -> setAlive(false)
-								if gold <= 99899 then
-										gold := gold + 100
-								else
-										text := "You do not have room to carry any more gold!"
-								end if
-								if archerylvl < 100 then
-										archeryxp := archeryxp + 70
-								else
-										text := "You've mastered the art of archery and cannot gain further experience."
-								end if
-								end if
-						else
-								text := "You have run out of arrows!"
-						end if
-						end if
-						if weapon -> style = "archery" then
-							if arrownum > 0 then
-								fork playHitSound
-							end if
-						else
-							fork playHitSound
-						end if
-				end if
-				end if
-		else
-				attacking := false
-		end if
-		else
-		attacking := false
-		end if
+      if x > 530 and x < 548 and (y < 193 or y > 273) then         %if colliding with trees
+        x := 548
+      else         %if not within cemetery
+        if y < 30 then             %if at bottom of scene
+          y := 30
+        end if
+      end if
+      if (y > 273 or y < 193) and x < 548 then
+        if y > 273 then
+          y := 273
+        elsif y < 193 then
+          y := 193
+        end if
+      end if
+      attack_enemy(ghost, go_to)
     elsif scene = "crypt" then
-		if x > 630 then
-			x := 630
-		end if
-		if x < 30 then
-			x := 30
-		end if
-		if y < 180 then
-			y := 180
-		end if
-		if y > 570 then
-			y := 570
-		end if
-		if x > 510 and x < 560 and y > 190 and y < 230 and ~ rope then
-			rope := true
-			text := "You find a rope and catch it on a rock on the surface...it seems secure."
-		end if
-		if zombie -> alive then
-		if xm > zombie -> xPos - 1 and xm < zombie -> xPos + 21 and ym > zombie -> yPos - 1 and ym < zombie -> yPos + 30 then
-				if right = 100 then
-				text := zombie -> description
-				elsif left = 1 then
-				destination := true
-				follow := zombie
-				end if
-			end if
-		if ((weapon -> style = "combat")
-				and (abs ((zombie -> xPos + 10) - (x + 15)) < 20
-				and abs ((zombie -> yPos + 15) - (y + 15)) < 20))
-				or (weapon -> style = "archery"
-			and (abs ((zombie -> xPos + 10) - (x + 15)) < 100
-				and abs ((zombie -> yPos + 15) - (y + 15)) < 200)) then
-				attacking := true
-				if xdest = zombie -> xPos and ydest = zombie -> yPos then
-				destination := false
-				end if
-				text := "You are attacking a zombie!  Arrows left: " + intstr (arrownum) + "  Zombie: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
-				if hpcounter = 20 or hpcounter = 40 then
-				if hitpoints > 0 then
-						if abs ((zombie -> xPos + 10) - (x + 15)) < 20 and abs ((zombie -> yPos + 15) - (y + 15)) < 20 then
-						damagetaken := Rand.Int (zombie -> dmgMin, zombie -> dmgMax)
-						if defence < damagetaken then
-								hitpoints := hitpoints - (damagetaken - defence)
-						end if
-						end if
-				else
-						reset(go_to)
-						return
-				end if
-				if zombie -> hp > 0 then
-						%if using a combat attack style
-						if weapon -> style = "combat" then
-						%inflicts damage to zombie accoring to player's skill level
-						damagedealt := Rand.Int (0, (combatlvl + bonus))
-							zombie -> setHp(zombie -> hp - damagedealt)
-						if zombie -> hp > 0 then
-								zombie -> setAlive(true)
-						else
-								zombie -> setHp(0)
-								text := "You defeat the zombie and gain 120 experience and 250 gold."
-								zombie -> setAlive(false)
-								if gold <= 99499 then
-								gold := gold + 250
-								else
-								text := "You do not have room to carry any more gold!"
-								end if
-								if combatlvl < 100 then
-								combatxp := combatxp + 120
-								else
-								text := "You've mastered the art of combat and cannot gain further experience."
-								end if
-						end if
-					%if using an archery attack style
-						elsif weapon -> style = "archery" then
-						%inflicts damage to zombie accoring to player's skill level
-						if arrownum > 0 then
-								arrownum := arrownum - 1
-								damagedealt := Rand.Int (0, (archerylvl + bonus))
-								zombie -> setHp(zombie -> hp - damagedealt)
-								if zombie -> hp > 0 then
-								zombie -> setAlive(true)
-								else
-								zombie -> setHp (0)
-								text := "You defeat the zombie and gain 120 experience and 250 gold."
-								zombie -> setAlive(false)
-								if gold <= 99499 then
-										gold := gold + 250
-								else
-										text := "You do not have room to carry any more gold!"
-								end if
-								if archerylvl < 100 then
-										archeryxp := archeryxp + 120
-								else
-										text := "You've mastered the art of archery and cannot gain further experience."
-								end if
-								end if
-						else
-								text := "You have run out of arrows!"
-						end if
-						end if
-						if weapon -> style = "archery" then
-							if arrownum > 0 then
-								fork playHitSound
-							end if
-						else
-							fork playHitSound
-						end if
-				end if
-				end if
-		else
-				attacking := false
-		end if
-		else
-		attacking := false
-		end if
+      if x > 630 then
+        x := 630
+      end if
+      if x < 30 then
+        x := 30
+      end if
+      if y < 180 then
+        y := 180
+      end if
+      if y > 570 then
+        y := 570
+      end if
+      if x > 510 and x < 560 and y > 190 and y < 230 and ~ rope then
+        rope := true
+        text := "You find a rope and catch it on a rock on the surface...it seems secure."
+      end if
+      attack_enemy(zombie, go_to)
     elsif scene = "dark forest" then
 		if x < 735 and y > 155 and y < 281 then         %north trees from the south
 			y := 155
@@ -3026,107 +2739,10 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			end if
 		end if
     elsif scene = "east of 'west river'" then
-		if y < 30 then         %bottom of screen
-			y := 30
-		end if  
-		if goblin -> alive then
-		if xm > goblin -> xPos - 1 and xm < goblin -> xPos + 21 and ym > goblin -> yPos - 1 and ym < goblin -> yPos + 30 then
-			if right = 100 then
-				text := goblin -> description
-			elsif left = 1 then
-				destination := true
-				follow := goblin
-			end if
-		end if
-		if ((weapon -> style = "combat")
-				and (abs ((goblin -> xPos + 10) - (x + 15)) < 20
-				and abs ((goblin -> yPos + 15) - (y + 15)) < 20))
-				or (weapon -> style = "archery"
-			and (abs ((goblin -> xPos + 10) - (x + 15)) < 100
-				and abs ((goblin -> yPos + 15) - (y + 15)) < 200)) then
-				attacking := true
-				if xdest = goblin -> xPos and ydest = goblin -> yPos then
-				destination := false
-				end if
-				text := "You are attacking a goblin!  Arrows left: " + intstr (arrownum) + "  Goblin: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
-				if hpcounter = 20 or hpcounter = 40 then
-				if hitpoints > 0 then
-						if abs ((goblin -> xPos + 10) - (x + 15)) < 20 and abs ((goblin -> yPos + 15) - (y + 15)) < 20 then
-						damagetaken := Rand.Int (goblin -> dmgMin, goblin -> dmgMax)
-						if defence < damagetaken then
-								hitpoints := hitpoints - (damagetaken - defence)
-						end if
-						end if
-				else
-						reset(go_to)
-						return
-				end if
-				if goblin -> hp > 0 then
-						%if using a combat attack style
-						if weapon -> style = "combat" then
-						%inflicts damage to goblin accoring to player's skill level
-						damagedealt := Rand.Int (0, (combatlvl + bonus))
-						goblin -> setHp(goblin -> hp - damagedealt)
-						if goblin -> hp > 0 then
-								goblin -> setAlive(true)
-						else
-								goblin -> setHp(0)
-								text := "You defeat the goblin and gain 10 experience and 10 gold."
-								goblin -> setAlive(false)
-								if gold <= 99989 then
-								gold := gold + 10
-								else
-								text := "You do not have room to carry any more gold!"
-								end if
-								if combatlvl < 100 then
-								combatxp := combatxp + 10
-								else
-								text := "You've mastered the art of combat and cannot gain further experience."
-								end if
-						end if
-					%if using an archery attack style
-						elsif weapon -> style = "archery" then
-						%inflicts damage to goblin accoring to player's skill level
-						if arrownum > 0 then
-								arrownum := arrownum - 1
-								damagedealt := Rand.Int (0, (archerylvl + bonus))
-								goblin -> setHp(goblin -> hp - damagedealt)
-								if goblin -> hp > 0 then
-								goblin -> setAlive(true)
-								else
-								goblin -> setHp(0)
-								text := "You defeat the goblin and gain 10 experience and 10 gold."
-								goblin -> setAlive(false)
-								if gold <= 99989 then
-										gold := gold + 10
-								else
-										text := "You do not have room to carry any more gold!"
-								end if
-								if archerylvl < 100 then
-										archeryxp := archeryxp + 10
-								else
-										text := "You've mastered the art of archery and cannot gain further experience."
-								end if
-								end if
-						else
-								text := "You have run out of arrows!"
-						end if
-						end if
-						if weapon -> style = "archery" then
-							if arrownum > 0 then
-								fork playHitSound
-							end if
-						else
-							fork playHitSound
-						end if
-				end if
-				end if
-		else
-				attacking := false
-		end if
-		else
-		attacking := false
-		end if
+      if y < 30 then         %bottom of screen
+        y := 30
+      end if  
+		  attack_enemy(goblin, go_to)
     elsif scene = "west river-north corner" then
 		%southeast side
 		if x > 460 and x < 490 and y < 280 then         %moving west to water
