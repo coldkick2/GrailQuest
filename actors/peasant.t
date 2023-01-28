@@ -33,4 +33,7 @@ class Peasant
     proc setInCottage(b : boolean)
         inCottage := b
     end setInCottage
+
+    body procedure detectCollision
+    end detectCollision
 end Peasant

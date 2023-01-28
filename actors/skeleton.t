@@ -27,4 +27,10 @@ class Skeleton
     dmgMin := 0
     dmgMax := 3
     totalLvl := round ((combatLvl + archeryLvl) / 2)
+
+    body procedure detectCollision
+        if xPos > 200 then
+            setXPos(200)
+        end if
+    end detectCollision
 end Skeleton

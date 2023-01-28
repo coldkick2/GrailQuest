@@ -686,7 +686,7 @@ var armour : string := "" %armour worn by player
 var chatchar : string (1) := "" %entered chat character
 var chattext : string := "" %chat entry text (combination of entered chat characters)
 var ingamemenubutton : string := "" %in game menu button that is highlighted
-var charlastdirection : string := "down" %last direction faced by character
+var charlastdirection : Direction := Direction.DOWN %last direction faced by character
 var sfxtoggle : string := "on" %sound effects on/off
 var musictoggle : string := "on" %music on/off
 var autosavetoggle : string := "off" %autosave on/off
@@ -1894,21 +1894,32 @@ proc load
 	restoreInv()
 end load
 
-proc picture     %selects appropriate picture number
-    if up then         %(true)advance picture number
-		picnum := picnum + 1
-    else         %(false)decrease picture number
-		picnum := picnum - 1
+proc drawHero
+  if destination
+    or move (KEY_LEFT_ARROW)
+    or move (KEY_RIGHT_ARROW)
+    or move (KEY_UP_ARROW)
+    or move (KEY_DOWN_ARROW) then
+    if picnum + 1 > 3 then
+      picnum := 1
+    else
+      picnum := picnum + 1
     end if
-    if picnum = 1 then         %set 'up' to true if 'picnum' is 1
-		up := true
-    elsif picnum = 3 then         %set 'up' to false if 'picnum' is 3
-		up := false
-    end if
-end picture
+  else
+    picnum := 1
+  end if
+
+  case charlastdirection of
+    label Direction.LEFT: Pic.Draw (picl (picnum), x, y, picMerge)
+    label Direction.RIGHT: Pic.Draw (picr (picnum), x, y, picMerge)
+    label Direction.UP: Pic.Draw (picu (picnum), x, y, picMerge) 
+    label Direction.DOWN: Pic.Draw (picd (picnum), x, y, picMerge)
+  end case
+  Time.DelaySinceLast (30)
+end drawHero
 
 proc movement     %manipulates character movement input
-    if ~ victory then
+  if ~ victory then
 		if xm > x - 1 and xm < x + 21 and ym > y - 1 and ym < y + 30 then
 			Font.Draw ("You [Level " + intstr (totalLvl) + "]", x, y + 30, font2, white)
 		end if
@@ -1926,162 +1937,78 @@ proc movement     %manipulates character movement input
 			end if
 		end if
 		if destination then
-			if follow = skeleton then
-				xdest := skeleton -> xPos
-				ydest := skeleton -> yPos
-			elsif follow = goblin then
-				xdest := goblin -> xPos
-				ydest := goblin -> yPos
-			elsif follow = ghost then
-				xdest := ghost -> xPos
-				ydest := ghost -> yPos
-			elsif follow = zombie then
-				xdest := zombie -> xPos
-				ydest := zombie -> yPos
-			elsif follow = peasant then
-				xdest := peasant -> xPos
-				ydest := peasant -> yPos
-			end if
+      if follow ~= nil then
+        xdest := follow -> xPos
+        ydest := follow -> yPos
+      end if
 			drawbox (xdest - 1, ydest - 8, xdest + 15, ydest + 8, brightred)
 			if x + 8 > xdest + 3 and y > ydest + 3 then             %left/down
 				x := x - 3
 				y := y - 3
-				picture
-				Pic.Draw (picl (picnum), x, y, picMerge)
-				charlastdirection := "left"
+				charlastdirection := Direction.LEFT
 			elsif x + 8 > xdest + 3 and y < ydest - 3 then             %left/up
 				x := x - 3
 				y := y + 3
-				picture
-				Pic.Draw (picl (picnum), x, y, picMerge)
-				charlastdirection := "left"
+				charlastdirection := Direction.LEFT
 			elsif x + 8 < xdest - 3 and y > ydest + 3 then             %right/down
 				x := x + 3
 				y := y - 3
-				picture
-				Pic.Draw (picr (picnum), x, y, picMerge)
-				charlastdirection := "right"
+				charlastdirection := Direction.RIGHT
 			elsif x + 8 < xdest - 3 and y < ydest - 3 then             %right/up
 				x := x + 3
 				y := y + 3
-				picture
-				Pic.Draw (picr (picnum), x, y, picMerge)
-				charlastdirection := "right"
+				charlastdirection := Direction.RIGHT
 			elsif x + 8 > xdest + 4 then             %left
 				x := x - 4
-				picture
-				Pic.Draw (picl (picnum), x, y, picMerge)
-				charlastdirection := "left"
+				charlastdirection := Direction.LEFT
 			elsif x + 8 < xdest - 4 then             %right
 				x := x + 4
-				picture
-				Pic.Draw (picr (picnum), x, y, picMerge)
-				charlastdirection := "right"
+				charlastdirection := Direction.RIGHT
 			elsif y < ydest - 4 then             %up
 				y := y + 4
-				picture
-				Pic.Draw (picu (picnum), x, y, picMerge)
-				charlastdirection := "up"
+				charlastdirection := Direction.UP
 			elsif y > ydest + 4 then             %down
 				y := y - 4
-				picture
-				Pic.Draw (picd (picnum), x, y, picMerge)
-				charlastdirection := "down"
+				charlastdirection := Direction.DOWN
 			else
-				if charlastdirection = "left" then
-					Pic.Draw (picl (1), x, y, picMerge)             %left
-				elsif charlastdirection = "right" then
-					Pic.Draw (picr (1), x, y, picMerge)             %right
-				elsif charlastdirection = "up" then
-					Pic.Draw (picu (1), x, y, picMerge)             %up
-				elsif charlastdirection = "down" then
-					Pic.Draw (picd (1), x, y, picMerge)             %down
-				end if
 				if follow ~= peasant then
 					destination := false
 				end if
 			end if
-		end if
-		if left = 0 then
+		elsif left = 0 then
 			Input.KeyDown (move)
 			if move (KEY_LEFT_ARROW) and move (KEY_DOWN_ARROW) then
-				destination := false
 				x := x - 3                 %left
 				y := y - 3                 %down
-				picture
-				Pic.Draw (picl (picnum), x, y, picMerge)
-				charlastdirection := "left"
+				charlastdirection := Direction.LEFT
 			elsif move (KEY_RIGHT_ARROW) and move (KEY_UP_ARROW) then
-				destination := false
 				x := x + 3                 %right
 				y := y + 3                 %up
-				picture
-				Pic.Draw (picr (picnum), x, y, picMerge)
-				charlastdirection := "right"
+				charlastdirection := Direction.RIGHT
 			elsif move (KEY_LEFT_ARROW) and move (KEY_UP_ARROW) then
-				destination := false
 				x := x - 3                 %left
 				y := y + 3                 %up
-				picture
-				Pic.Draw (picl (picnum), x, y, picMerge)
-				charlastdirection := "left"
+				charlastdirection := Direction.LEFT
 			elsif move (KEY_RIGHT_ARROW) and move (KEY_DOWN_ARROW) then
-				destination := false
 				x := x + 3                 %right
 				y := y - 3                 %down
-				picture
-				Pic.Draw (picr (picnum), x, y, picMerge)
-				charlastdirection := "right"
+				charlastdirection := Direction.RIGHT
 			elsif move (KEY_LEFT_ARROW) then
-				destination := false
 				x := x - 4                 %left
-				picture
-				Pic.Draw (picl (picnum), x, y, picMerge)
-				charlastdirection := "left"
+				charlastdirection := Direction.LEFT
 			elsif move (KEY_RIGHT_ARROW) then
-				destination := false
 				x := x + 4                 %right
-				picture
-				Pic.Draw (picr (picnum), x, y, picMerge)
-				charlastdirection := "right"
+				charlastdirection := Direction.RIGHT
 			elsif move (KEY_UP_ARROW) then
-				destination := false
 				y := y + 4                 %up
-				picture
-				Pic.Draw (picu (picnum), x, y, picMerge)
-				charlastdirection := "up"
+				charlastdirection := Direction.UP
 			elsif move (KEY_DOWN_ARROW) then
-				destination := false
 				y := y - 4                 %down
-				picture
-				Pic.Draw (picd (picnum), x, y, picMerge)
-				charlastdirection := "down"
-			else
-				if ~ destination then
-					if charlastdirection = "left" then
-						Pic.Draw (picl (1), x, y, picMerge)         %left
-					elsif charlastdirection = "right" then
-						Pic.Draw (picr (1), x, y, picMerge)         %right
-					elsif charlastdirection = "up" then
-						Pic.Draw (picu (1), x, y, picMerge)         %up
-					elsif charlastdirection = "down" then
-						Pic.Draw (picd (1), x, y, picMerge)         %down
-					end if
-				end if
-			end if
-		elsif left = 1 and ~ destination then
-			if charlastdirection = "left" then
-				Pic.Draw (picl (1), x, y, picMerge)                 %left
-			elsif charlastdirection = "right" then
-				Pic.Draw (picr (1), x, y, picMerge)                 %right
-			elsif charlastdirection = "up" then
-				Pic.Draw (picu (1), x, y, picMerge)                 %up
-			elsif charlastdirection = "down" then
-				Pic.Draw (picd (1), x, y, picMerge)                 %down
-			end if
+				charlastdirection := Direction.DOWN
+      end if
 		end if
-		Time.DelaySinceLast (30)
-    end if
+    drawHero()
+  end if
 end movement
 
 proc buyItem(item: pointer to Item)
@@ -2090,7 +2017,7 @@ proc buyItem(item: pointer to Item)
 			item -> setObtained(true)
 			gold := gold - item -> cost
 			Pic.Draw (item -> invpic, 235, 635, picMerge)
-			View.Update
+			View.Update()
 			if sfx_on then
 				fork purchase
 			end if
@@ -2502,7 +2429,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 						if weapon -> style = "combat" then
 							%inflicts damage to troll accoring to player's skill level
 							damagedealt := Rand.Int (0, (combatlvl + bonus))
-              troll -> setHp(troll -> hp - damagedealt)
+	      troll -> setHp(troll -> hp - damagedealt)
 							if troll -> hp > 0 then
 								troll -> setAlive(true)
 							else
@@ -3476,9 +3403,9 @@ process regenEnemy(enemy : pointer to Enemy)
   if enemy -> alive then
     if enemy -> hp < enemy -> maxHp then
       if hpcounter = 40 then
-        if abs ((enemy -> xPos + 10) - (x + 15)) > 19 and abs ((enemy -> yPos + 15) - (y + 15)) > 19 then
-          enemy -> setHp(enemy -> hp + 1)
-        end if
+	if abs ((enemy -> xPos + 10) - (x + 15)) > 19 and abs ((enemy -> yPos + 15) - (y + 15)) > 19 then
+	  enemy -> setHp(enemy -> hp + 1)
+	end if
       end if
     end if
   else
@@ -4097,7 +4024,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
     Font.Draw ("Chat history:", 221, 588 + ychat, font4, brightred)
     if editmodeenabled then
-		chatentry (1) := "x: " + intstr (x) + "  y: " + intstr (y) + "  picnum: " + intstr (picnum) + "  last dir.: " + charlastdirection
+		chatentry (1) := "x: " + intstr (x) + "  y: " + intstr (y) + "  picnum: " + intstr (picnum) + "  last dir.: " + intstr(ord(charlastdirection))
 		chatentry (2) := "xm: " + intstr (xm) + "  ym: " + intstr (ym) + "  left btn: " + intstr (left) + "  right btn: " + intstr (right)
 		if movecharacter then
 			chatentry (3) := "goto: " + goto + "  scene: " + scene + "  movecharacter: true"
@@ -4457,61 +4384,54 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
 end drawscreen
 
+proc move_actor(actor : pointer to Enemy)
+  for : 1 .. 50
+    case actor -> dir of
+      label ord(Direction.UP): actor -> setYPos(actor -> yPos + 1)
+      label ord(Direction.DOWN): actor -> setYPos(actor -> yPos - 1)
+      label ord(Direction.LEFT): actor -> setXPos(actor -> xPos - 1)
+      label ord(Direction.RIGHT): actor -> setXPos(actor -> xPos + 1)
+    end case
+    Time.DelaySinceLast (30)
+  end for
+end move_actor
+
 process move_enemy(enemy : pointer to Enemy)
   if ~ enemy -> move then         %if enemy has not been assigned a movement
     enemy -> setMove(true)
     if enemy -> alive then
       if abs ((enemy -> xPos + enemy -> xRad) - x + 15) >= 200 or abs ((enemy -> yPos + enemy -> yRad) - y + 15) >= 200 then
-	enemy -> setDir(Rand.Int (0, 3))
-	if enemy -> dir = ord(Direction.UP) then
-	  if enemy -> yPos < 550 then
-	    for : 1 .. 50
-	      enemy -> setYPos(enemy -> yPos + 1)
-	      Time.DelaySinceLast (30)
-	    end for
-	  end if
-	elsif enemy -> dir = ord(Direction.DOWN) then
-	  if enemy -> yPos > 50 then
-	    for : 1 .. 50
-	      enemy -> setYPos(enemy -> yPos - 1)
-	      Time.DelaySinceLast (30)
-	    end for
-	  end if
-	elsif enemy -> dir = ord(Direction.LEFT) then
-	  if enemy -> xPos > 50 then
-	    for : 1 .. 50
-	      enemy -> setXPos(enemy -> xPos - 1)
-	      Time.DelaySinceLast (30)
-	    end for
-	  end if
-	elsif enemy -> dir = ord(Direction.RIGHT) then
-	  if enemy -> xPos < 750 then
-	    for : 1 .. 50
-	      enemy -> setXPos(enemy -> xPos + 1)
-	      Time.DelaySinceLast (30)
-	    end for
-	  end if
-	else
-	  Time.DelaySinceLast (1500)
-	end if
+	      enemy -> setDir(Rand.Int (0, 3))
+	      if enemy -> dir = ord(Direction.UP) and enemy -> yPos < 550 then
+	        move_actor(enemy)
+	      elsif enemy -> dir = ord(Direction.DOWN) and enemy -> yPos > 50 then
+	        move_actor(enemy)
+	      elsif enemy -> dir = ord(Direction.LEFT) and enemy -> xPos > 50 then
+	        move_actor(enemy)
+	      elsif enemy -> dir = ord(Direction.RIGHT) and enemy -> xPos < 750 then
+	        move_actor(enemy)
+	      else
+	        Time.DelaySinceLast (1500)
+	      end if
       else
-	if enemy -> yPos + enemy -> yRad < (y + 15) - 10 then
-	  enemy -> setDir(ord(Direction.UP))
-	  enemy -> setYPos(enemy -> yPos + 1)
-	end if
-	if enemy -> yPos + enemy -> yRad > (y + 15) + 10 then
-	  enemy -> setDir(ord(Direction.DOWN))
-	  enemy -> setYPos(enemy -> yPos - 1)
-	end if
-	if goblin -> xPos + enemy -> xRad < (x + 15) - 10 then
-	  enemy -> setDir(ord(Direction.RIGHT))
-	  enemy -> setXPos(enemy -> xPos + 1)
-	end if
-	if enemy -> xPos + enemy -> xRad > (x + 15) + 10 then
-	  enemy -> setDir(ord(Direction.LEFT))
-	  enemy -> setXPos(enemy -> xPos - 1)
-	end if
+        if enemy -> yPos + enemy -> yRad < (y + 15) - 10 then
+          enemy -> setDir(ord(Direction.UP))
+          enemy -> setYPos(enemy -> yPos + 1)
+        end if
+        if enemy -> yPos + enemy -> yRad > (y + 15) + 10 then
+          enemy -> setDir(ord(Direction.DOWN))
+          enemy -> setYPos(enemy -> yPos - 1)
+        end if
+        if goblin -> xPos + enemy -> xRad < (x + 15) - 10 then
+          enemy -> setDir(ord(Direction.RIGHT))
+          enemy -> setXPos(enemy -> xPos + 1)
+        end if
+        if enemy -> xPos + enemy -> xRad > (x + 15) + 10 then
+          enemy -> setDir(ord(Direction.LEFT))
+          enemy -> setXPos(enemy -> xPos - 1)
+        end if
       end if
+      enemy -> detectCollision()
     end if
     enemy -> setMove(false)
   end if
@@ -4546,402 +4466,66 @@ process talk_enemy(enemy : pointer to Enemy)
   end if
 end talk_enemy
 
-process goblin_proc
-  if ~ goblin -> move then         %if goblin has not been assigned a movement
-		goblin -> setMove(true)
-		if goblin -> alive then
-		  if abs ((goblin -> xPos + goblin -> xRad) - x + 15) >= 200 or abs ((goblin -> yPos + goblin -> yRad) - y + 15) >= 200 then
-				goblin -> setDir(Rand.Int (0, 3))
-				if goblin -> dir = ord(Direction.UP) then
-				  if goblin -> yPos < 550 then
-						for : 1 .. 50
-							goblin -> setYPos(goblin -> yPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-				  end if
-				elsif goblin -> dir = ord(Direction.DOWN) then
-					if goblin -> yPos > 50 then
-						for : 1 .. 50
-							goblin -> setYPos(goblin -> yPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-					end if
-				elsif goblin -> dir = ord(Direction.LEFT) then
-				  if goblin -> xPos > 50 then
-						for : 1 .. 50
-							goblin -> setXPos(goblin -> xPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-				  end if
-				elsif goblin -> dir = ord(Direction.RIGHT) then
-				  if goblin -> xPos < 750 then
-						for : 1 .. 50
-							goblin -> setXPos(goblin -> xPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-				  end if
-				else
-				  Time.DelaySinceLast (1500)
-				end if
-		  else
-				if goblin -> yPos + goblin -> yRad < (y + 15) - 10 then
-					goblin -> setDir(ord(Direction.UP))
-					goblin -> setYPos(goblin -> yPos + 1)
-				end if
-				if goblin -> yPos + goblin -> yRad > (y + 15) + 10 then
-					goblin -> setDir(ord(Direction.DOWN))
-					goblin -> setYPos(goblin -> yPos - 1)
-				end if
-				if goblin -> xPos + goblin -> xRad < (x + 15) - 10 then
-					goblin -> setDir(ord(Direction.RIGHT))
-					goblin -> setXPos(goblin -> xPos + 1)
-				end if
-				if goblin -> xPos + goblin -> xRad > (x + 15) + 10 then
-					goblin -> setDir(ord(Direction.LEFT))
-					goblin -> setXPos(goblin -> xPos - 1)
-				end if
-		  end if
-		end if
-		goblin -> setMove(false)
-  end if
-end goblin_proc
-
-process skeleton_proc
-    if ~ skeleton -> move then         %if skeleton has not been assigned a movement
-		skeleton -> setMove(true)
-		if skeleton -> alive then
-		if abs ((skeleton -> xPos + skeleton -> xRad) - x + 15) >= 300 or abs ((skeleton -> yPos + skeleton -> yRad) - y + 15) >= 300 then
-				skeleton -> setDir(Rand.Int (0, 3))
-				if skeleton -> dir = ord(Direction.UP) then
-				if skeleton -> yPos < 550 then
-						for : 1 .. 50
-							skeleton -> setYPos(skeleton -> yPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				elsif skeleton -> dir = ord(Direction.DOWN) then
-				if skeleton -> yPos > 50 then
-						for : 1 .. 50
-							skeleton -> setYPos(skeleton -> yPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				elsif skeleton -> dir = ord(Direction.LEFT) then
-				if skeleton -> xPos > 0 then
-						for : 1 .. 50
-							skeleton -> setXPos(skeleton -> xPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				elsif skeleton -> dir = ord(Direction.RIGHT) then
-				if skeleton -> xPos < 190 then
-						for : 1 .. 50
-							skeleton -> setXPos(skeleton -> xPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				else
-				Time.DelaySinceLast (1500)
-				end if
-		else
-				if skeleton -> yPos + skeleton -> yRad < (y + 15) - 10 then
-					skeleton -> setDir(ord(Direction.UP))
-					skeleton -> setYPos(skeleton -> yPos + 1)
-				end if
-				if skeleton -> yPos + skeleton -> yRad > (y + 15) + 10 then
-					skeleton -> setDir(ord(Direction.DOWN))
-					skeleton -> setYPos(skeleton -> yPos - 1)
-				end if
-				if skeleton -> xPos + skeleton -> xRad < (x + 15) - 10 then
-					skeleton -> setDir(ord(Direction.RIGHT))
-					if skeleton -> xPos < 200 then
-						skeleton -> setXPos(skeleton -> xPos + 1)
-					end if
-				end if
-				if skeleton -> xPos + skeleton -> xRad > (x + 15) + 10 then
-					skeleton -> setDir(ord(Direction.LEFT))
-					skeleton -> setXPos(skeleton -> xPos - 1)
-				end if
-		end if
-		end if
-		skeleton -> setMove(false)
-    end if
-end skeleton_proc
-
-process ghost_proc
-    if ~ ghost -> move then         %if ghost has not been assigned a movement
-		ghost -> setMove(true)
-		if ghost -> alive then
-		if abs ((ghost -> xPos + 15) - x + 15) >= 500 or abs ((ghost -> yPos + 20) - y + 15) >= 500 then
-				ghost -> setDir(Rand.Int(0, 3))
-				if ghost -> dir = ord(Direction.UP) then
-				if ghost -> yPos < 550 then
-						for : 1 .. 50
-							ghost -> setYPos(ghost -> yPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				elsif ghost -> dir = ord(Direction.DOWN) then
-				if ghost -> yPos > 0 then
-						for : 1 .. 50
-							ghost -> setYPos(ghost -> yPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				elsif ghost -> dir = ord(Direction.LEFT) then
-				if ghost -> xPos > 0 then
-						for : 1 .. 50
-							ghost -> setXPos(ghost -> xPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				elsif ghost -> dir = ord(Direction.RIGHT) then
-				if ghost -> xPos < 210 then
-						for : 1 .. 50
-							ghost -> setXPos(ghost -> xPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				else
-				Time.DelaySinceLast (1500)
-				end if
-		else
-				if ghost -> yPos + 20 < (y + 15) - 10 then
-					ghost -> setDir(ord(Direction.UP))
-					ghost -> setYPos(ghost -> yPos + 1)
-				end if
-				if ghost -> yPos + 20 > (y + 15) + 10 then
-					ghost -> setDir(ord(Direction.DOWN))
-					ghost -> setYPos(ghost -> yPos - 1)
-				end if
-				if ghost -> xPos + 15 < (x + 15) - 10 then
-					ghost -> setDir(ord(Direction.RIGHT))
-					ghost -> setXPos(ghost -> xPos + 1)
-				end if
-				if ghost -> xPos + 15 > (x + 15) + 10 then
-					ghost -> setDir(ord(Direction.LEFT))
-					ghost -> setXPos(ghost -> xPos - 1)
-				end if
-		end if
-		end if
-		ghost -> setMove(false)
-    end if
-end ghost_proc
-
-process zombie_proc
-    if ~ zombie -> move then         %if zombie has not been assigned a movement
-		zombie -> setMove(true)
-		if zombie -> alive then
-		if abs ((zombie -> xPos + 15) - x + 15) >= 500 or abs ((zombie -> yPos + 20) - y + 15) >= 500 then
-				zombie -> setDir(Rand.Int (0, 3))
-				if zombie -> dir = ord(Direction.UP) then
-				if zombie -> yPos < 550 then
-						for : 1 .. 50
-							zombie -> setYPos(zombie -> yPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				elsif zombie -> dir = ord(Direction.DOWN) then
-					if zombie -> yPos > 0 then
-						for : 1 .. 50
-							zombie -> setYPos(zombie -> yPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-					end if
-				elsif zombie -> dir = ord(Direction.LEFT) then
-					if zombie -> xPos > 0 then
-						for : 1 .. 50
-							zombie -> setXPos(zombie -> xPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-					end if
-				elsif zombie -> dir = ord(Direction.RIGHT) then
-					if zombie -> xPos < 210 then
-						for : 1 .. 50
-							zombie -> setXPos(zombie -> xPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-					end if
-				else
-					Time.DelaySinceLast (1500)
-				end if
-		else
-				if zombie -> yPos + 20 < (y + 15) - 10 then
-					zombie -> setDir(ord(Direction.UP))
-					zombie -> setYPos(zombie -> yPos + 1)
-				end if
-				if zombie -> yPos + 20 > (y + 15) + 10 then
-					zombie -> setDir(ord(Direction.DOWN))
-					zombie -> setYPos(zombie -> yPos - 1)
-				end if
-				if zombie -> xPos + 15 < (x + 15) - 10 then
-					zombie -> setDir(ord(Direction.RIGHT))
-					zombie -> setXPos(zombie -> xPos + 1)
-				end if
-				if zombie -> xPos + 15 > (x + 15) + 10 then
-					zombie -> setDir(ord(Direction.LEFT))
-					zombie -> setXPos(zombie -> xPos - 1)
-				end if
-		end if
-			if zombie -> xPos > 640 then
-				zombie -> setXPos(640)
-			elsif zombie -> xPos < 30 then
-				zombie -> setXPos(30)
-			end if
-			if zombie -> yPos < 180 then
-				zombie -> setYPos(180)
-			elsif zombie -> yPos > 570 then
-				zombie -> setYPos(570)
-			end if
-		end if
-		zombie -> setMove(false)
-    end if
-end zombie_proc
-
-process troll_proc
-    if ~ troll -> move then         %if troll has not been assigned a movement
-		troll -> setMove(true)
-		if troll -> alive then
-		if abs ((troll -> xPos + 15) - x + 15) >= 500 or abs ((troll -> yPos + 20) - y + 15) >= 500 then
-				troll -> setDir(Rand.Int (0, 3))
-				if troll -> dir = ord(Direction.UP) then
-				if troll -> yPos < 550 then
-						for : 1 .. 50
-              troll -> setYPos(troll -> yPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-				end if
-				elsif troll -> dir = ord(Direction.DOWN) then
-					if troll -> yPos > 0 then
-						for : 1 .. 50
-							troll -> setYPos(troll -> yPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-					end if
-				elsif troll -> dir = ord(Direction.LEFT) then
-					if troll -> xPos > 0 then
-						for : 1 .. 50
-							troll -> setXPos(troll -> xPos - 1)
-							Time.DelaySinceLast (30)
-						end for
-					end if
-				elsif troll -> dir = ord(Direction.RIGHT) then
-					if troll -> xPos < 210 then
-						for : 1 .. 50
-							troll -> setXPos(troll -> xPos + 1)
-							Time.DelaySinceLast (30)
-						end for
-					end if
-				else
-					Time.DelaySinceLast (1500)
-				end if
-		else
-				if troll -> yPos + 20 < (y + 15) - 10 then
-					troll -> setDir(ord(Direction.UP))
-          troll -> setYPos(troll -> yPos + 1)
-				end if
-				if troll -> yPos + 20 > (y + 15) + 10 then
-					troll -> setDir(ord(Direction.DOWN))
-          troll -> setYPos(troll -> yPos - 1)
-				end if
-				if troll -> xPos + 15 < (x + 15) - 10 then
-					troll -> setDir(ord(Direction.RIGHT))
-          troll -> setXPos(troll -> xPos + 1)
-				end if
-				if troll -> xPos + 15 > (x + 15) + 10 then
-					troll -> setDir(ord(Direction.LEFT))
-          troll -> setXPos(troll -> xPos - 1)
-				end if
-		end if
-			if troll -> xPos > 650 then
-        troll -> setXPos(650)
-			elsif troll -> xPos < 30 then
-				troll -> setXPos(30)
-			end if
-			if troll -> yPos < 30 then
-				troll -> setYPos(30)
-			elsif troll -> yPos > 570 then
-				troll -> setYPos(570)
-			end if
-		if troll -> yPos > 280 and troll -> yPos < 390 then
-				if troll -> xPos > 315 and troll -> xPos < 320 then     %if approaching fire from left
-          troll -> setXPos(315)
-				elsif troll -> xPos < 455 and troll -> xPos > 450 then     %if approaching fire from right
-				  troll -> setXPos(455)
-				end if
-		end if
-		if troll -> xPos > 315 and troll -> xPos < 455 then
-				if troll -> yPos > 280 and troll -> yPos < 285 then     %if approaching fire from bottom
-				  troll -> setYPos(280)
-				elsif troll -> yPos < 390 and troll -> yPos > 385 then     %if approaching fire from top
-				  troll -> setYPos(390)
-				end if
-		end if
-		end if
-		troll -> setMove(false)
-    end if
-end troll_proc
-
 process peasant_proc
     if ~ peasant -> move then         %if peasant has not been assigned a movement
       peasant -> setMove(true)
       peasant -> setDir(Rand.Int(0, 3))
       for : 1 .. 30
-        case peasant -> dir of 
-          label ord(Direction.UP): peasant -> setXPos(peasant -> xPos + 1)
-          label ord(Direction.DOWN): peasant -> setXPos(peasant -> xPos - 1)
-          label ord(Direction.LEFT): peasant -> setYPos(peasant -> yPos - 1)
-          label ord(Direction.RIGHT): peasant -> setYPos(peasant -> yPos + 1)
-        end case
-        if peasant -> yPos > 250 and peasant -> yPos < 280 then
-          peasant -> setYPos(250)
-        elsif peasant -> yPos > 490 and peasant -> yPos < 520 then
-          peasant -> setYPos(520)
-        elsif peasant -> yPos < 30 and peasant -> xPos > 420 then
-          peasant -> setYPos(30)
-        elsif peasant -> yPos > 570 then
-          peasant -> setYPos(570)
-        end if
-        if peasant -> xPos > 765 then
-          peasant -> setXPos(765)
-        end if
-        if peasant -> xPos > 360 and peasant -> xPos < 400 and (peasant -> yPos < 75 or (peasant -> yPos > 120 and peasant -> yPos < 490)) then
-          peasant -> setXPos(360)
-        elsif peasant -> xPos > 399 and peasant -> xPos < 439 and (peasant -> yPos < 75 or (peasant -> yPos > 120 and peasant -> yPos < 490)) then
-          peasant -> setXPos(439)
-        end if
-        if (peasant -> yPos > 56 and peasant -> yPos < 76 and peasant -> xPos > 495 and peasant -> xPos < 515) or (peasant -> yPos > 111 and peasant -> yPos < 180 and peasant -> xPos > 495 and peasant -> xPos < 515) then
-          peasant -> setXPos(495)
-        end if
-        if peasant -> xPos > 495 then
-          if peasant -> yPos > 53 and peasant -> yPos < 58 then                     %if south of cottage
-            peasant -> setYPos(53)
-          elsif peasant -> yPos > 175 and peasant -> yPos < 180 then                     %if north of cottage
-            peasant -> setYPos(180)
-          end if
-        end if
-        if peasant -> xPos > 495 then
-          if peasant -> yPos > 58 and peasant -> yPos < 67 then                     %if inside at south wall
-            peasant -> setYPos(67)
-          end if
-          if peasant -> yPos > 167 and peasant -> yPos < 175 then                     %if inside at north wall
-            peasant -> setYPos(167)
-          end if
-        end if
-        if (peasant -> xPos > 515 and peasant -> xPos < 533 and peasant -> yPos > 56 and peasant -> yPos < 76) or (peasant -> xPos > 515 and peasant -> xPos < 533 and peasant -> yPos > 111 and peasant -> yPos < 180) then
-          peasant -> setXPos(533)
-        end if
-        if peasant -> dir = ord(Direction.UP) then
-          if peasant -> xPos < 30 then
-            peasant -> setXPos(30)
-          elsif peasant -> xPos > 770 then
-            peasant -> setXPos(770)
-          end if
-          if peasant -> yPos < 30 then
-            peasant -> setYPos(30)
-          end if
-        end if
-        Time.DelaySinceLast (10)
+	case peasant -> dir of 
+	  label ord(Direction.UP): peasant -> setXPos(peasant -> xPos + 1)
+	  label ord(Direction.DOWN): peasant -> setXPos(peasant -> xPos - 1)
+	  label ord(Direction.LEFT): peasant -> setYPos(peasant -> yPos - 1)
+	  label ord(Direction.RIGHT): peasant -> setYPos(peasant -> yPos + 1)
+	end case
+	if peasant -> yPos > 250 and peasant -> yPos < 280 then
+	  peasant -> setYPos(250)
+	elsif peasant -> yPos > 490 and peasant -> yPos < 520 then
+	  peasant -> setYPos(520)
+	elsif peasant -> yPos < 30 and peasant -> xPos > 420 then
+	  peasant -> setYPos(30)
+	elsif peasant -> yPos > 570 then
+	  peasant -> setYPos(570)
+	end if
+	if peasant -> xPos > 765 then
+	  peasant -> setXPos(765)
+	end if
+	if peasant -> xPos > 360 and peasant -> xPos < 400 and (peasant -> yPos < 75 or (peasant -> yPos > 120 and peasant -> yPos < 490)) then
+	  peasant -> setXPos(360)
+	elsif peasant -> xPos > 399 and peasant -> xPos < 439 and (peasant -> yPos < 75 or (peasant -> yPos > 120 and peasant -> yPos < 490)) then
+	  peasant -> setXPos(439)
+	end if
+	if (peasant -> yPos > 56 and peasant -> yPos < 76 and peasant -> xPos > 495 and peasant -> xPos < 515) or (peasant -> yPos > 111 and peasant -> yPos < 180 and peasant -> xPos > 495 and peasant -> xPos < 515) then
+	  peasant -> setXPos(495)
+	end if
+	if peasant -> xPos > 495 then
+	  if peasant -> yPos > 53 and peasant -> yPos < 58 then                     %if south of cottage
+	    peasant -> setYPos(53)
+	  elsif peasant -> yPos > 175 and peasant -> yPos < 180 then                     %if north of cottage
+	    peasant -> setYPos(180)
+	  end if
+	end if
+	if peasant -> xPos > 495 then
+	  if peasant -> yPos > 58 and peasant -> yPos < 67 then                     %if inside at south wall
+	    peasant -> setYPos(67)
+	  end if
+	  if peasant -> yPos > 167 and peasant -> yPos < 175 then                     %if inside at north wall
+	    peasant -> setYPos(167)
+	  end if
+	end if
+	if (peasant -> xPos > 515 and peasant -> xPos < 533 and peasant -> yPos > 56 and peasant -> yPos < 76) or (peasant -> xPos > 515 and peasant -> xPos < 533 and peasant -> yPos > 111 and peasant -> yPos < 180) then
+	  peasant -> setXPos(533)
+	end if
+	if peasant -> dir = ord(Direction.UP) then
+	  if peasant -> xPos < 30 then
+	    peasant -> setXPos(30)
+	  elsif peasant -> xPos > 770 then
+	    peasant -> setXPos(770)
+	  end if
+	  if peasant -> yPos < 30 then
+	    peasant -> setYPos(30)
+	  end if
+	end if
+	Time.DelaySinceLast (10)
       end for
       peasant -> setMove(false)
     end if
@@ -5431,7 +5015,7 @@ proc troll_dungeon (var go_to : string)         %when in the castle
 		if exitgame then
 			return
 		end if
-		fork troll_proc
+		fork move_enemy(troll)
     fork talk_enemy(troll)
 		View.Update
     end loop
@@ -5661,7 +5245,7 @@ proc west_river (var go_to : string)         %when at west river
 		if exitgame then
 			return
 		end if
-		fork skeleton_proc
+		fork move_enemy(skeleton)
     fork talk_enemy(skeleton)
 		View.Update
     end loop
@@ -5718,7 +5302,7 @@ proc cemetery (var go_to : string)         %when at west river
 		if exitgame then
 			return
 		end if
-		fork ghost_proc
+		fork move_enemy(ghost)
     fork talk_enemy(ghost)
 		View.Update
     end loop
@@ -5841,7 +5425,7 @@ proc crypt (var go_to : string)         %when at west river
 		if exitgame then
 			return
 		end if
-		fork zombie_proc
+		fork move_enemy(zombie)
     fork talk_enemy(zombie)
 		View.Update
     end loop
@@ -5889,7 +5473,7 @@ proc west_river_northcorner (var go_to : string)         %when at west river
 		if exitgame then
 			return
 		end if
-		fork skeleton_proc
+		fork move_enemy(skeleton)
     fork talk_enemy(skeleton)
 		View.Update
     end loop
@@ -6037,7 +5621,7 @@ proc east_of_westriver (var go_to : string)         %when east of 'west river'
 		if exitgame then
 			return
 		end if
-		fork goblin_proc
+		fork move_enemy(goblin)
     fork talk_enemy(goblin)
 		View.Update
     end loop

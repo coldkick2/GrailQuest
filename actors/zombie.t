@@ -27,4 +27,17 @@ class Zombie
     dmgMin := 0
     dmgMax := 10
     totalLvl := round ((combatLvl + archeryLvl) / 2)
+
+    body procedure detectCollision
+        if xPos > 640 then
+            setXPos(640)
+        elsif xPos < 30 then
+            setXPos(30)
+        end if
+        if yPos < 180 then
+            setYPos(180)
+        elsif yPos > 570 then
+            setYPos(570)
+        end if
+    end detectCollision
 end Zombie

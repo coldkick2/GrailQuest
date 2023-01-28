@@ -27,4 +27,7 @@ class Goblin
     dmgMin := 0
     dmgMax := 1
     totalLvl := round ((combatLvl + archeryLvl) / 2)
+
+    body procedure detectCollision
+    end detectCollision
 end Goblin

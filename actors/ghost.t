@@ -27,4 +27,7 @@ class Ghost
     dmgMin := 0
     dmgMax := 7
     totalLvl := round ((combatLvl + archeryLvl) / 2)
+
+    body procedure detectCollision
+    end detectCollision
 end Ghost
