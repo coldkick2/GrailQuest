@@ -681,7 +681,7 @@ var goto : string := "" %scene redirection
 var text : string := "Your quest begins...you seek the Holy Grail." %top bar text
 var mapscale : string := "50" %map scale
 var menubutton : string := "" %highlighted main menu button
-var follow : pointer to Enemy %NPC the character is following
+var follow : pointer to Actor %NPC the character is following
 var armour : string := "" %armour worn by player
 var chatchar : string (1) := "" %entered chat character
 var chattext : string := "" %chat entry text (combination of entered chat characters)
@@ -2033,31 +2033,31 @@ proc equipItem(item: pointer to Item)
 	end if
 end equipItem
 
-proc attack_enemy(enemy : pointer to Enemy, var go_to : string)
-  if enemy -> alive then
-    if xm > enemy -> xPos - 1 and xm < enemy -> xPos + 21 and ym > enemy -> yPos - 1 and ym < enemy -> yPos + 30 then
+proc attack_enemy(actor : pointer to Actor, var go_to : string)
+  if actor -> alive then
+    if xm > actor -> xPos - 1 and xm < actor -> xPos + 21 and ym > actor -> yPos - 1 and ym < actor -> yPos + 30 then
       if right = 100 then
-        text := enemy -> description
+        text := actor -> description
       elsif left = 1 then
         destination := true
-        follow := enemy
+        follow := actor
       end if
     end if
     if ((weapon -> style = "combat")
-      and (abs ((enemy -> xPos + enemy -> xRad) - (x + 15)) < 20
-      and abs ((enemy -> yPos + enemy -> yRad) - (y + 15)) < 20))
+      and (abs ((actor -> xPos + actor -> xRad) - (x + 15)) < 20
+      and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 20))
       or (weapon -> style = "archery"
-      and (abs ((enemy -> xPos + enemy -> xRad) - (x + 15)) < 100
-      and abs ((enemy -> yPos + enemy -> yRad) - (y + 15)) < 200)) then
+      and (abs ((actor -> xPos + actor -> xRad) - (x + 15)) < 100
+      and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 200)) then
       attacking := true
-      if xdest = enemy -> xPos and ydest = enemy -> yPos then
+      if xdest = actor -> xPos and ydest = actor -> yPos then
         destination := false
       end if
-      text := "You are attacking a " + enemy -> name + "!  Arrows left: " + intstr (arrownum) + "  Goblin: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
+      text := "You are attacking a " + actor -> name + "!  Arrows left: " + intstr (arrownum) + "  Goblin: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
       if hpcounter = 20 or hpcounter = 40 then
         if hitpoints > 0 then
-          if abs ((enemy -> xPos + enemy -> xRad) - (x + 15)) < 20 and abs ((enemy -> yPos + enemy -> yRad) - (y + 15)) < 20 then
-            damagetaken := Rand.Int (enemy -> dmgMin, enemy -> dmgMax)
+          if abs ((actor -> xPos + actor -> xRad) - (x + 15)) < 20 and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 20 then
+            damagetaken := Rand.Int (actor -> dmgMin, actor -> dmgMax)
             if defence < damagetaken then
               hitpoints := hitpoints - (damagetaken - defence)
             end if
@@ -2066,25 +2066,25 @@ proc attack_enemy(enemy : pointer to Enemy, var go_to : string)
           reset(go_to)
           return
         end if
-        if enemy -> hp > 0 then
+        if actor -> hp > 0 then
           %if using a combat attack style
           if weapon -> style = "combat" then
             %inflicts damage to enemy accoring to player's skill level
             damagedealt := Rand.Int (0, (combatlvl + bonus))
-            enemy -> setHp(enemy -> hp - damagedealt)
-            if enemy -> hp > 0 then
-              enemy -> setAlive(true)
+            actor -> setHp(actor -> hp - damagedealt)
+            if actor -> hp > 0 then
+              actor -> setAlive(true)
             else
-              enemy -> setHp(0)
-              text := "You defeat the " + enemy -> name + " and gain " + intstr(enemy -> xpGain) + " experience and " + intstr(enemy -> goldGain) + " gold."
-              enemy -> setAlive(false)
+              actor -> setHp(0)
+              text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
+              actor -> setAlive(false)
               if gold <= 99989 then
-                gold := gold + enemy -> goldGain
+                gold := gold + actor -> goldGain
               else
                 text := "You do not have room to carry any more gold!"
               end if
               if combatlvl < 100 then
-                combatxp := combatxp + enemy -> xpGain
+                combatxp := combatxp + actor -> xpGain
               else
                 text := "You've mastered the art of combat and cannot gain further experience."
               end if
@@ -2095,20 +2095,20 @@ proc attack_enemy(enemy : pointer to Enemy, var go_to : string)
             if arrownum > 0 then
               arrownum := arrownum - 1
               damagedealt := Rand.Int (0, (archerylvl + bonus))
-              enemy -> setHp(enemy -> hp - damagedealt)
-              if enemy -> hp > 0 then
-                enemy -> setAlive(true)
+              actor -> setHp(actor -> hp - damagedealt)
+              if actor -> hp > 0 then
+                actor -> setAlive(true)
               else
-                enemy -> setHp(0)
-                text := "You defeat the " + enemy -> name + " and gain " + intstr(enemy -> xpGain) + " experience and " + intstr(enemy -> goldGain) + " gold."
-                enemy -> setAlive(false)
+                actor -> setHp(0)
+                text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
+                actor -> setAlive(false)
                 if gold <= 99989 then
-                  gold := gold + enemy -> goldGain
+                  gold := gold + actor -> goldGain
                 else
                   text := "You do not have room to carry any more gold!"
                 end if
                 if archerylvl < 100 then
-                  archeryxp := archeryxp + enemy -> xpGain
+                  archeryxp := archeryxp + actor -> xpGain
                 else
                   text := "You've mastered the art of archery and cannot gain further experience."
                 end if
@@ -3007,25 +3007,25 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     end if
 end collision
 
-process regenEnemy(enemy : pointer to Enemy)
-  if enemy -> alive then
-    if enemy -> hp < enemy -> maxHp then
+process regenActor(actor : pointer to Actor)
+  if actor -> alive then
+    if actor -> hp < actor -> maxHp then
       if hpcounter = 40 then
-	if abs ((enemy -> xPos + 10) - (x + 15)) > 19 and abs ((enemy -> yPos + 15) - (y + 15)) > 19 then
-	  enemy -> setHp(enemy -> hp + 1)
+	if abs ((actor -> xPos + 10) - (x + 15)) > 19 and abs ((actor -> yPos + 15) - (y + 15)) > 19 then
+	  actor -> setHp(actor -> hp + 1)
 	end if
       end if
     end if
   else
-    if enemy -> respawnCounter = 300 then
-      enemy -> setRespawnCounter(0)
-      enemy -> setAlive(true)
-      enemy -> setHp(enemy -> maxHp)
+    if actor -> respawnCounter = 300 then
+      actor -> setRespawnCounter(0)
+      actor -> setAlive(true)
+      actor -> setHp(actor -> maxHp)
     else
-      enemy -> setRespawnCounter(enemy -> respawnCounter + 1)
+      actor -> setRespawnCounter(actor -> respawnCounter + 1)
     end if
   end if
-end regenEnemy
+end regenActor
 
 proc drawscreen (var goto : string)         %generates graphics according to scene and conditions
     cls
@@ -3082,11 +3082,11 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 			end if
 		end if
     end if
-    fork regenEnemy(goblin)
-    fork regenEnemy(skeleton)
-    fork regenEnemy(ghost)
-    fork regenEnemy(zombie)
-    fork regenEnemy(troll)
+    fork regenActor(goblin)
+    fork regenActor(skeleton)
+    fork regenActor(ghost)
+    fork regenActor(zombie)
+    fork regenActor(troll)
     %rat
     if ~ ratalive then
 		if ratreturncounter = 300 then
@@ -3992,7 +3992,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
 end drawscreen
 
-proc move_actor(actor : pointer to Enemy)
+proc move_actor(actor : pointer to Actor)
   for : 1 .. 50
     case actor -> dir of
       label ord(Direction.UP): actor -> setYPos(actor -> yPos + 1)
@@ -4004,51 +4004,51 @@ proc move_actor(actor : pointer to Enemy)
   end for
 end move_actor
 
-process move_enemy(enemy : pointer to Enemy)
-  if ~ enemy -> move then         %if enemy has not been assigned a movement
-    enemy -> setMove(true)
-    if enemy -> alive then
-      if abs ((enemy -> xPos + enemy -> xRad) - x + 15) >= 200 or abs ((enemy -> yPos + enemy -> yRad) - y + 15) >= 200 then
-	      enemy -> setDir(Rand.Int (0, 3))
-	      if enemy -> dir = ord(Direction.UP) and enemy -> yPos < 550 then
-	        move_actor(enemy)
-	      elsif enemy -> dir = ord(Direction.DOWN) and enemy -> yPos > 50 then
-	        move_actor(enemy)
-	      elsif enemy -> dir = ord(Direction.LEFT) and enemy -> xPos > 50 then
-	        move_actor(enemy)
-	      elsif enemy -> dir = ord(Direction.RIGHT) and enemy -> xPos < 750 then
-	        move_actor(enemy)
+process move_enemy(actor : pointer to Actor)
+  if ~ actor -> move then         %if enemy has not been assigned a movement
+    actor -> setMove(true)
+    if actor -> alive then
+      if abs ((actor -> xPos + actor -> xRad) - x + 15) >= 200 or abs ((actor -> yPos + actor -> yRad) - y + 15) >= 200 then
+	      actor -> setDir(Rand.Int (0, 3))
+	      if actor -> dir = ord(Direction.UP) and actor -> yPos < 550 then
+	        move_actor(actor)
+	      elsif actor -> dir = ord(Direction.DOWN) and actor -> yPos > 50 then
+	        move_actor(actor)
+	      elsif actor -> dir = ord(Direction.LEFT) and actor -> xPos > 50 then
+	        move_actor(actor)
+	      elsif actor -> dir = ord(Direction.RIGHT) and actor -> xPos < 750 then
+	        move_actor(actor)
 	      else
 	        Time.DelaySinceLast (1500)
 	      end if
       else
-        if enemy -> yPos + enemy -> yRad < (y + 15) - 10 then
-          enemy -> setDir(ord(Direction.UP))
-          enemy -> setYPos(enemy -> yPos + 1)
+        if actor -> yPos + actor -> yRad < (y + 15) - 10 then
+          actor -> setDir(ord(Direction.UP))
+          actor -> setYPos(actor -> yPos + 1)
         end if
-        if enemy -> yPos + enemy -> yRad > (y + 15) + 10 then
-          enemy -> setDir(ord(Direction.DOWN))
-          enemy -> setYPos(enemy -> yPos - 1)
+        if actor -> yPos + actor -> yRad > (y + 15) + 10 then
+          actor -> setDir(ord(Direction.DOWN))
+          actor -> setYPos(actor -> yPos - 1)
         end if
-        if goblin -> xPos + enemy -> xRad < (x + 15) - 10 then
-          enemy -> setDir(ord(Direction.RIGHT))
-          enemy -> setXPos(enemy -> xPos + 1)
+        if goblin -> xPos + actor -> xRad < (x + 15) - 10 then
+          actor -> setDir(ord(Direction.RIGHT))
+          actor -> setXPos(actor -> xPos + 1)
         end if
-        if enemy -> xPos + enemy -> xRad > (x + 15) + 10 then
-          enemy -> setDir(ord(Direction.LEFT))
-          enemy -> setXPos(enemy -> xPos - 1)
+        if actor -> xPos + actor -> xRad > (x + 15) + 10 then
+          actor -> setDir(ord(Direction.LEFT))
+          actor -> setXPos(actor -> xPos - 1)
         end if
       end if
-      enemy -> detectCollision()
+      actor -> detectCollision()
     end if
-    enemy -> setMove(false)
+    actor -> setMove(false)
   end if
 end move_enemy
 
-process talk_enemy(enemy : pointer to Enemy)
-  if enemy -> alive then
-    if enemy -> talk then
-      chattext := enemy -> text (Rand.Int (0, 2))
+process talkActor(actor : pointer to Actor)
+  if actor -> alive then
+    if actor -> talk then
+      chattext := actor -> text (Rand.Int (0, 2))
       if chatentry (5) ~= "" and chattext ~= "" then
 	for chatnum : 2 .. 5
 	  chatentry (chatnum - 1) := chatentry (chatnum)
@@ -4063,16 +4063,16 @@ process talk_enemy(enemy : pointer to Enemy)
 	end for
       end if
       chattext := ""
-      enemy -> setTalk(false)
-      enemy -> setTalkCounter(0)
+      actor -> setTalk(false)
+      actor -> setTalkCounter(0)
     end if
   end if
-  enemy -> setTalkCounter(enemy -> talkCounter + 1)
-  if enemy -> talkCounter = enemy -> talkCounterGoal then
-    enemy -> setTalk(true)
-    enemy -> newTalkCounterGoal()
+  actor -> setTalkCounter(actor -> talkCounter + 1)
+  if actor -> talkCounter = actor -> talkCounterGoal then
+    actor -> setTalk(true)
+    actor -> newTalkCounterGoal()
   end if
-end talk_enemy
+end talkActor
 
 process peasant_proc
     if ~ peasant -> move then         %if peasant has not been assigned a movement
@@ -4624,7 +4624,7 @@ proc troll_dungeon (var go_to : string)         %when in the castle
 			return
 		end if
 		fork move_enemy(troll)
-    fork talk_enemy(troll)
+    fork talkActor(troll)
 		View.Update
     end loop
 end troll_dungeon
@@ -4854,7 +4854,7 @@ proc west_river (var go_to : string)         %when at west river
 			return
 		end if
 		fork move_enemy(skeleton)
-    fork talk_enemy(skeleton)
+    fork talkActor(skeleton)
 		View.Update
     end loop
 end west_river
@@ -4911,7 +4911,7 @@ proc cemetery (var go_to : string)         %when at west river
 			return
 		end if
 		fork move_enemy(ghost)
-    fork talk_enemy(ghost)
+    fork talkActor(ghost)
 		View.Update
     end loop
 end cemetery
@@ -5034,7 +5034,7 @@ proc crypt (var go_to : string)         %when at west river
 			return
 		end if
 		fork move_enemy(zombie)
-    fork talk_enemy(zombie)
+    fork talkActor(zombie)
 		View.Update
     end loop
 end crypt
@@ -5082,7 +5082,7 @@ proc west_river_northcorner (var go_to : string)         %when at west river
 			return
 		end if
 		fork move_enemy(skeleton)
-    fork talk_enemy(skeleton)
+    fork talkActor(skeleton)
 		View.Update
     end loop
 end west_river_northcorner
@@ -5170,7 +5170,7 @@ proc cottage (var go_to : string)         %when east of 'west river'
 		right := button - middle - left         % right = 0 or 100
 		drawscreen (goto)         %run graphical output
 		fork peasant_proc
-    fork talk_enemy(peasant)
+    fork talkActor(peasant)
 		if ~ (x > 505 and y > 53 and y < 180) then         %if not in cottage
 			Pic.Draw (thatchroof, 519, 149, picCopy)
 		end if
@@ -5230,7 +5230,7 @@ proc east_of_westriver (var go_to : string)         %when east of 'west river'
 			return
 		end if
 		fork move_enemy(goblin)
-    fork talk_enemy(goblin)
+    fork talkActor(goblin)
 		View.Update
     end loop
 end east_of_westriver

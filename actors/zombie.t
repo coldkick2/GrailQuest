@@ -1,5 +1,5 @@
 class Zombie
-    inherit Enemy
+    inherit Actor
 
     name := "zombie"
 

@@ -1,4 +1,4 @@
-class Enemy
+class Actor
     import Direction
     export alive, name, description, detectCollision, dir, dirImages, goldGain, lvlClr, xpGain, hp, maxHp, move, talk, talkCounter, talkCounterGoal, text, xPos, yPos, xRad, yRad, dmgMin, dmgMax, combatLvl, archeryLvl, respawnCounter, totalLvl, newTalkCounterGoal, setHp, setAlive, setRespawnCounter, setMove, setDir, setXPos, setYPos, setTalk, setTalkCounter, setLvlClr
     var alive : boolean := true
@@ -66,4 +66,4 @@ class Enemy
         talkCounterGoal := Rand.Int(500, 1000)
     end newTalkCounterGoal
     deferred procedure detectCollision
-end Enemy
+end Actor

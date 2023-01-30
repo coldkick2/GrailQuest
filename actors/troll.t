@@ -1,5 +1,5 @@
 class Troll
-    inherit Enemy
+    inherit Actor
 
     name := "troll"
 

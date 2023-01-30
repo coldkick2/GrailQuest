@@ -1,4 +1,4 @@
-include "enemy.t"
+include "actor.t"
 include "ghost.t"
 include "goblin.t"
 include "peasant.t"

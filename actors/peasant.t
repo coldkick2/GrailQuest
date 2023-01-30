@@ -1,5 +1,5 @@
 class Peasant
-    inherit Enemy
+    inherit Actor
     export inCottage, setInCottage
 
     name := "peasant"

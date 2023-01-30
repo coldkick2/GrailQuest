@@ -1,5 +1,5 @@
 class Ghost
-    inherit Enemy
+    inherit Actor
 
     name := "ghost"
 

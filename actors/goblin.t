@@ -1,5 +1,5 @@
 class Goblin
-    inherit Enemy
+    inherit Actor
 
     name := "goblin"
 

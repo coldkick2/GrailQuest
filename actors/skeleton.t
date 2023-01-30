@@ -1,5 +1,5 @@
 class Skeleton
-    inherit Enemy
+    inherit Actor
 
     name := "skeleton"
 
