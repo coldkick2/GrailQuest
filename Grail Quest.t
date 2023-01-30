@@ -1920,6 +1920,7 @@ end drawHero
 
 proc movement     %manipulates character movement input
   if ~ victory then
+    Input.KeyDown (move)
 		if xm > x - 1 and xm < x + 21 and ym > y - 1 and ym < y + 30 then
 			Font.Draw ("You [Level " + intstr (totalLvl) + "]", x, y + 30, font2, white)
 		end if
@@ -1976,7 +1977,6 @@ proc movement     %manipulates character movement input
 				end if
 			end if
 		elsif left = 0 then
-			Input.KeyDown (move)
 			if move (KEY_LEFT_ARROW) and move (KEY_DOWN_ARROW) then
 				x := x - 3                 %left
 				y := y - 3                 %down
