@@ -1844,27 +1844,19 @@ proc restoreInv
 	battleAxe -> setObtained(battleaxe)
 	twoHanded -> setObtained(twohanded)
 	bow -> setObtained(bowObtained)
-	if equipped = "kingsSword" then
+	if equipped = kingsSword -> name then
 		weapon := kingsSword
-	elsif equipped = "battleAxe" then
+	elsif equipped = battleAxe -> name then
 		weapon := battleAxe
-	elsif equipped = "twoHanded" then
+	elsif equipped = twoHanded -> name then
 		weapon := twoHanded
-	elsif equipped = "bow" then
+	elsif equipped = bow -> name then
 		weapon := bow
 	end if
 end restoreInv
 
 proc save
-	if weapon = kingsSword then
-		equipped := "kingsSword"
-	elsif weapon = battleAxe then
-		equipped := "battleAxe"
-	elsif weapon = twoHanded then
-		equipped := "twoHanded"
-	elsif weapon = bow then
-		equipped := "bow"
-	end if
+		equipped := weapon -> name
     open : record1, "Grail Quest - records.gqr", write
     write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive, dragonhead3alive,
 	victory, music_on, stopmusic, destination, scalehotkey, attacking, rope, songhotkey, newdest,
