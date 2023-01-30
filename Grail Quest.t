@@ -943,7 +943,7 @@ proc enterchat
     end if
     if editmodeenabled then
 		if chattext = "GOLD" then
-			gold := gold + 10000
+      hero -> setGold(hero -> gold + 10000)
 		elsif chattext = "COMBAT" then
 			combatxp := 99999
 		elsif chattext = "ARCHERY" then
@@ -1645,7 +1645,7 @@ proc map
 	Pic.Draw (centrebtn, 625, 525, picMerge)
 	Pic.Draw (scalebtn, 525, 525, picMerge)
 	Pic.Draw (topbar, 0, 600, picCopy)
-	Font.Draw (" " + intstr (gold), 45, 640, font2, black)
+	Font.Draw (" " + intstr (hero -> gold), 45, 640, font2, black)
 	Font.Draw ("Def.", 145, 645, font4, black)
 	Font.Draw (intstr (defence), 150, 636, font4, black)
 	Font.Draw (" Lvl.: " + intstr (archerylvl) + ", Exp.: " + intstr (archeryxp), 591, 640, font2, black)
@@ -1814,7 +1814,7 @@ proc reset(var go_to : string)
   hero -> setXPos(400)
   hero -> setYPos(100)
 	arrownum := 0
-	gold := 0
+	hero -> setGold(0)
 	hitpoints := 25
 	healthpacks := 0
   hero -> setWeapon(kingsSword)
@@ -1835,6 +1835,7 @@ proc restoreInv
 	end if
   hero -> setXPos(x)
   hero -> setYPos(y)
+  hero -> setGold(gold)
 end restoreInv
 
 proc save
@@ -1842,7 +1843,7 @@ proc save
     open : record1, "Grail Quest - records.gqr", write
     write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive, dragonhead3alive,
 	victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
-	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, hero -> xPos, hero -> yPos, xdest, ydest,
+	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, hero -> gold, hero -> xPos, hero -> yPos, xdest, ydest,
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp,  hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
@@ -1982,16 +1983,16 @@ end movement
 
 proc buyItem(item: pointer to Item)
 	if ~ item -> obtained then
-		if gold >= item -> cost then
+		if hero -> gold >= item -> cost then
 			item -> setObtained(true)
-			gold := gold - item -> cost
+      hero -> setGold(hero -> gold - item -> cost)
 			Pic.Draw (item -> invpic, 235, 635, picMerge)
 			View.Update()
 			if sfx_on then
 				fork purchase
 			end if
 		else
-			text := "You need " + intstr (item -> cost - gold) + " more gold to cover the cost."
+			text := "You need " + intstr (item -> cost - hero -> gold) + " more gold to cover the cost."
 		end if
 	end if
 end buyItem
@@ -2055,8 +2056,8 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
               actor -> setHp(0)
               text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
               actor -> setAlive(false)
-              if gold <= 99989 then
-                gold := gold + actor -> goldGain
+              if hero -> gold <= 99989 then
+                hero -> setGold(hero -> gold + actor -> goldGain)
               else
                 text := "You do not have room to carry any more gold!"
               end if
@@ -2079,8 +2080,8 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
                 actor -> setHp(0)
                 text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
                 actor -> setAlive(false)
-                if gold <= 99989 then
-                  gold := gold + actor -> goldGain
+                if hero -> gold <= 99989 then
+                  hero -> setGold(hero -> gold + actor -> goldGain)
                 else
                   text := "You do not have room to carry any more gold!"
                 end if
@@ -2521,8 +2522,8 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				buyItem(twoHanded)
 			elsif xm > 190 and xm < 272 and ym > 93 and ym < 140 then             %if healthpacks selected
 				if left = 1 and buyhp then
-					if gold >= 100 then
-						gold := gold - 100
+					if hero -> gold >= 100 then
+            hero -> setGold(hero -> gold - 100)
 						Font.Draw ("x " + intstr (healthpacks), 169, 636, font4, yellow)
 						View.Update
 						if sfx_on then
@@ -2530,7 +2531,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 						end if
 						healthpacks := healthpacks + 1
 					else
-						text := "You need " + intstr (100 - gold) + " more gold to cover the cost."
+						text := "You need " + intstr (100 - hero -> gold) + " more gold to cover the cost."
 					end if
 					buyhp := false
 				elsif left = 0 then
@@ -2540,14 +2541,14 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				buyItem(bow)
 			elsif xm > 454 and xm < 536 and ym > 95 and ym < 138 then             %if arrows selected
 				if left = 1 and buyarrow then
-					if gold >= 50 then
-						gold := gold - 50
+					if hero -> gold >= 50 then
+            hero -> setGold(hero -> gold - 50)
 						arrownum := arrownum + 10
 						if sfx_on then
 							fork purchase
 						end if
 					else
-						text := "You need " + intstr (50 - gold) + " more gold to cover the cost."
+						text := "You need " + intstr (50 - hero -> gold) + " more gold to cover the cost."
 					end if
 					buyarrow := false
 				elsif left = 0 then
@@ -2563,20 +2564,20 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		elsif shopscreen = 2 then
 			if xm > 149 and xm < 232 and ym > 249 and ym < 297 and left = 1 then             %platebody
 				if ~ platebody then
-					if gold >= 750 then
-						gold := gold - 750
+					if hero -> gold >= 750 then
+            hero -> setGold(hero -> gold - 750)
 						platebody := true
 						if sfx_on then
 							fork purchase
 						end if
 					else
-						text := "You need " + intstr (750 - gold) + " more gold to cover the cost."
+						text := "You need " + intstr (750 - hero -> gold) + " more gold to cover the cost."
 					end if
 				end if
 			elsif xm > 399 and xm < 482 and ym > 249 and ym < 297 and left = 1 then             %platelegs
 				if ~ platelegs then
-					if gold >= 500 then
-						gold := gold - 500
+					if hero -> gold >= 500 then
+            hero -> setGold(hero -> gold - 500)
 						platelegs := true
 						if sfx_on then
 							fork purchase
@@ -2587,14 +2588,14 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 			elsif xm > 649 and xm < 730 and ym > 249 and ym < 297 and left = 1 then             %fullhelm
 				if ~ fullhelm then
-					if gold >= 400 then
-						gold := gold - 400
+					if hero -> gold >= 400 then
+            hero -> setGold(hero -> gold - 400)
 						fullhelm := true
 						if sfx_on then
 							fork purchase
 						end if
 					else
-						text := "You need " + intstr (400 - gold) + " more gold to cover the cost."
+						text := "You need " + intstr (400 - hero -> gold) + " more gold to cover the cost."
 					end if
 				end if
 			end if
@@ -3005,8 +3006,8 @@ end regenActor
 
 proc drawscreen (var goto : string)         %generates graphics according to scene and conditions
     cls
-    if gold > 99999 then         %if gold exceeds maximum amount
-		gold := 99999         %set to maximum
+    if hero  -> gold > 99999 then         %if gold exceeds maximum amount
+      hero -> setGold(99999)
 		text := "You can't hold any more gold coins!...It seems you have plenty anyway."
     end if
     if platebody and platelegs and fullhelm then
@@ -3492,7 +3493,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		end if
 		if ~ slaycutsceneviewed then
 				Pic.Draw (topbar, 0, 600, picCopy)
-				Font.Draw (" " + intstr (gold), 45, 640, font2, black)
+				Font.Draw (" " + intstr (hero -> gold), 45, 640, font2, black)
 				Font.Draw ("Def.", 145, 645, font4, black)
 				Font.Draw (intstr (defence), 150, 636, font4, black)
 				Font.Draw (" Lvl.: " + intstr (archerylvl) + ", Exp.: " + intstr (archeryxp), 591, 640, font2, black)
@@ -3637,7 +3638,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     archerylvl := ((round ((sqrt (archeryxp)) div 3)) + 1)
     combatlvl := ((round ((sqrt (combatxp)) div 3)) + 1)
     Pic.Draw (topbar, 0, 600, picCopy)
-    Font.Draw (" " + intstr (gold), 45, 640, font2, black)
+    Font.Draw (" " + intstr (hero -> gold), 45, 640, font2, black)
     Font.Draw ("Def.", 145, 645, font4, black)
     Font.Draw (intstr (defence), 150, 636, font4, black)
     Font.Draw (" Lvl.: " + intstr (archerylvl) + ", Exp.: " + intstr (archeryxp), 591, 640, font2, black)

@@ -3,7 +3,7 @@ class Hero
 
     import Item
 
-    export destination, frameNumber, follow, followTarget, movementFrames, weapon, setDestination, setFrameNumber, setWeapon
+    export destination, frameNumber, follow, followTarget, movementFrames, gold, setGold, weapon, setDestination, setFrameNumber, setWeapon
 
     var destination : boolean := false
 
@@ -29,6 +29,12 @@ class Hero
     var followTarget : pointer to Actor
 
     var weapon : pointer to Item := kingsSword
+
+    var gold : int := 300
+
+    procedure setGold(i : int)
+        gold := i
+    end setGold
 
     procedure setDestination(b : boolean)
         destination := b
