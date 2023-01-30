@@ -1,5 +1,5 @@
 class Hero
-    import Direction
+    inherit Actor
 
     export destination, frameNumber, movementFrames, setDestination, setFrameNumber
 

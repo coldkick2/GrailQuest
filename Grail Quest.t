@@ -667,7 +667,6 @@ var armour : string := "" %armour worn by player
 var chatchar : string (1) := "" %entered chat character
 var chattext : string := "" %chat entry text (combination of entered chat characters)
 var ingamemenubutton : string := "" %in game menu button that is highlighted
-var charlastdirection : Direction := Direction.DOWN %last direction faced by character
 var sfxtoggle : string := "on" %sound effects on/off
 var musictoggle : string := "on" %music on/off
 var autosavetoggle : string := "off" %autosave on/off
@@ -675,7 +674,7 @@ var autosavetoggle : string := "off" %autosave on/off
 drawfillbox (100, 190, 400, 210, brightgreen)
 Font.Draw ("Loading Complete!", 105, 195, font5, black)
 finishedloading := true
-View.Update
+View.Update()
 %------------------------------------------
 %>>>END OF VARIABLE TABLE<<<
 %------------------------------------------
@@ -683,75 +682,75 @@ View.Update
 %------------------------------------------
 
 proc getInfo(item : pointer to Item)
-    loop
-      Pic.Draw (info, 100, 100, picMerge)
-      drawfillbox (150, 150, 650, 450, black)
-      Font.Draw (item -> name, 150, 420, font3, brightred)
-      Font.Draw (item -> description, 150, 390, font1, brightred)
-      Font.Draw ("Attack advantage: +" + intstr(item -> power), 150, 360, font1, brightred)
-      Pic.Draw (returnbtn, 630, 100, picMerge)
-      buttonchoose ("multibutton")
-      mousewhere (xm, ym, button)
-      left := button mod 10         % left = 0 or 1
-      middle := (button - left) mod 100         % middle = 0 or 10
-      right := button - middle - left         % right = 0 or 100
-      if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
-	return
-      end if
-      View.Update
-    end loop
+  loop
+    Pic.Draw (info, 100, 100, picMerge)
+    drawfillbox (150, 150, 650, 450, black)
+    Font.Draw (item -> name, 150, 420, font3, brightred)
+    Font.Draw (item -> description, 150, 390, font1, brightred)
+    Font.Draw ("Attack advantage: +" + intstr(item -> power), 150, 360, font1, brightred)
+    Pic.Draw (returnbtn, 630, 100, picMerge)
+    buttonchoose ("multibutton")
+    mousewhere (xm, ym, button)
+    left := button mod 10         % left = 0 or 1
+    middle := (button - left) mod 100         % middle = 0 or 10
+    right := button - middle - left         % right = 0 or 100
+    if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
+      return
+    end if
+    View.Update()
+  end loop
 end getInfo
 
 proc usermanual
-    colourback (black)
-    cls
-    loop
-      Font.Draw ("User Manual", 10, 630, font3, yellow)
-      Font.Draw ("-=Hotkeys=-", 10, 600, font6, yellow)
-      Font.Draw ("n - next song", 20, 580, font6, grey)
-      Font.Draw ("m - open world map", 20, 560, font6, grey)
-      drawline (25, 500, 25, 555, grey)
-      drawline (20, 555, 25, 555, grey)
-      Font.Draw ("s - toggle scale 50%/100%", 30, 540, font6, grey)
-      Font.Draw ("c - centre map", 30, 520, font6, grey)
-      Font.Draw ("r - return to game", 30, 500, font6, grey)
-      Font.Draw ("p - pause", 20, 480, font6, grey)
-      Font.Draw ("r - resume game (if paused)", 20, 460, font6, grey)
-      Font.Draw ("h - heal (uses player's healthpacks)", 20, 440, font6, grey)
-      Font.Draw ("i - information/user manual (current page)", 20, 420, font6, grey)
-      Font.Draw ("s - toggle sound effects and music", 20, 400, font6, grey)
-      Font.Draw ("Shift - enter chat text", 350, 580, font6, grey)
-      Font.Draw ("Esc - menu", 350, 560, font6, grey)
-      Font.Draw ("-=Movement=-", 10, 380, font6, yellow)
-      Font.Draw ("-Mouse" + "(click to set destination)", 20, 360, font6, grey)
-      Font.Draw ("-Arrow keys (use combinations of horizontal and vertical to move diagonally)", 20, 340, font6, grey)
-      Font.Draw ("-=Attacking=-", 10, 320, font6, yellow)
-      Font.Draw ("-Automatic when in range of attacking (this range is larger when bow is equipped).", 20, 300, font6, grey)
-      Font.Draw ("-Maximum Damage = skill level (of skill in use) + bonus of weapon used.", 20, 280, font6, grey)
-      Font.Draw ("-=Levelling=-", 10, 260, font6, yellow)
-      Font.Draw ("-Skill level = [square root (Exp) / 3] + 1", 20, 240, font6, grey)
-      Font.Draw ("-Total level = [(archery + combat) / 2]", 20, 220, font6, grey)
-      Font.Draw ("-=Buying Items=-", 10, 200, font6, yellow)
-      Font.Draw ("-There is a shop in the west wing of the castle.", 20, 180, font6, grey)
-      Font.Draw ("-Click the buy button next to an item to buy it...some items, such as weapons,", 20, 160, font6, grey)
-      Font.Draw (" have only a single supply - if you die they return to the shop's stock.", 20, 140, font6, grey)
-      Font.Draw ("-=World Map=-", 10, 120, font6, yellow)
-      Font.Draw ("-You can scroll across the map by moving your mouse to the edges/corners of the map,", 20, 100, font6, grey)
-      Font.Draw (" using the arrow keys (8 directions possible - see 'Movement'), or clicking and dragging the map.", 20, 80, font6, grey)
-      Font.Draw ("-" + "(See above for map hotkeys)", 20, 60, font6, grey)
-      Font.Draw ("-=Completing the Game=-", 10, 40, font6, yellow)
-      Font.Draw ("-After obtaining the grail you must bring it to the king who is at the castle entrance.", 20, 20, font6, grey)
-      Pic.Draw (returnbtn, 720, 10, picMerge)
-      buttonchoose ("multibutton")
-      mousewhere (xm, ym, button)
-      left := button mod 10         % left = 0 or 1
-      middle := (button - left) mod 100         % middle = 0 or 10
-      right := button - middle - left         % right = 0 or 100
-      if xm > 719 and xm < 791 and ym > 9 and ym < 71 and left = 1 then
-	return
-      end if
-      View.Update
-    end loop
+  colourback (black)
+  cls()
+  loop
+    Font.Draw ("User Manual", 10, 630, font3, yellow)
+    Font.Draw ("-=Hotkeys=-", 10, 600, font6, yellow)
+    Font.Draw ("n - next song", 20, 580, font6, grey)
+    Font.Draw ("m - open world map", 20, 560, font6, grey)
+    drawline (25, 500, 25, 555, grey)
+    drawline (20, 555, 25, 555, grey)
+    Font.Draw ("s - toggle scale 50%/100%", 30, 540, font6, grey)
+    Font.Draw ("c - centre map", 30, 520, font6, grey)
+    Font.Draw ("r - return to game", 30, 500, font6, grey)
+    Font.Draw ("p - pause", 20, 480, font6, grey)
+    Font.Draw ("r - resume game (if paused)", 20, 460, font6, grey)
+    Font.Draw ("h - heal (uses player's healthpacks)", 20, 440, font6, grey)
+    Font.Draw ("i - information/user manual (current page)", 20, 420, font6, grey)
+    Font.Draw ("s - toggle sound effects and music", 20, 400, font6, grey)
+    Font.Draw ("Shift - enter chat text", 350, 580, font6, grey)
+    Font.Draw ("Esc - menu", 350, 560, font6, grey)
+    Font.Draw ("-=Movement=-", 10, 380, font6, yellow)
+    Font.Draw ("-Mouse" + "(click to set destination)", 20, 360, font6, grey)
+    Font.Draw ("-Arrow keys (use combinations of horizontal and vertical to move diagonally)", 20, 340, font6, grey)
+    Font.Draw ("-=Attacking=-", 10, 320, font6, yellow)
+    Font.Draw ("-Automatic when in range of attacking (this range is larger when bow is equipped).", 20, 300, font6, grey)
+    Font.Draw ("-Maximum Damage = skill level (of skill in use) + bonus of weapon used.", 20, 280, font6, grey)
+    Font.Draw ("-=Levelling=-", 10, 260, font6, yellow)
+    Font.Draw ("-Skill level = [square root (Exp) / 3] + 1", 20, 240, font6, grey)
+    Font.Draw ("-Total level = [(archery + combat) / 2]", 20, 220, font6, grey)
+    Font.Draw ("-=Buying Items=-", 10, 200, font6, yellow)
+    Font.Draw ("-There is a shop in the west wing of the castle.", 20, 180, font6, grey)
+    Font.Draw ("-Click the buy button next to an item to buy it...some items, such as weapons,", 20, 160, font6, grey)
+    Font.Draw (" have only a single supply - if you die they return to the shop's stock.", 20, 140, font6, grey)
+    Font.Draw ("-=World Map=-", 10, 120, font6, yellow)
+    Font.Draw ("-You can scroll across the map by moving your mouse to the edges/corners of the map,", 20, 100, font6, grey)
+    Font.Draw (" using the arrow keys (8 directions possible - see 'Movement'), or clicking and dragging the map.", 20, 80, font6, grey)
+    Font.Draw ("-" + "(See above for map hotkeys)", 20, 60, font6, grey)
+    Font.Draw ("-=Completing the Game=-", 10, 40, font6, yellow)
+    Font.Draw ("-After obtaining the grail you must bring it to the king who is at the castle entrance.", 20, 20, font6, grey)
+    Pic.Draw (returnbtn, 720, 10, picMerge)
+    buttonchoose ("multibutton")
+    mousewhere (xm, ym, button)
+    left := button mod 10         % left = 0 or 1
+    middle := (button - left) mod 100         % middle = 0 or 10
+    right := button - middle - left         % right = 0 or 100
+    if xm > 719 and xm < 791 and ym > 9 and ym < 71 and left = 1 then
+      return
+    end if
+    View.Update()
+  end loop
 end usermanual
 
 proc talk
@@ -839,7 +838,7 @@ proc talk
 								if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
 									return
 								end if
-								View.Update
+								View.Update()
 							end loop
 						end if
 					elsif xm > 150 and xm < 650 and ym > 270 and ym < 300 then
@@ -895,7 +894,7 @@ proc talk
 					if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
 						return
 					end if
-					View.Update
+					View.Update()
 				end loop
 			end if
 		else
@@ -910,7 +909,7 @@ proc talk
 		if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
 			return
 		end if
-		View.Update
+		View.Update()
     end loop
 end talk
 
@@ -1882,7 +1881,7 @@ proc drawHero
     hero -> setFrameNumber(0)
   end if
 
-  Pic.Draw(hero -> movementFrames (ord(charlastdirection), hero -> frameNumber), x, y, picMerge)
+  Pic.Draw(hero -> movementFrames (hero -> dir, hero -> frameNumber), x, y, picMerge)
   Time.DelaySinceLast (30)
 end drawHero
 
@@ -1914,31 +1913,31 @@ proc movement     %manipulates character movement input
 			if x + 8 > xdest + 3 and y > ydest + 3 then             %left/down
 				x := x - 3
 				y := y - 3
-				charlastdirection := Direction.LEFT
+				hero -> setDir(ord(Direction.LEFT))
 			elsif x + 8 > xdest + 3 and y < ydest - 3 then             %left/up
 				x := x - 3
 				y := y + 3
-				charlastdirection := Direction.LEFT
+				hero -> setDir(ord(Direction.LEFT))
 			elsif x + 8 < xdest - 3 and y > ydest + 3 then             %right/down
 				x := x + 3
 				y := y - 3
-				charlastdirection := Direction.RIGHT
+				hero -> setDir(ord(Direction.RIGHT))
 			elsif x + 8 < xdest - 3 and y < ydest - 3 then             %right/up
 				x := x + 3
 				y := y + 3
-				charlastdirection := Direction.RIGHT
+				hero -> setDir(ord(Direction.RIGHT))
 			elsif x + 8 > xdest + 4 then             %left
 				x := x - 4
-				charlastdirection := Direction.LEFT
+				hero -> setDir(ord(Direction.LEFT))
 			elsif x + 8 < xdest - 4 then             %right
 				x := x + 4
-				charlastdirection := Direction.RIGHT
+				hero -> setDir(ord(Direction.RIGHT))
 			elsif y < ydest - 4 then             %up
 				y := y + 4
-				charlastdirection := Direction.UP
+				hero -> setDir(ord(Direction.UP))
 			elsif y > ydest + 4 then             %down
 				y := y - 4
-				charlastdirection := Direction.DOWN
+				hero -> setDir(ord(Direction.DOWN))
 			else
 				if follow ~= peasant then
 					hero -> setDestination(false)
@@ -1948,31 +1947,31 @@ proc movement     %manipulates character movement input
 			if move (KEY_LEFT_ARROW) and move (KEY_DOWN_ARROW) then
 				x := x - 3                 %left
 				y := y - 3                 %down
-				charlastdirection := Direction.LEFT
+				hero -> setDir(ord(Direction.LEFT))
 			elsif move (KEY_RIGHT_ARROW) and move (KEY_UP_ARROW) then
 				x := x + 3                 %right
 				y := y + 3                 %up
-				charlastdirection := Direction.RIGHT
+				hero -> setDir(ord(Direction.RIGHT))
 			elsif move (KEY_LEFT_ARROW) and move (KEY_UP_ARROW) then
 				x := x - 3                 %left
 				y := y + 3                 %up
-				charlastdirection := Direction.LEFT
+				hero -> setDir(ord(Direction.LEFT))
 			elsif move (KEY_RIGHT_ARROW) and move (KEY_DOWN_ARROW) then
 				x := x + 3                 %right
 				y := y - 3                 %down
-				charlastdirection := Direction.RIGHT
+				hero -> setDir(ord(Direction.RIGHT))
 			elsif move (KEY_LEFT_ARROW) then
 				x := x - 4                 %left
-				charlastdirection := Direction.LEFT
+				hero -> setDir(ord(Direction.LEFT))
 			elsif move (KEY_RIGHT_ARROW) then
 				x := x + 4                 %right
-				charlastdirection := Direction.RIGHT
+				hero -> setDir(ord(Direction.RIGHT))
 			elsif move (KEY_UP_ARROW) then
 				y := y + 4                 %up
-				charlastdirection := Direction.UP
+				hero -> setDir(ord(Direction.UP))
 			elsif move (KEY_DOWN_ARROW) then
 				y := y - 4                 %down
-				charlastdirection := Direction.DOWN
+				hero -> setDir(ord(Direction.DOWN))
       end if
 		end if
     drawHero()
@@ -3608,7 +3607,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
     Font.Draw ("Chat history:", 221, 588 + ychat, font4, brightred)
     if editmodeenabled then
-		chatentry (1) := "x: " + intstr (x) + "  y: " + intstr (y) + "  frameNumber: " + intstr (hero -> frameNumber) + "  last dir.: " + intstr(ord(charlastdirection))
+		chatentry (1) := "x: " + intstr (x) + "  y: " + intstr (y) + "  frameNumber: " + intstr (hero -> frameNumber) + "  last dir.: " + intstr(hero -> dir)
 		chatentry (2) := "xm: " + intstr (xm) + "  ym: " + intstr (ym) + "  left btn: " + intstr (left) + "  right btn: " + intstr (right)
 		if movecharacter then
 			chatentry (3) := "goto: " + goto + "  scene: " + scene + "  movecharacter: true"
