@@ -48,7 +48,11 @@ new BattleAxe, battleAxe
 var bow: ^Bow
 new Bow, bow
 
-%Enemies
+%Hero
+var hero: ^Hero
+new Hero, hero
+
+%Actors
 var goblin: ^Goblin
 new Goblin, goblin
 
@@ -106,27 +110,6 @@ View.Update
 %--------------------
 %*Characters*
 %-------------
-%Player
-%right
-var picr : array 1 .. 3 of int
-picr (1) := Pic.FileNew ("Images/warrior_new1r.bmp")
-picr (2) := Pic.FileNew ("Images/warrior_new2r.bmp")
-picr (3) := Pic.FileNew ("Images/warrior_new3r.bmp")
-% %left
-var picl : array 1 .. 3 of int
-picl (1) := Pic.FileNew ("Images/warrior_new1l.bmp")
-picl (2) := Pic.FileNew ("Images/warrior_new2l.bmp")
-picl (3) := Pic.FileNew ("Images/warrior_new3l.bmp")
-%up                                                   29x29
-var picu : array 1 .. 3 of int
-picu (1) := Pic.FileNew ("Images/warrior_new1u.bmp")
-picu (2) := Pic.FileNew ("Images/warrior_new2u.bmp")
-picu (3) := Pic.FileNew ("Images/warrior_new3u.bmp")
-%down
-var picd : array 1 .. 3 of int
-picd (1) := Pic.FileNew ("Images/warrior_new1d.bmp")
-picd (2) := Pic.FileNew ("Images/warrior_new2d.bmp")
-picd (3) := Pic.FileNew ("Images/warrior_new3d.bmp")
 
 %Rat
 var ratpic : array 1 .. 10 of int
@@ -554,7 +537,6 @@ var victory : boolean := false %player is victorious if true
 var mapscalebtn_on : boolean := true %map scale can be toggled again if false
 var music_on : boolean := false %music is on if true
 var stopmusic : boolean := false %stops music when true
-var destination : boolean := false %player has a destination when true
 var ratmove : boolean := false %rat has been assigned a movement when true
 var catmove : boolean := false %cat has been assigned a movement when true
 var scalehotkey : boolean := true %scale hotkey can be pressed again when true
@@ -598,7 +580,6 @@ Font.Draw ("Loading values...", 105, 195, font5, white)
 View.Update
 var delayspeed : int := 30 %credits speed
 var gold : int := 300 %player gold
-var picnum : int := 1 %character image cycling number
 var x : int := 400 %character x coordinate
 var y : int := 300 %character y coordinate
 var xm : int %mouse x coordinate
@@ -1859,8 +1840,8 @@ proc save
 		equipped := weapon -> name
     open : record1, "Grail Quest - records.gqr", write
     write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive, dragonhead3alive,
-	victory, music_on, stopmusic, destination, scalehotkey, attacking, rope, songhotkey, newdest,
-	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
+	victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
+	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, x, y, xdest, ydest,
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp,  hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
@@ -1875,8 +1856,8 @@ end save
 proc load
     open : record1, "Grail Quest - records.gqr", read
     read : record1, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive, dragonhead3alive,
-	victory, music_on, stopmusic, destination, scalehotkey, attacking, rope, songhotkey, newdest,
-	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
+	victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
+	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, x, y, xdest, ydest,
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
@@ -1887,26 +1868,21 @@ proc load
 end load
 
 proc drawHero
-  if destination
+  if hero -> destination
     or move (KEY_LEFT_ARROW)
     or move (KEY_RIGHT_ARROW)
     or move (KEY_UP_ARROW)
     or move (KEY_DOWN_ARROW) then
-    if picnum + 1 > 3 then
-      picnum := 1
+    if hero -> frameNumber + 1 > 2 then
+      hero -> setFrameNumber(0)
     else
-      picnum := picnum + 1
+      hero -> setFrameNumber(hero -> frameNumber + 1)
     end if
   else
-    picnum := 1
+    hero -> setFrameNumber(0)
   end if
 
-  case charlastdirection of
-    label Direction.LEFT: Pic.Draw (picl (picnum), x, y, picMerge)
-    label Direction.RIGHT: Pic.Draw (picr (picnum), x, y, picMerge)
-    label Direction.UP: Pic.Draw (picu (picnum), x, y, picMerge) 
-    label Direction.DOWN: Pic.Draw (picd (picnum), x, y, picMerge)
-  end case
+  Pic.Draw(hero -> movementFrames (ord(charlastdirection), hero -> frameNumber), x, y, picMerge)
   Time.DelaySinceLast (30)
 end drawHero
 
@@ -1919,7 +1895,7 @@ proc movement     %manipulates character movement input
 		if ym < 601 and ym > -1 and xm > -1 and xm < 801 then         %if mouse in playing screen then move character
 			if xm < 787 or xm > 793 or ym < 585 or ym > 595 then
 				if left = 1 and newdest then
-					destination := true
+					hero -> setDestination(true)
 					xdest := xm - 7
 					ydest := ym
 					follow := nil
@@ -1929,7 +1905,7 @@ proc movement     %manipulates character movement input
 				end if
 			end if
 		end if
-		if destination then
+		if hero -> destination then
       if follow ~= nil then
         xdest := follow -> xPos
         ydest := follow -> yPos
@@ -1965,7 +1941,7 @@ proc movement     %manipulates character movement input
 				charlastdirection := Direction.DOWN
 			else
 				if follow ~= peasant then
-					destination := false
+					hero -> setDestination(false)
 				end if
 			end if
 		elsif left = 0 then
@@ -2039,7 +2015,7 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
       if right = 100 then
         text := actor -> description
       elsif left = 1 then
-        destination := true
+        hero -> setDestination(true)
         follow := actor
       end if
     end if
@@ -2051,7 +2027,7 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
       and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 200)) then
       attacking := true
       if xdest = actor -> xPos and ydest = actor -> yPos then
-        destination := false
+        hero -> setDestination(false)
       end if
       text := "You are attacking a " + actor -> name + "!  Arrows left: " + intstr (arrownum) + "  Goblin: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
       if hpcounter = 20 or hpcounter = 40 then
@@ -2831,7 +2807,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			if right = 100 then
 				text := peasant -> description
 			elsif left = 1 then
-				destination := true
+				hero -> setDestination(true)
 				follow := peasant
 			end if
 		end if
@@ -3632,7 +3608,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     end if
     Font.Draw ("Chat history:", 221, 588 + ychat, font4, brightred)
     if editmodeenabled then
-		chatentry (1) := "x: " + intstr (x) + "  y: " + intstr (y) + "  picnum: " + intstr (picnum) + "  last dir.: " + intstr(ord(charlastdirection))
+		chatentry (1) := "x: " + intstr (x) + "  y: " + intstr (y) + "  frameNumber: " + intstr (hero -> frameNumber) + "  last dir.: " + intstr(ord(charlastdirection))
 		chatentry (2) := "xm: " + intstr (xm) + "  ym: " + intstr (ym) + "  left btn: " + intstr (left) + "  right btn: " + intstr (right)
 		if movecharacter then
 			chatentry (3) := "goto: " + goto + "  scene: " + scene + "  movecharacter: true"
@@ -3701,7 +3677,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     if (xm > 506 and xm < 531 and ym > 608 and ym < 632 and left = 1) or hotkey (KEY_ESC) or returntomenu then         %if quit selected
 		Pic.Draw (info, 100, 100, picMerge)
 		returntomenu := false
-		destination := false
+		hero -> setDestination(false)
 		loop
 		drawfillbox (150, 150, 650, 450, black)             %black background
 		buttonchoose ("multibutton")
@@ -4344,7 +4320,7 @@ process cat
 end cat
 
 proc in_castle (var go_to : string)         %when in the castle
-    destination := false
+    hero -> setDestination(false)
     scene := "castle entrance"
     loop
 		if y > 354 and x > 284 and x < 457 then         %if passing through entrance
@@ -4400,7 +4376,7 @@ proc in_castle (var go_to : string)         %when in the castle
 end in_castle
 
 proc south_of_entrance (var go_to : string)         %when in the castle
-    destination := false
+    hero -> setDestination(false)
     scene := "south of entrance"
     loop
 		if y > 570 then         %if passing through entrance
@@ -4437,7 +4413,7 @@ proc south_of_entrance (var go_to : string)         %when in the castle
 end south_of_entrance
 
 proc east_hall (var go_to : string)
-    destination := false
+    hero -> setDestination(false)
     scene := "east hall"
     loop
 		if x < 30 then
@@ -4475,7 +4451,7 @@ proc east_hall (var go_to : string)
 end east_hall
 
 proc incastle_trapdoor (var go_to : string)         %when in the castle
-    destination := false
+    hero -> setDestination(false)
     scene := "in-castle trapdoor"
     loop
 		if y > 570 then         %if passing through entrance
@@ -4521,7 +4497,7 @@ proc incastle_trapdoor (var go_to : string)         %when in the castle
 end incastle_trapdoor
 
 proc subcastle_tunnel (var go_to : string)         %when in the castle
-    destination := false
+    hero -> setDestination(false)
     scene := "subcastle tunnel"
     loop
 		if x < 30 then
@@ -4559,7 +4535,7 @@ proc subcastle_tunnel (var go_to : string)         %when in the castle
 end subcastle_tunnel
 
 proc subcastle_tunnel2 (var go_to : string)         %when in the castle
-    destination := false
+    hero -> setDestination(false)
     scene := "subcastle tunnel2"
     loop
 		if x < 30 then
@@ -4596,7 +4572,7 @@ proc subcastle_tunnel2 (var go_to : string)         %when in the castle
 end subcastle_tunnel2
 
 proc troll_dungeon (var go_to : string)         %when in the castle
-    destination := false
+    hero -> setDestination(false)
     scene := "troll dungeon"
     loop
 		if x < 30 then
@@ -4630,7 +4606,7 @@ proc troll_dungeon (var go_to : string)         %when in the castle
 end troll_dungeon
 
 proc outside_entrance (var go_to : string)         %when outside entrance
-    destination := false
+    hero -> setDestination(false)
     scene := "outside entrance"
     loop
 		if y < 30 then
@@ -4686,7 +4662,7 @@ proc outside_entrance (var go_to : string)         %when outside entrance
 end outside_entrance
 
 proc shop (var go_to : string)         %when near shop
-    destination := false
+    hero -> setDestination(false)
     scene := "shop"
     loop
 		if x < 30 then         %if leaving through west side of screen
@@ -4726,7 +4702,7 @@ proc shop (var go_to : string)         %when near shop
 end shop
 
 proc in_shop (var go_to : string)         %when in the shop
-    destination := false
+    hero -> setDestination(false)
     scene := "in shop"
     loop
 		buttonchoose ("multibutton")
@@ -4749,7 +4725,7 @@ proc in_shop (var go_to : string)         %when in the shop
 end in_shop
 
 proc west_hall (var go_to : string)         %when in second hall segment west of castle entrance
-    destination := false
+    hero -> setDestination(false)
     scene := "west hall"
     loop
 		if x + 29 > 770 then
@@ -4793,7 +4769,7 @@ proc west_hall (var go_to : string)         %when in second hall segment west of
 end west_hall
 
 proc west_river (var go_to : string)         %when at west river
-    destination := false
+    hero -> setDestination(false)
     scene := "west river"
     loop
 		if y < 30 then
@@ -4860,7 +4836,7 @@ proc west_river (var go_to : string)         %when at west river
 end west_river
 
 proc cemetery (var go_to : string)         %when at west river
-    destination := false
+    hero -> setDestination(false)
     scene := "cemetery"
     loop
 		if x + 29 > 770 then
@@ -4917,7 +4893,7 @@ proc cemetery (var go_to : string)         %when at west river
 end cemetery
 
 proc dark_forest (var go_to : string)         %when at west river
-    destination := false
+    hero -> setDestination(false)
     scene := "dark forest"
     loop
 		if x + 29 > 770 then
@@ -4967,7 +4943,7 @@ proc dark_forest (var go_to : string)         %when at west river
 end dark_forest
 
 proc witch_house (var go_to : string)         %when at west river
-    destination := false
+    hero -> setDestination(false)
     scene := "witch house"
     loop
 		if x + 29 > 770 then
@@ -5001,7 +4977,7 @@ proc witch_house (var go_to : string)         %when at west river
 end witch_house
 
 proc crypt (var go_to : string)         %when at west river
-    destination := false
+    hero -> setDestination(false)
     scene := "crypt"
     loop
 		if x > 140 and x < 180 and y > 275 and y < 340 then
@@ -5040,7 +5016,7 @@ proc crypt (var go_to : string)         %when at west river
 end crypt
 
 proc west_river_northcorner (var go_to : string)         %when at west river
-    destination := false
+    hero -> setDestination(false)
     scene := "west river-north corner"
     loop
 		if y < 30 then
@@ -5088,7 +5064,7 @@ proc west_river_northcorner (var go_to : string)         %when at west river
 end west_river_northcorner
 
 proc mountains (var go_to : string)         %when east of 'west river'
-    destination := false
+    hero -> setDestination(false)
     scene := "mountains"
     loop
 		if y > 570 then
@@ -5142,7 +5118,7 @@ proc mountains (var go_to : string)         %when east of 'west river'
 end mountains
 
 proc cottage (var go_to : string)         %when east of 'west river'
-    destination := false
+    hero -> setDestination(false)
     scene := "cottage"
     loop
 		if y < 30 then
@@ -5185,7 +5161,7 @@ proc cottage (var go_to : string)         %when east of 'west river'
 end cottage
 
 proc east_of_westriver (var go_to : string)         %when east of 'west river'
-    destination := false
+    hero -> setDestination(false)
     scene := "east of 'west river'"
     loop
 		if x + 29 > 770 then       %if leaving through left side of screen
@@ -5236,7 +5212,7 @@ proc east_of_westriver (var go_to : string)         %when east of 'west river'
 end east_of_westriver
 
 proc lair_entrance (var go_to : string)         %when in the castle
-    destination := false
+    hero -> setDestination(false)
     scene := "lair entrance"
     loop
 		if y > 410 then
@@ -5277,7 +5253,7 @@ proc lair_entrance (var go_to : string)         %when in the castle
 end lair_entrance
 
 proc dragons_lair (var go_to : string)         %when in the castle
-    destination := false
+    hero -> setDestination(false)
     scene := "dragon's lair"
     loop
 		if y < 30 then
@@ -5579,8 +5555,8 @@ loop
 			open : record2, "Newgamevars.gqr", read
 			read : record2, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive,
 			dragonhead3alive,
-			victory, music_on, stopmusic, destination, scalehotkey, attacking, rope, songhotkey, newdest,
-			platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, picnum, x, y, xdest, ydest,
+			victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
+			platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, x, y, xdest, ydest,
 			xpic, ypic, xdiff, ydiff, archeryxp, combatxp, hitpoints,
 			dragonhead1hp,
 			dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
