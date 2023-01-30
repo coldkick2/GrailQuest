@@ -14,7 +14,6 @@ type Direction : enum (UP, DOWN, LEFT, RIGHT)
 
 include "scenes/index.t"
 include "items/index.t"
-include "actors/index.t"
 
 setscreen ("position:middle,centre,graphics:500;400,offscreenonly,nobuttonbar,nocursor")
 var loadpic : int := Pic.FileNew ("Images/opening screen - loading.bmp") %loading screen
@@ -36,17 +35,19 @@ loaddotsize (9) := 2
 var finishedloading : boolean := false
 
 %Items
-var kingsSword: ^KingsSword
+var pervasive kingsSword: ^KingsSword
 new KingsSword, kingsSword
 
-var twoHanded: ^TwoHanded
+var pervasive twoHanded: ^TwoHanded
 new TwoHanded, twoHanded
 
-var battleAxe: ^BattleAxe
+var pervasive battleAxe: ^BattleAxe
 new BattleAxe, battleAxe
 
 var bow: ^Bow
 new Bow, bow
+
+include "actors/index.t"
 
 %Hero
 var hero: ^Hero
@@ -616,7 +617,6 @@ var dragonhead1returncounter : int := 0 %dragon head 1 respawn counter
 var dragonhead2returncounter : int := 0 %dragon head 2 respawn counter
 var dragonhead3returncounter : int := 0 %dragon head 3 respawn counter
 var ratreturncounter : int := 0 %rat respawn counter
-var bonus : int := 0 %weapon bonus
 var healthpacks : int := 0 %number of healthpacks
 var arrownum : int := 50 %number of arrows
 var totalLvl : int := round ((combatlvl + archerylvl) / 2) %total level
@@ -1016,7 +1016,7 @@ process swords
 end swords
 
 process playHitSound
-	Music.PlayFile(weapon -> hitSound)
+	Music.PlayFile(hero -> weapon -> hitSound)
 end playHitSound
 
 process purchase
@@ -1817,7 +1817,7 @@ proc reset(var go_to : string)
 	gold := 0
 	hitpoints := 25
 	healthpacks := 0
-	weapon := kingsSword
+  hero -> setWeapon(kingsSword)
 end reset
 
 proc restoreInv
@@ -1825,18 +1825,18 @@ proc restoreInv
 	twoHanded -> setObtained(twohanded)
 	bow -> setObtained(bowObtained)
 	if equipped = kingsSword -> name then
-		weapon := kingsSword
+    hero -> setWeapon(kingsSword)
 	elsif equipped = battleAxe -> name then
-		weapon := battleAxe
+		hero -> setWeapon(battleAxe)
 	elsif equipped = twoHanded -> name then
-		weapon := twoHanded
+		hero -> setWeapon(twoHanded)
 	elsif equipped = bow -> name then
-		weapon := bow
+		hero -> setWeapon(bow)
 	end if
 end restoreInv
 
 proc save
-		equipped := weapon -> name
+		equipped := hero -> weapon -> name
     open : record1, "Grail Quest - records.gqr", write
     write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive, dragonhead3alive,
 	victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
@@ -1844,7 +1844,7 @@ proc save
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp,  hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-	bonus, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
+	healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
     drawdot (793, 602, brightgreen)
@@ -1860,7 +1860,7 @@ proc load
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-	bonus, healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
+	healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
 	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
 	restoreInv()
@@ -1996,8 +1996,8 @@ end buyItem
 
 proc equipItem(item: pointer to Item)
 	if item -> obtained then
-		if weapon ~= item then
-			weapon := item
+		if hero -> weapon ~= item then
+      hero -> setWeapon(item)
 			if sfx_on then
 				fork playHitSound
 			end if
@@ -2018,10 +2018,10 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
         follow := actor
       end if
     end if
-    if ((weapon -> style = "combat")
+    if ((hero -> weapon -> style = "combat")
       and (abs ((actor -> xPos + actor -> xRad) - (x + 15)) < 20
       and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 20))
-      or (weapon -> style = "archery"
+      or (hero -> weapon -> style = "archery"
       and (abs ((actor -> xPos + actor -> xRad) - (x + 15)) < 100
       and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 200)) then
       attacking := true
@@ -2043,9 +2043,9 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
         end if
         if actor -> hp > 0 then
           %if using a combat attack style
-          if weapon -> style = "combat" then
+          if hero -> weapon -> style = "combat" then
             %inflicts damage to enemy accoring to player's skill level
-            damagedealt := Rand.Int (0, (combatlvl + bonus))
+            damagedealt := Rand.Int (0, (combatlvl + hero -> weapon -> power))
             actor -> setHp(actor -> hp - damagedealt)
             if actor -> hp > 0 then
               actor -> setAlive(true)
@@ -2065,11 +2065,11 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
               end if
             end if
           %if using an archery attack style
-          elsif weapon -> style = "archery" then
+          elsif hero -> weapon -> style = "archery" then
             %inflicts damage to enemy accoring to player's skill level
             if arrownum > 0 then
               arrownum := arrownum - 1
-              damagedealt := Rand.Int (0, (archerylvl + bonus))
+              damagedealt := Rand.Int (0, (archerylvl + hero -> weapon -> power))
               actor -> setHp(actor -> hp - damagedealt)
               if actor -> hp > 0 then
                 actor -> setAlive(true)
@@ -2092,7 +2092,7 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
               text := "You have run out of arrows!"
             end if
           end if
-          if weapon -> style = "archery" then
+          if hero -> weapon -> style = "archery" then
             if arrownum > 0 then
               fork playHitSound
             end if
@@ -2386,7 +2386,6 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			bowlist := false
 		end if
     end if
-	bonus := weapon -> power
     if scene = "castle entrance" then         %if inside castle
 		if y > 354 and (x < 284 or x > 457) then         %if colliding with wall but not entrance
 			y := 354
@@ -2856,9 +2855,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 				if dragonhead1hp > 0 then
 						%if using a combat attack style
-						if weapon -> style = "combat" then
+						if hero -> weapon -> style = "combat" then
 						%inflicts damage to dragon accoring to player's skill level
-						damagedealt := Rand.Int (0, (combatlvl + bonus))
+						damagedealt := Rand.Int (0, (combatlvl + hero -> weapon -> power))
 						dragonhead1hp := dragonhead1hp - damagedealt
 						if dragonhead1hp > 0 then
 								dragonhead1alive := true
@@ -2872,7 +2871,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 								end if
 						end if
 						end if
-						if weapon -> style = "archery" then
+						if hero -> weapon -> style = "archery" then
 							if arrownum > 0 then
 								fork playHitSound
 							end if
@@ -2902,9 +2901,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 				if dragonhead2hp > 0 then
 						%if using a combat attack style
-						if weapon -> style = "combat" then
+						if hero -> weapon -> style = "combat" then
 						%inflicts damage to dragon accoring to player's skill level
-						damagedealt := Rand.Int (0, (combatlvl + bonus))
+						damagedealt := Rand.Int (0, (combatlvl + hero -> weapon -> power))
 						dragonhead2hp := dragonhead2hp - damagedealt
 						end if
 						if dragonhead2hp > 0 then
@@ -2918,7 +2917,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 								text := "You've mastered the art of combat and cannot gain further experience."
 						end if
 						end if
-						if weapon -> style = "archery" then
+						if hero -> weapon -> style = "archery" then
 							if arrownum > 0 then
 								fork playHitSound
 							end if
@@ -2948,9 +2947,9 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 				if dragonhead3hp > 0 then
 						%if using a combat attack style
-						if weapon -> style = "combat" then
+						if hero -> weapon -> style = "combat" then
 							%inflicts damage to dragon accoring to player's skill level
-							damagedealt := Rand.Int (0, (combatlvl + bonus))
+							damagedealt := Rand.Int (0, (combatlvl + hero -> weapon -> power))
 							dragonhead3hp := dragonhead3hp - damagedealt
 						end if
 						if dragonhead3hp > 0 then
@@ -2964,7 +2963,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 								text := "You've mastered the art of combat and cannot gain further experience."
 						end if
 						end if
-						if weapon -> style = "archery" then
+						if hero -> weapon -> style = "archery" then
 							if arrownum > 0 then
 								fork playHitSound
 							end if
@@ -5559,7 +5558,7 @@ loop
 			xpic, ypic, xdiff, ydiff, archeryxp, combatxp, hitpoints,
 			dragonhead1hp,
 			dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
-			bonus, healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
+      healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
 			text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
 			close : record2
 			loadnew := false

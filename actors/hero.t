@@ -1,7 +1,9 @@
 class Hero
     inherit Actor
 
-    export destination, frameNumber, movementFrames, setDestination, setFrameNumber
+    import Item
+
+    export destination, frameNumber, movementFrames, weapon, setDestination, setFrameNumber, setWeapon
 
     var destination : boolean := false
 
@@ -21,6 +23,8 @@ class Hero
     movementFrames(ord(Direction.RIGHT), 1) := Pic.FileNew ("Images/warrior_new2r.bmp")
     movementFrames(ord(Direction.RIGHT), 2) := Pic.FileNew ("Images/warrior_new3r.bmp")
 
+    var weapon : pointer to Item := kingsSword
+
     procedure setDestination(b : boolean)
         destination := b
     end setDestination
@@ -28,4 +32,8 @@ class Hero
     procedure setFrameNumber(i : int)
         frameNumber := i
     end setFrameNumber
+
+    procedure setWeapon(w : pointer to Item)
+        weapon := w
+    end setWeapon
 end Hero
