@@ -581,8 +581,8 @@ Font.Draw ("Loading values...", 105, 195, font5, white)
 View.Update
 var delayspeed : int := 30 %credits speed
 var gold : int := 300 %player gold
-var x : int := 400 %character x coordinate
-var y : int := 300 %character y coordinate
+var x : int
+var y : int
 var xm : int %mouse x coordinate
 var ym : int %mouse y coordinate
 var button : int %mouse button
@@ -949,13 +949,13 @@ proc enterchat
 		elsif chattext = "ARCHERY" then
 			archeryxp := 99999
 		elsif chattext = "RIGHT" then
-			x := x + 50
+      hero -> setXPos(hero -> xPos + 50)
 		elsif chattext = "LEFT" then
-			x := x - 50
+      hero -> setXPos(hero -> xPos - 50)
 		elsif chattext = "UP" then
-			y := y + 50
+      hero -> setYPos(hero -> yPos + 50)
 		elsif chattext = "DOWN" then
-			y := y - 50
+      hero -> setYPos(hero -> yPos - 50)
 		elsif chattext = "BATTLEAXE" then
 			battleAxe -> setObtained(true)
 		elsif chattext = "2H" then
@@ -1233,16 +1233,16 @@ end menumusic
 proc gqintro
     Pic.DrawSpecial (intro, 0, 0, picCopy, picFadeIn, 1000)
     setscreen ("position:middle,centre,graphics:500;400,offscreenonly,nobuttonbar,nocursor,title:Grail Quest")
-    for x : 1 .. 289
+    for xIntro : 1 .. 289
 		if xgrail < 105 then
 			xgrail := xgrail + 1
 		end if
-		if x = 155 then
+		if xIntro = 155 then
 			fork stonedoor
 		end if
 		Pic.Draw (intro, 0, 0, picCopy)
 		Font.Draw ("G r a i l", xgrail, 140, font3, grey)
-		if x > 50 then
+		if xIntro > 50 then
 			xquest := xquest - 1
 		end if
 		Font.Draw ("Q u e s t", xquest, 140, font3, grey)
@@ -1484,41 +1484,41 @@ proc map
 	    drawfillbox (0, 0, 800, 600, black)
 	    Pic.Draw (mappic50, xpic, ypic, picMerge)
 	    if scene = "outside entrance" then
-			Pic.Draw (location, xpic + round (x / 2) + 1600, ypic + round (y / 2) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1600, ypic + round (hero -> yPos / 2) + 600, picMerge)
 	    elsif scene = "castle entrance" then
-			Pic.Draw (location, xpic + round (x / 2) + 1600, ypic + round (y / 2) + 300, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1600, ypic + round (hero -> yPos / 2) + 300, picMerge)
 	    elsif scene = "south of entrance" then
-			Pic.Draw (location, xpic + round (x / 2) + 1600, ypic + round (y / 2), picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1600, ypic + round (hero -> yPos / 2), picMerge)
 	    elsif scene = "east hall" then
-			Pic.Draw (location, xpic + round (x / 2) + 1800, ypic + round (y / 2) + 300, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1800, ypic + round (hero -> yPos / 2) + 300, picMerge)
 	    elsif scene = "in-castle trapdoor" then
-			Pic.Draw (location, xpic + round (x / 2) + 1800, ypic + round (y / 2), picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1800, ypic + round (hero -> yPos / 2), picMerge)
 	    elsif scene = "shop" then
-			Pic.Draw (location, xpic + round (x / 2) + 1200, ypic + round (y / 2) + 300, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1200, ypic + round (hero -> yPos / 2) + 300, picMerge)
 	    elsif scene = "in shop" then
-			Pic.Draw (location, xpic + round (x / 2) + 1200, ypic + round (y / 2) + 300, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1200, ypic + round (hero -> yPos / 2) + 300, picMerge)
 	    elsif scene = "west hall" then
-			Pic.Draw (location, xpic + round (x / 2) + 800, ypic + round (y / 2) + 300, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 800, ypic + round (hero -> yPos / 2) + 300, picMerge)
 	    elsif scene = "west river" then
-			Pic.Draw (location, xpic + round (x / 2) + 800, ypic + round (y / 2) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 800, ypic + round (hero -> yPos / 2) + 600, picMerge)
 	    elsif scene = "cemetery" then
-			Pic.Draw (location, xpic + round (x / 2) + 400, ypic + round (y / 2) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 400, ypic + round (hero -> yPos / 2) + 600, picMerge)
 	    elsif scene = "dark forest" then
-			Pic.Draw (location, xpic + round (x / 2) + 400, ypic + round (y / 2) + 900, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 400, ypic + round (hero -> yPos / 2) + 900, picMerge)
 	    elsif scene = "witch house" then
-			Pic.Draw (location, xpic + round (x / 2) + 0, ypic + round (y / 2) + 900, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 0, ypic + round (hero -> yPos / 2) + 900, picMerge)
 	    elsif scene = "east of 'west river'" then
-			Pic.Draw (location, xpic + round (x / 2) + 1200, ypic + round (y / 2) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1200, ypic + round (hero -> yPos / 2) + 600, picMerge)
 	    elsif scene = "west river-north corner" then
-			Pic.Draw (location, xpic + round (x / 2) + 800, ypic + round (y / 2) + 900, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 800, ypic + round (hero -> yPos / 2) + 900, picMerge)
 	    elsif scene = "mountains" then
-			Pic.Draw (location, xpic + round (x / 2) + 1200, ypic + round (y / 2) + 900, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1200, ypic + round (hero -> yPos / 2) + 900, picMerge)
 	    elsif scene = "cottage" then
-			Pic.Draw (location, xpic + round (x / 2) + 1600, ypic + round (y / 2) + 900, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1600, ypic + round (hero -> yPos / 2) + 900, picMerge)
 	    elsif scene = "lair entrance" then
-			Pic.Draw (location, xpic + round (x / 2) + 1200, ypic + round (y / 2) + 1200, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1200, ypic + round (hero -> yPos / 2) + 1200, picMerge)
 	    elsif scene = "dragon's lair" then
-			Pic.Draw (location, xpic + round (x / 2) + 1200, ypic + round (y / 2) + 1500, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 2) + 1200, ypic + round (hero -> yPos / 2) + 1500, picMerge)
 	    end if
 	elsif mapscale = "100" then         %if scale is 100%
 	    if xm > 0 and xm < 30 and ym > 570 and ym < 600 then             %NW
@@ -1603,41 +1603,41 @@ proc map
 	    drawfillbox (0, 0, 800, 600, black)
 	    Pic.Draw (mappic100, xpic, ypic, picMerge)
 	    if scene = "outside entrance" then
-			Pic.Draw (location, xpic + round (x / 1) + 3200, ypic + round (y / 1) + 1200, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 3200, ypic + round (hero -> yPos / 1) + 1200, picMerge)
 	    elsif scene = "castle entrance" then
-			Pic.Draw (location, xpic + round (x / 1) + 3200, ypic + round (y / 1) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 3200, ypic + round (hero -> yPos / 1) + 600, picMerge)
 	    elsif scene = "south of entrance" then
-			Pic.Draw (location, xpic + round (x / 1) + 3200, ypic + round (y / 1), picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 3200, ypic + round (hero -> yPos / 1), picMerge)
 	    elsif scene = "east hall" then
-			Pic.Draw (location, xpic + round (x / 1) + 4000, ypic + round (y / 1) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 4000, ypic + round (hero -> yPos / 1) + 600, picMerge)
 	    elsif scene = "in-castle trapdoor" then
-			Pic.Draw (location, xpic + round (x / 1) + 4000, ypic + round (y / 1), picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 4000, ypic + round (hero -> yPos / 1), picMerge)
 	    elsif scene = "shop" then
-			Pic.Draw (location, xpic + round (x / 1) + 2400, ypic + round (y / 1) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 2400, ypic + round (hero -> yPos / 1) + 600, picMerge)
 	    elsif scene = "in shop" then
-			Pic.Draw (location, xpic + round (x / 1) + 2400, ypic + round (y / 1) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 2400, ypic + round (hero -> yPos / 1) + 600, picMerge)
 	    elsif scene = "west hall" then
-			Pic.Draw (location, xpic + round (x / 1) + 1600, ypic + round (y / 1) + 600, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 1600, ypic + round (hero -> yPos / 1) + 600, picMerge)
 	    elsif scene = "west river" then
-			Pic.Draw (location, xpic + round (x / 1) + 1600, ypic + round (y / 1) + 1200, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 1600, ypic + round (hero -> yPos / 1) + 1200, picMerge)
 	    elsif scene = "cemetery" then
-			Pic.Draw (location, xpic + round (x / 1) + 800, ypic + round (y / 1) + 1200, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 800, ypic + round (hero -> yPos / 1) + 1200, picMerge)
 	    elsif scene = "dark forest" then
-			Pic.Draw (location, xpic + round (x / 1) + 800, ypic + round (y / 1) + 1800, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 800, ypic + round (hero -> yPos / 1) + 1800, picMerge)
 	    elsif scene = "witch house" then
-			Pic.Draw (location, xpic + round (x / 1) + 0, ypic + round (y / 1) + 1800, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 0, ypic + round (hero -> yPos / 1) + 1800, picMerge)
 	    elsif scene = "east of 'west river'" then
-			Pic.Draw (location, xpic + round (x / 1) + 2400, ypic + round (y / 1) + 1200, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 2400, ypic + round (hero -> yPos / 1) + 1200, picMerge)
 	    elsif scene = "west river-north corner" then
-			Pic.Draw (location, xpic + round (x / 1) + 1600, ypic + round (y / 1) + 1800, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 1600, ypic + round (hero -> yPos / 1) + 1800, picMerge)
 	    elsif scene = "mountains" then
-			Pic.Draw (location, xpic + round (x / 1) + 2400, ypic + round (y / 1) + 1800, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 2400, ypic + round (hero -> yPos / 1) + 1800, picMerge)
 	    elsif scene = "cottage" then
-			Pic.Draw (location, xpic + round (x / 1) + 3200, ypic + round (y / 1) + 1800, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 3200, ypic + round (hero -> yPos / 1) + 1800, picMerge)
 	    elsif scene = "lair entrance" then
-			Pic.Draw (location, xpic + round (x / 1) + 2400, ypic + round (y / 1) + 2400, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 2400, ypic + round (hero -> yPos / 1) + 2400, picMerge)
 	    elsif scene = "dragon's lair" then
-			Pic.Draw (location, xpic + round (x / 1) + 2400, ypic + round (y / 1) + 3000, picMerge)
+			Pic.Draw (location, xpic + round (hero -> xPos / 1) + 2400, ypic + round (hero -> yPos / 1) + 3000, picMerge)
 	    end if
 	end if
 	Font.Draw ("World Map", 50, 550, font1, red)
@@ -1811,8 +1811,8 @@ proc reset(var go_to : string)
 	fullhelm := false
 	key_west_hall := false
 	cottagekey := false
-	x := 400
-	y := 100
+  hero -> setXPos(400)
+  hero -> setYPos(100)
 	arrownum := 0
 	gold := 0
 	hitpoints := 25
@@ -1833,6 +1833,8 @@ proc restoreInv
 	elsif equipped = bow -> name then
 		hero -> setWeapon(bow)
 	end if
+  hero -> setXPos(x)
+  hero -> setYPos(y)
 end restoreInv
 
 proc save
@@ -1840,7 +1842,7 @@ proc save
     open : record1, "Grail Quest - records.gqr", write
     write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive, dragonhead3alive,
 	victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
-	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, x, y, xdest, ydest,
+	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, hero -> xPos, hero -> yPos, xdest, ydest,
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp,  hitpoints,
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
@@ -1881,15 +1883,15 @@ proc drawHero
     hero -> setFrameNumber(0)
   end if
 
-  Pic.Draw(hero -> movementFrames (hero -> dir, hero -> frameNumber), x, y, picMerge)
+  Pic.Draw(hero -> movementFrames (hero -> dir, hero -> frameNumber), hero -> xPos, hero -> yPos, picMerge)
   Time.DelaySinceLast (30)
 end drawHero
 
 proc movement     %manipulates character movement input
   if ~ victory then
     Input.KeyDown (move)
-		if xm > x - 1 and xm < x + 21 and ym > y - 1 and ym < y + 30 then
-			Font.Draw ("You [Level " + intstr (totalLvl) + "]", x, y + 30, font2, white)
+		if xm > hero -> xPos - 1 and xm < hero -> xPos + 21 and ym > hero -> yPos - 1 and ym < hero -> yPos + 30 then
+			Font.Draw ("You [Level " + intstr (totalLvl) + "]", hero -> xPos, hero -> yPos + 30, font2, white)
 		end if
 		if ym < 601 and ym > -1 and xm > -1 and xm < 801 then         %if mouse in playing screen then move character
 			if xm < 787 or xm > 793 or ym < 585 or ym > 595 then
@@ -1910,33 +1912,33 @@ proc movement     %manipulates character movement input
         ydest := follow -> yPos
       end if
 			drawbox (xdest - 1, ydest - 8, xdest + 15, ydest + 8, brightred)
-			if x + 8 > xdest + 3 and y > ydest + 3 then             %left/down
-				x := x - 3
-				y := y - 3
+			if hero -> xPos + 8 > xdest + 3 and hero -> yPos > ydest + 3 then             %left/down
+        hero -> setXPos(hero -> xPos - 3)
+        hero -> setYPos(hero -> yPos - 3)
 				hero -> setDir(ord(Direction.LEFT))
-			elsif x + 8 > xdest + 3 and y < ydest - 3 then             %left/up
-				x := x - 3
-				y := y + 3
+			elsif hero -> xPos + 8 > xdest + 3 and hero -> yPos < ydest - 3 then             %left/up
+        hero -> setXPos(hero -> xPos - 3)
+        hero -> setYPos(hero -> yPos + 3)
 				hero -> setDir(ord(Direction.LEFT))
-			elsif x + 8 < xdest - 3 and y > ydest + 3 then             %right/down
-				x := x + 3
-				y := y - 3
+			elsif hero -> xPos + 8 < xdest - 3 and hero -> yPos > ydest + 3 then             %right/down
+        hero -> setXPos(hero -> xPos + 3)
+        hero -> setYPos(hero -> yPos - 3)
 				hero -> setDir(ord(Direction.RIGHT))
-			elsif x + 8 < xdest - 3 and y < ydest - 3 then             %right/up
-				x := x + 3
-				y := y + 3
+			elsif hero -> xPos + 8 < xdest - 3 and hero -> yPos < ydest - 3 then             %right/up
+        hero -> setXPos(hero -> xPos + 3)
+        hero -> setYPos(hero -> yPos + 3)
 				hero -> setDir(ord(Direction.RIGHT))
-			elsif x + 8 > xdest + 4 then             %left
-				x := x - 4
+			elsif hero -> xPos + 8 > xdest + 4 then             %left
+        hero -> setXPos(hero -> xPos - 4)
 				hero -> setDir(ord(Direction.LEFT))
-			elsif x + 8 < xdest - 4 then             %right
-				x := x + 4
+			elsif hero -> xPos + 8 < xdest - 4 then             %right
+        hero -> setXPos(hero -> xPos + 4)
 				hero -> setDir(ord(Direction.RIGHT))
-			elsif y < ydest - 4 then             %up
-				y := y + 4
+			elsif hero -> yPos < ydest - 4 then             %up
+        hero -> setYPos(hero -> yPos + 4)
 				hero -> setDir(ord(Direction.UP))
-			elsif y > ydest + 4 then             %down
-				y := y - 4
+			elsif hero -> yPos > ydest + 4 then             %down
+        hero -> setYPos(hero -> yPos - 4)
 				hero -> setDir(ord(Direction.DOWN))
 			else
 				if follow ~= peasant then
@@ -1945,32 +1947,32 @@ proc movement     %manipulates character movement input
 			end if
 		elsif left = 0 then
 			if move (KEY_LEFT_ARROW) and move (KEY_DOWN_ARROW) then
-				x := x - 3                 %left
-				y := y - 3                 %down
+        hero -> setXPos(hero -> xPos - 3)
+        hero -> setYPos(hero -> yPos - 3)
 				hero -> setDir(ord(Direction.LEFT))
 			elsif move (KEY_RIGHT_ARROW) and move (KEY_UP_ARROW) then
-				x := x + 3                 %right
-				y := y + 3                 %up
+        hero -> setXPos(hero -> xPos + 3)
+        hero -> setYPos(hero -> yPos + 3)
 				hero -> setDir(ord(Direction.RIGHT))
 			elsif move (KEY_LEFT_ARROW) and move (KEY_UP_ARROW) then
-				x := x - 3                 %left
-				y := y + 3                 %up
+        hero -> setXPos(hero -> xPos - 3)
+        hero -> setYPos(hero -> yPos + 3)
 				hero -> setDir(ord(Direction.LEFT))
 			elsif move (KEY_RIGHT_ARROW) and move (KEY_DOWN_ARROW) then
-				x := x + 3                 %right
-				y := y - 3                 %down
+        hero -> setXPos(hero -> xPos + 3)
+        hero -> setYPos(hero -> yPos - 3)
 				hero -> setDir(ord(Direction.RIGHT))
 			elsif move (KEY_LEFT_ARROW) then
-				x := x - 4                 %left
+        hero -> setXPos(hero -> xPos - 4)
 				hero -> setDir(ord(Direction.LEFT))
 			elsif move (KEY_RIGHT_ARROW) then
-				x := x + 4                 %right
+        hero -> setXPos(hero -> xPos + 4)
 				hero -> setDir(ord(Direction.RIGHT))
 			elsif move (KEY_UP_ARROW) then
-				y := y + 4                 %up
+        hero -> setYPos(hero -> yPos + 4)
 				hero -> setDir(ord(Direction.UP))
 			elsif move (KEY_DOWN_ARROW) then
-				y := y - 4                 %down
+        hero -> setYPos(hero -> yPos - 4)
 				hero -> setDir(ord(Direction.DOWN))
       end if
 		end if
@@ -2019,11 +2021,11 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
       end if
     end if
     if ((hero -> weapon -> style = "combat")
-      and (abs ((actor -> xPos + actor -> xRad) - (x + 15)) < 20
-      and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 20))
+      and (abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 20
+      and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 20))
       or (hero -> weapon -> style = "archery"
-      and (abs ((actor -> xPos + actor -> xRad) - (x + 15)) < 100
-      and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 200)) then
+      and (abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 100
+      and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 200)) then
       attacking := true
       if xdest = actor -> xPos and ydest = actor -> yPos then
         hero -> setDestination(false)
@@ -2031,7 +2033,7 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
       text := "You are attacking a " + actor -> name + "!  Arrows left: " + intstr (arrownum) + "  Goblin: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
       if hpcounter = 20 or hpcounter = 40 then
         if hitpoints > 0 then
-          if abs ((actor -> xPos + actor -> xRad) - (x + 15)) < 20 and abs ((actor -> yPos + actor -> yRad) - (y + 15)) < 20 then
+          if abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 20 and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 20 then
             damagetaken := Rand.Int (actor -> dmgMin, actor -> dmgMax)
             if defence < damagetaken then
               hitpoints := hitpoints - (damagetaken - defence)
@@ -2387,10 +2389,10 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		end if
     end if
     if scene = "castle entrance" then         %if inside castle
-		if y > 354 and (x < 284 or x > 457) then         %if colliding with wall but not entrance
-			y := 354
+		if hero -> yPos > 354 and (hero -> xPos < 284 or hero -> xPos > 457) then         %if colliding with wall but not entrance
+      hero -> setYPos(354)
 		end if
-		if x > 200 and x < 600 and y < 400 then
+		if hero -> xPos > 200 and hero -> xPos < 600 and hero -> yPos < 400 then
 			if grail then
 				Font.Draw ("You return the Holy Grail to your king...", 100, 300, font3, yellow)
 				Font.Draw ("Quest Complete!", 300, 200, font3, yellow)
@@ -2402,114 +2404,114 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			end if
 		end if
     elsif scene = "south of entrance" then                         %if south of entrance
-		if y < 30 then
-			y := 30
+		if hero -> yPos < 30 then
+      hero -> setYPos(30)
 		end if
-		if x < 30 then
-			x := 30
+		if hero -> xPos < 30 then
+      hero -> setXPos(30)
 		end if
     elsif scene = "east hall" then                     %if east hall
-		if y > 354 then
-			y := 354
+		if hero -> yPos > 354 then
+      hero -> setYPos(354)
 		end if
-		if x > 770 then
-			x := 770
+		if hero -> xPos > 770 then
+      hero -> setXPos(770)
 		end if
     elsif scene = "in-castle trapdoor" then                 %if in-castle trapdoor
-		if x > 770 then
-			x := 770
+		if hero -> xPos > 770 then
+      hero -> setXPos(770)
 		end if
-		if y < 30 then
-			y := 30
+		if hero -> yPos < 30 then
+      hero -> setYPos(30)
 		end if
     elsif scene = "subcastle tunnel" then                 %if subcastle tunnel
-		if y > 350 then
-			y := 350
-		elsif y < 230 then
-			y := 230
+		if hero -> yPos > 350 then
+      hero -> setYPos(350)
+		elsif hero -> yPos < 230 then
+      hero -> setYPos(230)
 		end if
     elsif scene = "subcastle tunnel2" then                     %if subcastle tunnel2
-		if y > 350 then
-			y := 350
-		elsif y < 230 then
-			y := 230
+		if hero -> yPos > 350 then
+      hero -> setYPos(350)
+		elsif hero -> yPos < 230 then
+      hero -> setYPos(230)
 		end if
     elsif scene = "troll dungeon" then                         %if troll dungeon
-		if y < 30 then
-			y := 30
-		elsif y > 570 then
-			y := 570
+		if hero -> yPos < 30 then
+      hero -> setYPos(30)
+		elsif hero -> yPos > 570 then
+      hero -> setYPos(570)
 		end if
-		if x > 650 then
-			x := 650
-		elsif x < 30 and (y > 350 or y < 230) then
-			x := 30
+		if hero -> xPos > 650 then
+      hero -> setXPos(650)
+		elsif hero -> xPos < 30 and (hero -> yPos > 350 or hero -> yPos < 230) then
+      hero -> setXPos(30)
 		end if
-		if y > 280 and y < 390 then
-			if x > 315 and x < 320 then     %if approaching fire from left
-				x := 315
-			elsif x < 455 and x > 450 then     %if approaching fire from right
-				x := 455
+		if hero -> yPos > 280 and hero -> yPos < 390 then
+			if hero -> xPos > 315 and hero -> xPos < 320 then     %if approaching fire from left
+        hero -> setXPos(315)
+			elsif hero -> xPos < 455 and hero -> xPos > 450 then     %if approaching fire from right
+        hero -> setXPos(455)
 			end if
 		end if
-		if x > 315 and x < 455 then
-			if y > 280 and y < 285 then     %if approaching fire from bottom
-				y := 280
-			elsif y < 390 and y > 385 then     %if approaching fire from top
-				y := 390
+		if hero -> xPos > 315 and hero -> xPos < 455 then
+			if hero -> yPos > 280 and hero -> yPos < 285 then     %if approaching fire from bottom
+        hero -> setYPos(280)
+			elsif hero -> yPos < 390 and hero -> yPos > 385 then     %if approaching fire from top
+        hero -> setYPos(390)
 			end if
 		end if
       attack_enemy(troll, go_to)
     elsif scene = "outside entrance" then         %if outside entrance
 		%tree1
-		if x > 100 and x < 110 and y > 65 and y < 120 then         % if coming from the left
-			x := 100
-		elsif x < 270 and x > 260 and y > 65 and y < 120 then         %if coming from the right
-			x := 270
-		elsif y < 120 and y > 110 and x > 100 and x < 270 then         %if coming from above
-			y := 120
-		elsif y > 65 and y < 80 and x > 100 and x < 270 then         %if coming from below
-			y := 65
+		if hero -> xPos > 100 and hero -> xPos < 110 and hero -> yPos > 65 and hero -> yPos < 120 then         % if coming from the left
+      hero -> setXPos(100)
+		elsif hero -> xPos < 270 and hero -> xPos > 260 and hero -> yPos > 65 and hero -> yPos < 120 then         %if coming from the right
+      hero -> setXPos(270)
+		elsif hero -> yPos < 120 and hero -> yPos > 110 and hero -> xPos > 100 and hero -> xPos < 270 then         %if coming from above
+      hero -> setYPos(120)
+		elsif hero -> yPos > 65 and hero -> yPos < 80 and hero -> xPos > 100 and hero -> xPos < 270 then         %if coming from below
+      hero -> setYPos(65)
 		end if
 		%tree2
-		if x > 500 and x < 510 and y > 15 and y < 60 then         % if coming from the left
-			x := 500
-		elsif x < 670 and x > 660 and y > 15 and y < 70 then         %if coming from the right
-			x := 670
-		elsif y < 70 and y > 60 and x > 500 and x < 670 then         %if coming from above
-			y := 70
-		elsif y > 15 and y < 30 and x > 500 and x < 670 then         %if coming from below
-			y := 15
+		if hero -> xPos > 500 and hero -> xPos < 510 and hero -> yPos > 15 and hero -> yPos < 60 then         % if coming from the left
+      hero -> setXPos(500)
+		elsif hero -> xPos < 670 and hero -> xPos > 660 and hero -> yPos > 15 and hero -> yPos < 70 then         %if coming from the right
+      hero -> setXPos(670)
+		elsif hero -> yPos < 70 and hero -> yPos > 60 and hero -> xPos > 500 and hero -> xPos < 670 then         %if coming from above
+      hero -> setYPos(70)
+		elsif hero -> yPos > 15 and hero -> yPos < 30 and hero -> xPos > 500 and hero -> xPos < 670 then         %if coming from below
+      hero -> setYPos(15)
 		end if
 		%tree3
-		if x > 300 and x < 310 and y > 265 and y < 320 then         %if coming from the left
-			x := 300
-		elsif x < 470 and x > 460 and y > 265 and y < 320 then         %if coming from the right
-			x := 470
-		elsif y < 320 and y > 310 and x > 300 and x < 470 then         %if coming from above
-			y := 320
-		elsif y > 265 and y < 280 and x > 300 and x < 470 then         %if coming from below
-			y := 265
+		if hero -> xPos > 300 and hero -> xPos < 310 and hero -> yPos > 265 and hero -> yPos < 320 then         %if coming from the left
+      hero -> setXPos(300)
+		elsif hero -> xPos < 470 and hero -> xPos > 460 and hero -> yPos > 265 and hero -> yPos < 320 then         %if coming from the right
+      hero -> setXPos(470)
+		elsif hero -> yPos < 320 and hero -> yPos > 310 and hero -> xPos > 300 and hero -> xPos < 470 then         %if coming from above
+      hero -> setYPos(320)
+		elsif hero -> yPos > 265 and hero -> yPos < 280 and hero -> xPos > 300 and hero -> xPos < 470 then         %if coming from below
+      hero -> setYPos(265)
 		end if
-		if x > 770 then
-			x := 770
+		if hero -> xPos > 770 then
+      hero -> setXPos(770)
 		end if
-		if y > 570 and x > 360 then
-			y := 570
+		if hero -> yPos > 570 and hero -> xPos > 360 then
+      hero -> setYPos(570)
 		end if
     elsif scene = "shop" then
-		if y > 354 then         %if colliding with wall
-			y := 354
-		elsif y < 30 then
-			y := 30
+		if hero -> yPos > 354 then         %if colliding with wall
+      hero -> setYPos(354)
+		elsif hero -> yPos < 30 then
+      hero -> setYPos(30)
 		end if
-		if x > 470 and x < 480 and y > 200 then
-			x := 470
-		elsif x > 480 and y > 195 and y < 205 and not (x > 615 and x < 656) then
-			y := 195
+		if hero -> xPos > 470 and hero -> xPos < 480 and hero -> yPos > 200 then
+      hero -> setXPos(470)
+		elsif hero -> xPos > 480 and hero -> yPos > 195 and hero -> yPos < 205 and not (hero -> xPos > 615 and hero -> xPos < 656) then
+      hero -> setYPos(195)
 		end if
-		if x > 700 and y > 195 then
-			y := 195
+		if hero -> xPos > 700 and hero -> yPos > 195 then
+      hero -> setYPos(195)
 		end if
     elsif scene = "in shop" then
 		if shopscreen = 1 then
@@ -2554,7 +2556,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			elsif xm > 718 and xm < 800 and ym > 46 and ym < 93 and left = 1 then
 				shopscreen := 2
 			elsif xm > 718 and xm < 801 and ym > 0 and ym < 47 and left = 1 then             %if player wants to leave the shop
-				y := 150
+        hero -> setYPos(150)
 				go_to := "shop"
 				return
 			end if
@@ -2601,101 +2603,101 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			end if
 		end if
     elsif scene = "west hall" then
-		if y > 354 then
-			if x > 117 and x < 141 then
+		if hero -> yPos > 354 then
+			if hero -> xPos > 117 and hero -> xPos < 141 then
 				if ~ key_west_hall then
-					y := 354
+          hero -> setYPos(354)
 					text := "The door is locked.  You should find the key..."
 				end if
 			else
-				y := 354
+        hero -> setYPos(354)
 			end if
 		end if
-		if y < 30 then
-			y := 30
+		if hero -> yPos < 30 then
+      hero -> setYPos(30)
 		end if
-		if x < 30 then
-			x := 30
+		if hero -> xPos < 30 then
+      hero -> setXPos(30)
 		end if
     elsif scene = "west river" then
-      if x > 210 and x < 220 then         %"west river"'s west edge
-        x := 210
+      if hero -> xPos > 210 and hero -> xPos < 220 then         %"west river"'s west edge
+        hero -> setXPos(210)
       end if
-      if x > 480 and x < 490 then         %"west river"'s east edge
-        x := 490
+      if hero -> xPos > 480 and hero -> xPos < 490 then         %"west river"'s east edge
+        hero -> setXPos(490)
       end if
       %key west hall
-      if x > xkey_west_hall - 5 and x < xkey_west_hall + 26 and y > ykey_west_hall - 5 and y < ykey_west_hall + 26 then
+      if hero -> xPos > xkey_west_hall - 5 and hero -> xPos < xkey_west_hall + 26 and hero -> yPos > ykey_west_hall - 5 and hero -> yPos < ykey_west_hall + 26 then
         key_west_hall := true
         text := "You find a battered iron key..."
       end if
       attack_enemy(skeleton, go_to)
     elsif scene = "cemetery" then
-      if x > 530 and x < 548 and (y < 193 or y > 273) then         %if colliding with trees
-        x := 548
+      if hero -> xPos > 530 and hero -> xPos < 548 and (hero -> yPos < 193 or hero -> yPos > 273) then         %if colliding with trees
+        hero -> setXPos(548)
       else         %if not within cemetery
-        if y < 30 then             %if at bottom of scene
-          y := 30
+        if hero -> yPos < 30 then             %if at bottom of scene
+          hero -> setYPos(30)
         end if
       end if
-      if (y > 273 or y < 193) and x < 548 then
-        if y > 273 then
-          y := 273
-        elsif y < 193 then
-          y := 193
+      if (hero -> yPos > 273 or hero -> yPos < 193) and hero -> xPos < 548 then
+        if hero -> yPos > 273 then
+          hero -> setYPos(273)
+        elsif hero -> yPos < 193 then
+          hero -> setYPos(193)
         end if
       end if
       attack_enemy(ghost, go_to)
     elsif scene = "crypt" then
-      if x > 630 then
-        x := 630
+      if hero -> xPos > 630 then
+        hero -> setXPos(630)
       end if
-      if x < 30 then
-        x := 30
+      if hero -> xPos < 30 then
+        hero -> setXPos(30)
       end if
-      if y < 180 then
-        y := 180
+      if hero -> yPos < 180 then
+        hero -> setYPos(180)
       end if
-      if y > 570 then
-        y := 570
+      if hero -> yPos > 570 then
+        hero -> setYPos(570)
       end if
-      if x > 510 and x < 560 and y > 190 and y < 230 and ~ rope then
+      if hero -> xPos > 510 and hero -> xPos < 560 and hero -> yPos > 190 and hero -> yPos < 230 and ~ rope then
         rope := true
         text := "You find a rope and catch it on a rock on the surface...it seems secure."
       end if
       attack_enemy(zombie, go_to)
     elsif scene = "dark forest" then
-		if x < 735 and y > 155 and y < 281 then         %north trees from the south
-			y := 155
+		if hero -> xPos < 735 and hero -> yPos > 155 and hero -> yPos < 281 then         %north trees from the south
+      hero -> setYPos(155)
 		end if
-		if y > 155 and x > 720 and x < 735 then         %north trees from the east
-			x := 735
+		if hero -> yPos > 155 and hero -> xPos > 720 and hero -> xPos < 735 then         %north trees from the east
+      hero -> setXPos(735)
 		end if
-		if y > 20 and y < 40 and x < 550 then         %south trees from the north
-			y := 40
+		if hero -> yPos > 20 and hero -> yPos < 40 and hero -> xPos < 550 then         %south trees from the north
+      hero -> setYPos(40)
 		end if
-		if y < 40 and x > 540 and x < 550 then         %south trees from the east
-			x := 550
+		if hero -> yPos < 40 and hero -> xPos > 540 and hero -> xPos < 550 then         %south trees from the east
+      hero -> setXPos(550)
 		end if
-		if y > 570 then
-			y := 570
+		if hero -> yPos > 570 then
+      hero -> setYPos(570)
 		end if
     elsif scene = "witch house" then
-		if y < 210 then         %south trees form the north
-			y := 210
-		elsif y > 280 and y < 300 and x > 387 then         %northeast trees from the south
-			y := 280
+		if hero -> yPos < 210 then         %south trees form the north
+      hero -> setYPos(210)
+		elsif hero -> yPos > 280 and hero -> yPos < 300 and hero -> xPos > 387 then         %northeast trees from the south
+      hero -> setYPos(280)
 		end if
-		if x > 387 and x < 400 and y > 280 then         %northeast trees from the west
-			x := 387
-		elsif x < 125 then         %west trees from the east
-			x := 125
+		if hero -> xPos > 387 and hero -> xPos < 400 and hero -> yPos > 280 then         %northeast trees from the west
+      hero -> setXPos(387)
+		elsif hero -> xPos < 125 then         %west trees from the east
+      hero -> setXPos(125)
 		end if
-		if y > 465 then
-			if x > 250 and x < 264 then
+		if hero -> yPos > 465 then
+			if hero -> xPos > 250 and hero -> xPos < 264 then
 				text := "You don't think you should go in there..."
 			end if
-			y := 465
+      hero -> setYPos(465)
 		end if
 		if ratalive then
 			if abs ((xcat + 23) - xrat) < 20 and abs ((ycat + 23) - yrat) < 20 then
@@ -2705,62 +2707,62 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 			end if
 		end if
     elsif scene = "east of 'west river'" then
-      if y < 30 then         %bottom of screen
-        y := 30
+      if hero -> yPos < 30 then         %bottom of screen
+        hero -> setYPos(30)
       end if  
 		  attack_enemy(goblin, go_to)
     elsif scene = "west river-north corner" then
 		%southeast side
-		if x > 460 and x < 490 and y < 280 then         %moving west to water
-			x := 490
+		if hero -> xPos > 460 and hero -> xPos < 490 and hero -> yPos < 280 then         %moving west to water
+      hero -> setXPos(490)
 		end if
-		if y > 250 and y < 280 and x > 460 then         %moving north to water
-			y := 250
+		if hero -> yPos > 250 and hero -> yPos < 280 and hero -> xPos > 460 then         %moving north to water
+      hero -> setYPos(250)
 		end if
 		%northwest side
-		if x > 210 and x < 220 and y < 520 then
-			x := 210
+		if hero -> xPos > 210 and hero -> xPos < 220 and hero -> yPos < 520 then
+      hero -> setXPos(210)
 		end if
-		if y > 490 and y < 520 and x > 210 then
-			y := 520
+		if hero -> yPos > 490 and hero -> yPos < 520 and hero -> xPos > 210 then
+      hero -> setYPos(520)
 		end if
 		%edges
-		if y > 565 then         %top of screen
-			y := 565
+		if hero -> yPos > 565 then         %top of screen
+      hero -> setYPos(565)
 		end if
     elsif scene = "mountains" then
-		if y > 250 and y < 280 then
-			y := 250
-		elsif y > 490 and y < 520 then
-			y := 520
+		if hero -> yPos > 250 and hero -> yPos < 280 then
+      hero -> setYPos(250)
+		elsif hero -> yPos > 490 and hero -> yPos < 520 then
+      hero -> setYPos(520)
 		end if
     elsif scene = "lair entrance" then
-		if x < 30 then
-			x := 30
-		elsif x > 770 then
-			x := 770
+		if hero -> xPos < 30 then
+      hero -> setXPos(30)
+		elsif hero -> xPos > 770 then
+      hero -> setXPos(770)
 		end if
-		if y > 395 and (x < 341 or x > 430) then
-			y := 395
+		if hero -> yPos > 395 and (hero -> xPos < 341 or hero -> xPos > 430) then
+      hero -> setYPos(395)
 		end if
     elsif scene = "cottage" then
-		if x > xcottagekey - 5 and x < xcottagekey + 26 and y > ycottagekey - 5 and y < ycottagekey + 26 and ~ cottagekey then
+		if hero -> xPos > xcottagekey - 5 and hero -> xPos < xcottagekey + 26 and hero -> yPos > ycottagekey - 5 and hero -> yPos < ycottagekey + 26 and ~ cottagekey then
 			cottagekey := true
 			text := "You find a small, tarnished bronze key..."
 		end if
-		if y > 250 and y < 280 then
-			y := 250
-		elsif y > 490 and y < 520 then
-			y := 520
-		elsif y < 30 and x > 420 then
-			y := 30
-		elsif y > 570 then
-			y := 570
+		if hero -> yPos > 250 and hero -> yPos < 280 then
+      hero -> setYPos(250)
+		elsif hero -> yPos > 490 and hero -> yPos < 520 then
+      hero -> setYPos(520)
+		elsif hero -> yPos < 30 and hero -> xPos > 420 then
+      hero -> setYPos(30)
+		elsif hero -> yPos > 570 then
+      hero -> setYPos(570)
 		end if
-		if x > 765 then
-			x := 765
+		if hero -> xPos > 765 then
+      hero -> setXPos(765)
 		end if
-		if x > 505 and y > 66 and y < 168 then         %if player is in cottage
+		if hero -> xPos > 505 and hero -> yPos > 66 and hero -> yPos < 168 then         %if player is in cottage
 			playerincottage := true
 		else
 			playerincottage := false
@@ -2770,36 +2772,36 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		else
 			peasant -> setInCottage(false)
 		end if
-		if x > 360 and x < 400 and (y < 75 or (y > 120 and y < 490)) then
-			x := 360
-		elsif x > 399 and x < 439 and (y < 75 or (y > 120 and y < 490)) then
-			x := 439
+		if hero -> xPos > 360 and hero -> xPos < 400 and (hero -> yPos < 75 or (hero -> yPos > 120 and hero -> yPos < 490)) then
+      hero -> setXPos(360)
+		elsif hero -> xPos > 399 and hero -> xPos < 439 and (hero -> yPos < 75 or (hero -> yPos > 120 and hero -> yPos < 490)) then
+      hero -> setXPos(439)
 		end if
-		if y > 75 and y < 112 and x > 495 and x < 515 then
+		if hero -> yPos > 75 and hero -> yPos < 112 and hero -> xPos > 495 and hero -> xPos < 515 then
 			if ~ cottagekey then
 				text := "The door seems to be locked..."
-				x := 495
+        hero -> setXPos(495)
 			end if
-		elsif (y > 56 and y < 76 and x > 495 and x < 515) or (y > 111 and y < 180 and x > 495 and x < 515) then
-			x := 495
+		elsif (hero -> yPos > 56 and hero -> yPos < 76 and hero -> xPos > 495 and hero -> xPos < 515) or (hero -> yPos > 111 and hero -> yPos < 180 and hero -> xPos > 495 and hero -> xPos < 515) then
+      hero -> setXPos(495)
 		end if
-		if x > 495 then
-			if y > 45 and y < 54 then             %if south of cottage
-			y := 45
-			elsif y > 169 and y < 180 then             %if north of cottage
-			y := 180
-			end if
-		end if
-		if x > 495 then
-			if y > 53 and y < 73 then             %if inside at south wall
-			y := 73
-			end if
-			if y > 160 and y < 180 then             %if inside at north wall
-			y := 160
+		if hero -> xPos > 495 then
+			if hero -> yPos > 45 and hero -> yPos < 54 then             %if south of cottage
+        hero -> setYPos(45)
+			elsif hero -> yPos > 169 and hero -> yPos < 180 then             %if north of cottage
+        hero -> setYPos(180)
 			end if
 		end if
-		if (x > 515 and x < 533 and y > 56 and y < 76) or (x > 515 and x < 533 and y > 111 and y < 180) then
-			x := 533
+		if hero -> xPos > 495 then
+			if hero -> yPos > 53 and hero -> yPos < 73 then             %if inside at south wall
+        hero -> setYPos(73)
+			end if
+			if hero -> yPos > 160 and hero -> yPos < 180 then             %if inside at north wall
+        hero -> setYPos(160)
+			end if
+		end if
+		if (hero -> xPos > 515 and hero -> xPos < 533 and hero -> yPos > 56 and hero -> yPos < 76) or (hero -> xPos > 515 and hero -> xPos < 533 and hero -> yPos > 111 and hero -> yPos < 180) then
+      hero -> setXPos(533)
 		end if
 		if xm > peasant -> xPos - 1 and xm < peasant -> xPos + 30 and ym > peasant -> yPos - 1 and ym < peasant -> yPos + 30 then
 			if right = 100 then
@@ -2816,32 +2818,32 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		elsif ~ dragonhead1alive and ~ dragonhead2alive and ~ dragonhead3alive and ~ grail then
 			text := "You slay the dragon! The Holy Grail lies before you..."
 		end if
-		if y > 570 then
-			y := 570
+		if hero -> yPos > 570 then
+      hero -> setYPos(570)
 		end if
 		%left lava
-		if x < 330 and x > 100 and y < 400 and y > 370 then         %if approaching left lava from top
-			y := 400
-		elsif x < 330 and x > 300 and y < 400 and y > 0 then         %if approaching left lava from side
-			x := 330
+		if hero -> xPos < 330 and hero -> xPos > 100 and hero -> yPos < 400 and hero -> yPos > 370 then         %if approaching left lava from top
+      hero -> setYPos(400)
+		elsif hero -> xPos < 330 and hero -> xPos > 300 and hero -> yPos < 400 and hero -> yPos > 0 then         %if approaching left lava from side
+      hero -> setXPos(330)
 		end if
 		%right lava
-		if x < 800 and x > 450 and y < 400 and y > 370 then         %if approaching right lava from top
-			y := 400
-		elsif x < 480 and x > 450 and y < 400 and y > 0 then         %if approaching right lava from side
-			x := 450
+		if hero -> xPos < 800 and hero -> xPos > 450 and hero -> yPos < 400 and hero -> yPos > 370 then         %if approaching right lava from top
+      hero -> setYPos(400)
+		elsif hero -> xPos < 480 and hero -> xPos > 450 and hero -> yPos < 400 and hero -> yPos > 0 then         %if approaching right lava from side
+      hero -> setXPos(475)
 		end if
-		if x < 100 then         %left side
-			x := 100
-		elsif x > 670 then         %right side
-			x := 670
+		if hero -> xPos < 100 then         %left side
+      hero -> setXPos(100)
+		elsif hero -> xPos > 670 then         %right side
+      hero -> setXPos(670)
 		end if
-		if x > 322 and x < 369 and y > 299 and y < 325 and ~ dragonhead1alive and ~ dragonhead2alive and ~ dragonhead3alive then
+		if hero -> xPos > 322 and hero -> xPos < 369 and hero -> yPos > 299 and hero -> yPos < 325 and ~ dragonhead1alive and ~ dragonhead2alive and ~ dragonhead3alive then
 			grail := true
 			text := "You take the Holy Grail...you should bring it to the king."
 		end if
 		if dragonhead1alive then
-		if x > 180 and x < 220 and y > 500 and y < 550 then
+		if hero -> xPos > 180 and hero -> xPos < 220 and hero -> yPos > 500 and hero -> yPos < 550 then
 				attacking := true
 				if hpcounter = 20 or hpcounter = 40 then
 				if hitpoints > 0 then
@@ -2887,7 +2889,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		attacking := false
 		end if
 		if dragonhead2alive then
-		if x > 380 and x < 420 and y > 450 and y < 500 then
+		if hero -> xPos > 380 and hero -> xPos < 420 and hero -> yPos > 450 and hero -> yPos < 500 then
 				attacking := true
 				if hpcounter = 20 or hpcounter = 40 then
 				if hitpoints > 0 then
@@ -2933,7 +2935,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		attacking := false
 		end if
 		if dragonhead3alive then
-		if x > 580 and x < 620 and y > 500 and y < 550 then
+		if hero -> xPos > 580 and hero -> xPos < 620 and hero -> yPos > 500 and hero -> yPos < 550 then
 				attacking := true
 				if hpcounter = 20 or hpcounter = 40 then
 				if hitpoints > 0 then
@@ -2985,7 +2987,7 @@ process regenActor(actor : pointer to Actor)
   if actor -> alive then
     if actor -> hp < actor -> maxHp then
       if hpcounter = 40 then
-	if abs ((actor -> xPos + 10) - (x + 15)) > 19 and abs ((actor -> yPos + 15) - (y + 15)) > 19 then
+	if abs ((actor -> xPos + 10) - (hero -> xPos + 15)) > 19 and abs ((actor -> yPos + 15) - (hero -> yPos + 15)) > 19 then
 	  actor -> setHp(actor -> hp + 1)
 	end if
       end if
@@ -3076,7 +3078,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     if dragonhead1alive then
 		if dragonhead1hp < 300 then
 		if hpcounter = 40 then
-				if ~ (x > 180 and x < 220) or not (y > 500 and y < 550) then
+				if ~ (hero -> xPos > 180 and hero -> xPos < 220) or not (hero -> yPos > 500 and hero -> yPos < 550) then
 				dragonhead1hp := dragonhead1hp + 1
 				end if
 		end if
@@ -3098,7 +3100,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     if dragonhead2alive then
 		if dragonhead2hp < 300 then
 		if hpcounter = 40 then
-				if ~ (x > 380 and x < 420) or not (y > 450 and y < 500) then
+				if ~ (hero -> xPos > 380 and hero -> xPos < 420) or not (hero -> yPos > 450 and hero -> yPos < 500) then
 				dragonhead2hp := dragonhead2hp + 1
 				end if
 		end if
@@ -3120,7 +3122,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     if dragonhead3alive then
 		if dragonhead3hp < 300 then
 		if hpcounter = 40 then
-				if ~ (x > 580 and x < 620) or not (y > 500 and y < 550) then
+				if ~ (hero -> xPos > 580 and hero -> xPos < 620) or not (hero -> yPos > 500 and hero -> yPos < 550) then
 				dragonhead3hp := dragonhead3hp + 1
 				end if
 		end if
@@ -3175,7 +3177,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 				Font.Draw ("Troll [Level " + intstr (troll -> totalLvl) + "]", troll -> xPos, troll -> yPos + 67, font2, troll -> lvlClr)
 		end if
 		Pic.Draw (troll -> dirImages (troll -> dir), troll -> xPos, troll -> yPos, picMerge)
-		if abs ((troll -> xPos + 10) - x + 15) < 200 and abs ((troll -> yPos + 15) - y + 15) < 200 and troll -> hp > 0 then
+		if abs ((troll -> xPos + 10) - hero -> xPos + 15) < 200 and abs ((troll -> yPos + 15) - hero -> yPos + 15) < 200 and troll -> hp > 0 then
 				drawfillbox (7, barheight - 3, 123, barheight + 53, troll -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((troll -> hp / troll -> maxHp) * 100), barheight + 5, 115, barheight + 15, red)
@@ -3276,7 +3278,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 				Font.Draw ("Skeleton [Level " + intstr (skeleton -> totalLvl) + "]", skeleton -> xPos, skeleton -> yPos + 41, font2, skeleton -> lvlClr)
 		end if
 		Pic.Draw (skeleton -> dirImages (skeleton -> dir), skeleton -> xPos, skeleton -> yPos, picMerge)
-		if abs ((skeleton -> xPos + 10) - x + 15) < 200 and abs ((skeleton -> yPos + 15) - y + 15) < 200 and skeleton -> hp > 0 then
+		if abs ((skeleton -> xPos + 10) - hero -> xPos + 15) < 200 and abs ((skeleton -> yPos + 15) - hero -> yPos + 15) < 200 and skeleton -> hp > 0 then
 				drawfillbox (7, barheight - 3, 123, barheight + 53, skeleton -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((skeleton -> hp / 30) * 100), barheight + 5, 115, barheight + 15, red)
@@ -3309,7 +3311,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 				Font.Draw ("Ghost [Level " + intstr (ghost -> totalLvl) + "]", ghost -> xPos, ghost -> yPos + 41, font2, ghost -> lvlClr)
 		end if
 		Pic.DrawSpecial (ghost -> dirImages (ghost -> dir), ghost -> xPos, ghost -> yPos, picMerge, picBlend, 1)
-		if abs ((ghost -> xPos + 10) - x + 15) < 200 and abs ((ghost -> yPos + 15) - y + 15) < 200 and ghost -> hp > 0 then
+		if abs ((ghost -> xPos + 10) - hero -> xPos + 15) < 200 and abs ((ghost -> yPos + 15) - hero -> yPos + 15) < 200 and ghost -> hp > 0 then
 				drawfillbox (7, barheight - 3, 123, barheight + 53, ghost -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((ghost -> hp / 70) * 100), barheight + 5, 115, barheight + 15, red)
@@ -3338,9 +3340,9 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		if xm > zombie -> xPos - 1 and xm < zombie -> xPos + 32 and ym > zombie -> yPos - 1 and ym < zombie -> yPos + 41 then
 				Font.Draw ("Zombie [Level " + intstr (zombie -> totalLvl) + "]", zombie -> xPos, zombie -> yPos + 41, font2, zombie -> lvlClr)
 		end if
-			Pic.DrawSpecial (darkoverlay, x - 790, y - 590, picMerge, picBlend, 1)
+			Pic.DrawSpecial (darkoverlay, hero ->xPos - 790, hero -> yPos - 590, picMerge, picBlend, 1)
 			Pic.Draw (zombie -> dirImages (zombie -> dir), zombie -> xPos, zombie -> yPos, picMerge)
-		if abs ((zombie -> xPos + 10) - x + 15) < 200 and abs ((zombie -> yPos + 15) - y + 15) < 200 and zombie -> hp > 0 then
+		if abs ((zombie -> xPos + 10) - hero -> xPos + 15) < 200 and abs ((zombie -> yPos + 15) - hero -> yPos + 15) < 200 and zombie -> hp > 0 then
 				drawfillbox (7, barheight - 3, 123, barheight + 53, zombie -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((zombie -> hp / 120) * 100), barheight + 5, 115, barheight + 15, red)
@@ -3348,7 +3350,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 				Font.Draw ("Hitpoints: " + intstr (round ((zombie -> hp / 120) * 100)) + "%", 15, barheight + 20, font2, zombie -> lvlClr)
 		end if
 		else
-		Pic.DrawSpecial (darkoverlay, x - 790, y - 590, picMerge, picBlend, 1)
+		Pic.DrawSpecial (darkoverlay, hero ->xPos - 790, hero -> yPos - 590, picMerge, picBlend, 1)
 		end if
 		Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
 		if rope then
@@ -3383,7 +3385,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 				Font.Draw ("Goblin [Level " + intstr (goblin -> totalLvl) + "]", goblin -> xPos, goblin -> yPos + 30, font2, goblin -> lvlClr)
 		end if
 		Pic.Draw (goblin -> dirImages(goblin -> dir), goblin -> xPos, goblin -> yPos, picMerge)
-		if abs ((goblin -> xPos + 10) - x + 15) < 200 and abs ((goblin -> yPos + 15) - y + 15) < 200 and goblin -> hp > 0 then
+		if abs ((goblin -> xPos + 10) - hero -> xPos + 15) < 200 and abs ((goblin -> yPos + 15) - hero -> yPos + 15) < 200 and goblin -> hp > 0 then
 				drawfillbox (7, barheight - 3, 123, barheight + 53, goblin -> lvlClr)
 				drawfillbox (10, barheight, 120, barheight + 50, black)
 				drawfillbox (115 - round ((goblin -> hp / 10) * 100), barheight + 5, 115, barheight + 15, red)
@@ -3405,7 +3407,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		Pic.Draw (cursor_moveto, xm - 18, ym - 18, picMerge)
     elsif scene = "cottage" then
 		Pic.Draw (cottage_pic, 0, 0, picMerge)
-		if x > 505 and y > 53 and y < 180 then
+		if hero -> xPos > 505 and hero -> yPos > 53 and hero -> yPos < 180 then
 			Pic.Draw (in_cottage_pic, 519, 58, picMerge)
 		end if
 		if ~ cottagekey then
@@ -3415,7 +3417,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 		drawoval (xsplash2, ysplash2, round (splashradius2), round (splashradius2), 55)
 		drawoval (xsplash3, ysplash3, round (splashradius3), round (splashradius3), 55)
 		if peasant -> xPos > 505 and peasant -> yPos > 53 and peasant -> yPos < 180 then
-			if x > 505 and y > 53 and y < 180 then
+			if hero -> xPos > 505 and hero -> yPos > 53 and hero -> yPos < 180 then
 				if xm > peasant -> xPos - 1 and xm < peasant -> xPos + 21 and ym > peasant -> yPos - 1 and ym < peasant -> yPos + 30 then
 					Font.Draw ("Peasant", peasant -> xPos, peasant -> yPos + 30, font2, white)
 				end if
@@ -3427,7 +3429,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
 			end if
 			Pic.Draw (peasant -> dirImages (peasant -> dir), peasant -> xPos, peasant -> yPos, picMerge)
 		end if
-		if abs ((peasant -> xPos + 10) - x + 15) < 200 and abs ((peasant -> yPos + 15) - y + 15) < 200 then
+		if abs ((peasant -> xPos + 10) - hero -> xPos + 15) < 200 and abs ((peasant -> yPos + 15) - hero -> yPos + 15) < 200 then
 		drawfillbox (7, barheight - 3, 123, barheight + 53, grey)             %barheight = 540
 		drawfillbox (10, barheight, 120, barheight + 50, black)
 		Font.Draw ("Peasant", 15, barheight + 35, font2, grey)
@@ -3982,7 +3984,7 @@ process move_enemy(actor : pointer to Actor)
   if ~ actor -> move then         %if enemy has not been assigned a movement
     actor -> setMove(true)
     if actor -> alive then
-      if abs ((actor -> xPos + actor -> xRad) - x + 15) >= 200 or abs ((actor -> yPos + actor -> yRad) - y + 15) >= 200 then
+      if abs ((actor -> xPos + actor -> xRad) - hero -> xPos + 15) >= 200 or abs ((actor -> yPos + actor -> yRad) - hero -> yPos + 15) >= 200 then
 	      actor -> setDir(Rand.Int (0, 3))
 	      if actor -> dir = ord(Direction.UP) and actor -> yPos < 550 then
 	        move_actor(actor)
@@ -3996,19 +3998,19 @@ process move_enemy(actor : pointer to Actor)
 	        Time.DelaySinceLast (1500)
 	      end if
       else
-        if actor -> yPos + actor -> yRad < (y + 15) - 10 then
+        if actor -> yPos + actor -> yRad < (hero -> yPos + 15) - 10 then
           actor -> setDir(ord(Direction.UP))
           actor -> setYPos(actor -> yPos + 1)
         end if
-        if actor -> yPos + actor -> yRad > (y + 15) + 10 then
+        if actor -> yPos + actor -> yRad > (hero -> yPos + 15) + 10 then
           actor -> setDir(ord(Direction.DOWN))
           actor -> setYPos(actor -> yPos - 1)
         end if
-        if goblin -> xPos + actor -> xRad < (x + 15) - 10 then
+        if goblin -> xPos + actor -> xRad < (hero -> xPos + 15) - 10 then
           actor -> setDir(ord(Direction.RIGHT))
           actor -> setXPos(actor -> xPos + 1)
         end if
-        if actor -> xPos + actor -> xRad > (x + 15) + 10 then
+        if actor -> xPos + actor -> xRad > (hero -> xPos + 15) + 10 then
           actor -> setDir(ord(Direction.LEFT))
           actor -> setXPos(actor -> xPos - 1)
         end if
@@ -4321,36 +4323,36 @@ proc in_castle (var go_to : string)         %when in the castle
     hero -> setDestination(false)
     scene := "castle entrance"
     loop
-		if y > 354 and x > 284 and x < 457 then         %if passing through entrance
+		if hero -> yPos > 354 and hero -> xPos > 284 and hero -> xPos < 457 then         %if passing through entrance
 			if sfx_on then
 				fork portcullis
 			end if
 			go_to := "outside entrance"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (castle_entrance_all, 0, 0, picMerge)
 			Pic.DrawSpecial (outside_entrancepic_all, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x < 30 then
+		elsif hero -> xPos < 30 then
 			go_to := "shop"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (castle_entrance_all, 0, 0, picMerge)
 			Pic.DrawSpecial (shop_pic_all, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x + 29 > 770 then
+		elsif hero -> xPos + 29 > 770 then
 			go_to := "east hall"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (castle_entrance_all, 0, 0, picMerge)
 			Pic.DrawSpecial (hall_all, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif y < 30 then
+		elsif hero -> yPos < 30 then
 			go_to := "south of entrance"
-			y := 570
+      hero -> setYPos(570)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (castle_entrance_all, 0, 0, picMerge)
 			Pic.DrawSpecial (stonefloor_pic, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
@@ -4377,17 +4379,17 @@ proc south_of_entrance (var go_to : string)         %when in the castle
     hero -> setDestination(false)
     scene := "south of entrance"
     loop
-		if y > 570 then         %if passing through entrance
+		if hero -> yPos > 570 then         %if passing through entrance
 			go_to := "castle entrance"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (stonefloor_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x + 29 > 770 then
+		elsif hero -> xPos + 29 > 770 then
 			go_to := "in-castle trapdoor"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (stonefloor_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (incastletrapdoor_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
@@ -4414,18 +4416,18 @@ proc east_hall (var go_to : string)
     hero -> setDestination(false)
     scene := "east hall"
     loop
-		if x < 30 then
+		if hero -> xPos < 30 then
 			go_to := "castle entrance"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (hall_all, 0, 0, picMerge)
 			Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
 		end if
-		if y < 30 then
+		if hero -> yPos < 30 then
 			go_to := "in-castle trapdoor"
-			y := 570
+      hero -> setYPos(570)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (hall_all, 0, 0, picMerge)
 			Pic.DrawSpecial (incastletrapdoor_pic, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
@@ -4452,26 +4454,26 @@ proc incastle_trapdoor (var go_to : string)         %when in the castle
     hero -> setDestination(false)
     scene := "in-castle trapdoor"
     loop
-		if y > 570 then         %if passing through entrance
+		if hero -> yPos > 570 then         %if passing through entrance
 			go_to := "east hall"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (incastletrapdoor_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (hall_all, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
 		end if         %return to the main program
-		if x > 700 and y < 330 and y > 250 then
+		if hero -> xPos > 700 and hero -> yPos < 330 and hero -> yPos > 250 then
 			go_to := "subcastle tunnel"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (incastletrapdoor_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (subcastletunnel_pic, 0, 0, picCopy, picFadeIn, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x < 30 then
+		elsif hero -> xPos < 30 then
 			go_to := "south of entrance"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (incastletrapdoor_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (stonefloor_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
@@ -4498,18 +4500,18 @@ proc subcastle_tunnel (var go_to : string)         %when in the castle
     hero -> setDestination(false)
     scene := "subcastle tunnel"
     loop
-		if x < 30 then
+		if hero -> xPos < 30 then
 			go_to := "in-castle trapdoor"
-			x := 670
-			y := 300
+      hero -> setXPos(670)
+      hero -> setYPos(300)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (subcastletunnel_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (incastletrapdoor_pic, 0, 0, picCopy, picFadeIn, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x + 29 > 770 then
+		elsif hero -> xPos + 29 > 770 then
 			go_to := "subcastle tunnel2"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (subcastletunnel_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (subcastletunnel2_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
@@ -4536,17 +4538,17 @@ proc subcastle_tunnel2 (var go_to : string)         %when in the castle
     hero -> setDestination(false)
     scene := "subcastle tunnel2"
     loop
-		if x < 30 then
+		if hero -> xPos < 30 then
 			go_to := "subcastle tunnel"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (subcastletunnel2_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (subcastletunnel_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x + 29 > 770 then
+		elsif hero -> xPos + 29 > 770 then
 			go_to := "troll dungeon"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (subcastletunnel2_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (trolldungeon_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
@@ -4573,9 +4575,9 @@ proc troll_dungeon (var go_to : string)         %when in the castle
     hero -> setDestination(false)
     scene := "troll dungeon"
     loop
-		if x < 30 then
+		if hero -> xPos < 30 then
 			go_to := "subcastle tunnel2"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (trolldungeon_pic, 0, 0, picCopy)
 			Pic.DrawSpecial (subcastletunnel2_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
@@ -4607,33 +4609,33 @@ proc outside_entrance (var go_to : string)         %when outside entrance
     hero -> setDestination(false)
     scene := "outside entrance"
     loop
-		if y < 30 then
-			if x > 284 and x < 457 then             %if entering castle
+		if hero -> yPos < 30 then
+			if hero -> xPos > 284 and hero -> xPos < 457 then             %if entering castle
 				if sfx_on then
 					fork portcullis
 				end if
 				go_to := "castle entrance"
-				y := 330
+        hero -> setYPos(330)
 				setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 				Pic.Draw (outside_entrancepic_all, 0, 0, picMerge)
 				Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
 				setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 				return                 %return to the main program
 			else
-				y := 30
+        hero -> setYPos(30)
 			end if
-		elsif y > 570 then
+		elsif hero -> yPos > 570 then
 			go_to := "cottage"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (outside_entrancepic_all, 0, 0, picMerge)
 			Pic.DrawSpecial (cottage_pic, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
 		end if
-		if x < 30 then
+		if hero -> xPos < 30 then
 			go_to := "east of 'west river'"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (outside_entrancepic_all, 0, 0, picMerge)
 			Pic.DrawSpecial (east_of_westriver_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
@@ -4663,23 +4665,23 @@ proc shop (var go_to : string)         %when near shop
     hero -> setDestination(false)
     scene := "shop"
     loop
-		if x < 30 then         %if leaving through west side of screen
+		if hero -> xPos < 30 then         %if leaving through west side of screen
 			go_to := "west hall"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (shop_pic_all, 0, 0, picMerge)
 			Pic.DrawSpecial (westhall_all, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x + 29 > 770 then
+		elsif hero -> xPos + 29 > 770 then
 			go_to := "castle entrance"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (shop_pic_all, 0, 0, picMerge)
 			Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
-		elsif x > 612 and x < 653 and y > 200 then         %if aligned with shop door
+		elsif hero -> xPos > 612 and hero -> xPos < 653 and hero -> yPos > 200 then         %if aligned with shop door
 			go_to := "in shop"
 			return             %return to the main program
 		end if
@@ -4726,21 +4728,21 @@ proc west_hall (var go_to : string)         %when in second hall segment west of
     hero -> setDestination(false)
     scene := "west hall"
     loop
-		if x + 29 > 770 then
+		if hero -> xPos + 29 > 770 then
 			go_to := "shop"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (westhall_all, 0, 0, picMerge)
 			Pic.DrawSpecial (shop_pic_all, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x > 117 and x < 141 and y > 360 then
+		elsif hero -> xPos > 117 and hero -> xPos < 141 and hero -> yPos > 360 then
 			if key_west_hall then
 				if sfx_on then
 					fork door
 				end if
 				go_to := "west river"
-				y := 30
+        hero -> setYPos(30)
 				setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 				Pic.Draw (westhall_all, 0, 0, picMerge)
 				Pic.DrawSpecial (west_river_pic, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
@@ -4770,42 +4772,42 @@ proc west_river (var go_to : string)         %when at west river
     hero -> setDestination(false)
     scene := "west river"
     loop
-		if y < 30 then
-			if x > 117 and x < 141 then             %if aligned with door to second west hall
+		if hero -> yPos < 30 then
+			if hero -> xPos > 117 and hero -> xPos < 141 then             %if aligned with door to second west hall
 				if sfx_on then
 					fork door
 				end if
 				go_to := "west hall"
-				y := 360
+        hero -> setYPos(360)
 				setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 				Pic.Draw (west_river_pic, 0, 0, picMerge)
 				Pic.DrawSpecial (westhall_all, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
 				setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 				return                 %return to the main program
 			else
-				y := 30
+        hero -> setYPos(30)
 			end if
 		end if
-		if x < 30 then
+		if hero -> xPos < 30 then
 			go_to := "cemetery"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (west_river_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (cemetery_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
-		elsif x + 29 > 770 then
+		elsif hero -> xPos + 29 > 770 then
 			go_to := "east of 'west river'"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (west_river_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (east_of_westriver_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
 		end if
-		if y > 570 then
+		if hero -> yPos > 570 then
 			go_to := "west river-north corner"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (west_river_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (westriver_northcorner_pic, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
@@ -4837,19 +4839,19 @@ proc cemetery (var go_to : string)         %when at west river
     hero -> setDestination(false)
     scene := "cemetery"
     loop
-		if x + 29 > 770 then
+		if hero -> xPos + 29 > 770 then
 			go_to := "west river"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (cemetery_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (west_river_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
 		end if
-		if x < 251 then
+		if hero -> xPos < 251 then
 			text := "You have broken into a crypt!"
 			go_to := "crypt"
-			x := 100
+      hero -> setXPos(100)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (cemetery_pic, 0, 0, picMerge)
 			if ~ rope then
@@ -4860,9 +4862,9 @@ proc cemetery (var go_to : string)         %when at west river
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
 		end if
-		if y > 570 then
+		if hero -> yPos > 570 then
 			go_to := "dark forest"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (cemetery_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (dark_forest_pic, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
@@ -4894,26 +4896,26 @@ proc dark_forest (var go_to : string)         %when at west river
     hero -> setDestination(false)
     scene := "dark forest"
     loop
-		if x + 29 > 770 then
+		if hero -> xPos + 29 > 770 then
 			go_to := "west river-north corner"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (dark_forest_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (westriver_northcorner_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
-		elsif x < 30 then
+		elsif hero -> xPos < 30 then
 			go_to := "witch house"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (dark_forest_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (witch_house_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
 		end if
-		if y < 30 then
+		if hero -> yPos < 30 then
 			go_to := "cemetery"
-			y := 570
+      hero -> setYPos(570)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (dark_forest_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (cemetery_pic, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
@@ -4944,9 +4946,9 @@ proc witch_house (var go_to : string)         %when at west river
     hero -> setDestination(false)
     scene := "witch house"
     loop
-		if x + 29 > 770 then
+		if hero -> xPos + 29 > 770 then
 			go_to := "dark forest"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (witch_house_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (dark_forest_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
@@ -4978,10 +4980,10 @@ proc crypt (var go_to : string)         %when at west river
     hero -> setDestination(false)
     scene := "crypt"
     loop
-		if x > 140 and x < 180 and y > 275 and y < 340 then
+		if hero -> xPos > 140 and hero -> xPos < 180 and hero -> yPos > 275 and hero -> yPos < 340 then
 			if rope then
 				go_to := "cemetery"
-				x := 300
+        hero -> setXPos(300)
 				text := "You climb up the rope to the surface..."
 				setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 				Pic.Draw (crypt_rope_pic, 0, 0, picMerge)
@@ -5017,26 +5019,26 @@ proc west_river_northcorner (var go_to : string)         %when at west river
     hero -> setDestination(false)
     scene := "west river-north corner"
     loop
-		if y < 30 then
+		if hero -> yPos < 30 then
 			go_to := "west river"
-			y := 570
+      hero -> setYPos(570)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (westriver_northcorner_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (west_river_pic, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
 		end if
-		if x + 29 > 770 then
+		if hero -> xPos + 29 > 770 then
 			go_to := "mountains"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (westriver_northcorner_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (mountains_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x < 30 then
+		elsif hero -> xPos < 30 then
 			go_to := "dark forest"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (westriver_northcorner_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (dark_forest_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
@@ -5065,34 +5067,34 @@ proc mountains (var go_to : string)         %when east of 'west river'
     hero -> setDestination(false)
     scene := "mountains"
     loop
-		if y > 570 then
+		if hero -> yPos > 570 then
 			go_to := "lair entrance"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (mountains_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (lair_entrance_pic, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
-		elsif y < 30 then
+		elsif hero -> yPos < 30 then
 			go_to := "east of 'west river'"
-			y := 570
+      hero -> setYPos(570)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (mountains_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (east_of_westriver_pic, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
 		end if
-		if x < 30 then
+		if hero -> xPos < 30 then
 			go_to := "west river-north corner"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (mountains_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (westriver_northcorner_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
-		elsif x + 29 > 770 then
+		elsif hero -> xPos + 29 > 770 then
 			go_to := "cottage"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (mountains_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (cottage_pic, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
@@ -5119,18 +5121,18 @@ proc cottage (var go_to : string)         %when east of 'west river'
     hero -> setDestination(false)
     scene := "cottage"
     loop
-		if y < 30 then
+		if hero -> yPos < 30 then
 			go_to := "outside entrance"
-			y := 570
+      hero -> setYPos(570)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (cottage_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (outside_entrancepic_all, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
 		end if
-		if x < 30 then
+		if hero -> xPos < 30 then
 			go_to := "mountains"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (cottage_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (mountains_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
@@ -5145,7 +5147,7 @@ proc cottage (var go_to : string)         %when east of 'west river'
 		drawscreen (goto)         %run graphical output
 		fork peasant_proc
     fork talkActor(peasant)
-		if ~ (x > 505 and y > 53 and y < 180) then         %if not in cottage
+		if ~ (hero -> xPos > 505 and hero -> yPos > 53 and hero -> yPos < 180) then         %if not in cottage
 			Pic.Draw (thatchroof, 519, 149, picCopy)
 		end if
 		if movecharacter then
@@ -5162,26 +5164,26 @@ proc east_of_westriver (var go_to : string)         %when east of 'west river'
     hero -> setDestination(false)
     scene := "east of 'west river'"
     loop
-		if x + 29 > 770 then       %if leaving through left side of screen
+		if hero -> xPos + 29 > 770 then       %if leaving through left side of screen
 			go_to := "outside entrance"
-			x := 30
+      hero -> setXPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (east_of_westriver_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (outside_entrancepic_all, 0, 0, picCopy, picSlideRightToLeftNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
-		elsif x < 30 then
+		elsif hero -> xPos < 30 then
 			go_to := "west river"
-			x := 770 - 29
+      hero -> setXPos(741)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (east_of_westriver_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (west_river_pic, 0, 0, picCopy, picSlideLeftToRightNoBar, 500)
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return             %return to the main program
 		end if
-		if y > 570 then
+		if hero -> yPos > 570 then
 			go_to := "mountains"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (east_of_westriver_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (mountains_pic, 0, 0, picCopy, picSlideTopToBottomNoBar, 500)
@@ -5213,9 +5215,9 @@ proc lair_entrance (var go_to : string)         %when in the castle
     hero -> setDestination(false)
     scene := "lair entrance"
     loop
-		if y > 410 then
+		if hero -> yPos > 410 then
 			go_to := "dragon's lair"
-			y := 30
+      hero -> setYPos(30)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (lair_entrance_pic, 0, 0, picMerge)
 			if ~ dragonhead1alive and ~ dragonhead2alive and ~ dragonhead3alive then
@@ -5225,9 +5227,9 @@ proc lair_entrance (var go_to : string)         %when in the castle
 			end if
 			setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 			return
-		elsif y < 30 then
+		elsif hero -> yPos < 30 then
 			go_to := "mountains"
-			y := 570
+      hero -> setYPos(570)
 			setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 			Pic.Draw (lair_entrance_pic, 0, 0, picMerge)
 			Pic.DrawSpecial (mountains_pic, 0, 0, picCopy, picSlideBottomToTopNoBar, 500)
@@ -5254,17 +5256,17 @@ proc dragons_lair (var go_to : string)         %when in the castle
     hero -> setDestination(false)
     scene := "dragon's lair"
     loop
-		if y < 30 then
-			if x > 340 and x < 430 then
+		if hero -> yPos < 30 then
+			if hero -> xPos > 340 and hero -> xPos < 430 then
 				go_to := "lair entrance"
-				y := 410
+        hero -> setYPos(410)
 				text := "You leave the dragon's lair..."
 				setscreen ("position:middle,centre,graphics:800;665,nooffscreenonly,nobuttonbar,nocursor")
 				Pic.DrawSpecial (lair_entrance_pic, 0, 0, picCopy, picFadeIn, 500)
 				setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
 				return
 			else
-				y := 30
+        hero -> setYPos(30)
 			end if
 		end if
 		if go_to = "castle entrance" then

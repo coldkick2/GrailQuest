@@ -23,6 +23,9 @@ class Hero
     movementFrames(ord(Direction.RIGHT), 1) := Pic.FileNew ("Images/warrior_new2r.bmp")
     movementFrames(ord(Direction.RIGHT), 2) := Pic.FileNew ("Images/warrior_new3r.bmp")
 
+    yPos := 300
+    xPos := 400
+
     var weapon : pointer to Item := kingsSword
 
     procedure setDestination(b : boolean)
