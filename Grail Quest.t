@@ -12,9 +12,6 @@
 
 type Direction : enum (UP, DOWN, LEFT, RIGHT) 
 
-include "scenes/index.t"
-include "items/index.t"
-
 setscreen ("position:middle,centre,graphics:500;400,offscreenonly,nobuttonbar,nocursor")
 var loadpic : int := Pic.FileNew ("Images/opening screen - loading.bmp") %loading screen
 var font5 : int := Font.New ("Courier:12")
@@ -33,6 +30,8 @@ loaddotsize (7) := 8
 loaddotsize (8) := 9
 loaddotsize (9) := 2
 var finishedloading : boolean := false
+
+include "items/index.t"
 
 %Items
 var pervasive kingsSword: ^KingsSword
@@ -71,6 +70,8 @@ new Troll, troll
 
 var peasant: ^Peasant
 new Peasant, peasant
+
+include "scenes/index.t"
 
 process loadanimation
     loop
@@ -662,7 +663,6 @@ var goto : string := "" %scene redirection
 var text : string := "Your quest begins...you seek the Holy Grail." %top bar text
 var mapscale : string := "50" %map scale
 var menubutton : string := "" %highlighted main menu button
-var follow : pointer to Actor %NPC the character is following
 var armour : string := "" %armour worn by player
 var chatchar : string (1) := "" %entered chat character
 var chattext : string := "" %chat entry text (combination of entered chat characters)
@@ -1847,7 +1847,7 @@ proc save
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
 	healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
-	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
+	text, mapscale, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
     drawdot (793, 602, brightgreen)
     drawdot (795, 602, brightgreen)
@@ -1863,7 +1863,7 @@ proc load
 	dragonhead1hp,
 	dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
 	healthpacks, arrownum, barheight, shopscreen, defence, equipped, scene, goto,
-	text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
+	text, mapscale, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
     close : record1
 	restoreInv()
 end load
@@ -1899,7 +1899,7 @@ proc movement     %manipulates character movement input
 					hero -> setDestination(true)
 					xdest := xm - 7
 					ydest := ym
-					follow := nil
+          hero -> follow(nil)
 					newdest := false
 				elsif left = 0 then
 					newdest := true
@@ -1907,9 +1907,9 @@ proc movement     %manipulates character movement input
 			end if
 		end if
 		if hero -> destination then
-      if follow ~= nil then
-        xdest := follow -> xPos
-        ydest := follow -> yPos
+      if hero -> followTarget ~= nil then
+        xdest := hero -> followTarget -> xPos
+        ydest := hero -> followTarget -> yPos
       end if
 			drawbox (xdest - 1, ydest - 8, xdest + 15, ydest + 8, brightred)
 			if hero -> xPos + 8 > xdest + 3 and hero -> yPos > ydest + 3 then             %left/down
@@ -1941,7 +1941,7 @@ proc movement     %manipulates character movement input
         hero -> setYPos(hero -> yPos - 4)
 				hero -> setDir(ord(Direction.DOWN))
 			else
-				if follow ~= peasant then
+				if hero -> followTarget ~= peasant then
 					hero -> setDestination(false)
 				end if
 			end if
@@ -2017,7 +2017,7 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
         text := actor -> description
       elsif left = 1 then
         hero -> setDestination(true)
-        follow := actor
+        hero -> follow(actor)
       end if
     end if
     if ((hero -> weapon -> style = "combat")
@@ -2808,7 +2808,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				text := peasant -> description
 			elsif left = 1 then
 				hero -> setDestination(true)
-				follow := peasant
+        hero -> follow(peasant)
 			end if
 		end if
     elsif scene = "dragon's lair" then
@@ -5561,7 +5561,7 @@ loop
 			dragonhead1hp,
 			dragonhead2hp, dragonhead3hp, hpcounter, dragonhead1returncounter, dragonhead2returncounter, dragonhead3returncounter,
       healthpacks, arrownum, barheight, shopscreen, defence, weapon, scene, goto,
-			text, mapscale, follow, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
+			text, mapscale, armour, sfx_on, chatentry (1), chatentry (2), chatentry (3), chatentry (4), chatentry (5)
 			close : record2
 			loadnew := false
 			music_on := false
