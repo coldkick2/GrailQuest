@@ -3,7 +3,7 @@ class Hero
 
     import Item
 
-    export destination, frameNumber, follow, followTarget, movementFrames, gold, setGold, weapon, setDestination, setFrameNumber, setWeapon
+    export attacking, destination, frameNumber, follow, followTarget, movementFrames, gold, setGold, weapon, setDestination, setFrameNumber, setWeapon, setAttacking
 
     var destination : boolean := false
 
@@ -36,6 +36,8 @@ class Hero
 
     var archeryXp : int := 0
 
+    var attacking : boolean := false
+
     procedure setGold(i : int)
         gold := i
     end setGold
@@ -55,4 +57,8 @@ class Hero
     procedure setWeapon(w : pointer to Item)
         weapon := w
     end setWeapon
+
+    procedure setAttacking(b : boolean)
+        attacking := b
+    end setAttacking
 end Hero

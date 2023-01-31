@@ -542,7 +542,6 @@ var stopmusic : boolean := false %stops music when true
 var ratmove : boolean := false %rat has been assigned a movement when true
 var catmove : boolean := false %cat has been assigned a movement when true
 var scalehotkey : boolean := true %scale hotkey can be pressed again when true
-var attacking : boolean := false %player is under attack when true
 var rope : boolean := false %player has the crypt rope when true
 var songhotkey : boolean := true %next song hotkey can be pressed again when true
 var newdest : boolean := true %a new destination can be selected when true
@@ -1804,7 +1803,7 @@ proc reset(var go_to : string)
 	Pic.DrawSpecial (warriorresurrectedpic, 0, 0, picCopy, picFadeIn, 3000)
 	Pic.DrawSpecial (castle_entrance_all, 0, 0, picCopy, picFadeIn, 3000)
 	setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
-	attacking := false
+	hero -> setAttacking(false)
 	text := "You die...a monk resurrects you and warns you to be more careful..."
 	go_to := "castle entrance"
 	battleAxe -> setObtained(false)
@@ -1846,7 +1845,7 @@ proc save
 		equipped := hero -> weapon -> name
     open : record1, "Grail Quest - records.gqr", write
     write : record1, grail, up, battleAxe -> obtained, twoHanded -> obtained, bow -> obtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive, dragonhead3alive,
-	victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
+	victory, music_on, stopmusic, scalehotkey, rope, songhotkey, newdest,
 	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, hero -> gold, hero -> xPos, hero -> yPos, xdest, ydest,
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp,  hitpoints,
 	dragonhead1hp,
@@ -1862,7 +1861,7 @@ end save
 proc load
     open : record1, "Grail Quest - records.gqr", read
     read : record1, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive, dragonhead3alive,
-	victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
+	victory, music_on, stopmusic, scalehotkey, rope, songhotkey, newdest,
 	platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, x, y, xdest, ydest,
 	xpic, ypic, xdiff, ydiff, archeryxp, combatxp, hitpoints,
 	dragonhead1hp,
@@ -1893,96 +1892,101 @@ proc drawHero
 end drawHero
 
 proc movement     %manipulates character movement input
-  if ~ victory then
-    Input.KeyDown (move)
-		if xm > hero -> xPos - 1 and xm < hero -> xPos + 21 and ym > hero -> yPos - 1 and ym < hero -> yPos + 30 then
-			Font.Draw ("You [Level " + intstr (totalLvl) + "]", hero -> xPos, hero -> yPos + 30, font2, white)
-		end if
-		if ym < 601 and ym > -1 and xm > -1 and xm < 801 then         %if mouse in playing screen then move character
-			if xm < 787 or xm > 793 or ym < 585 or ym > 595 then
-				if left = 1 and newdest then
-					hero -> setDestination(true)
-					xdest := xm - 7
-					ydest := ym
-          hero -> follow(nil)
-					newdest := false
-				elsif left = 0 then
-					newdest := true
-				end if
-			end if
-		end if
-		if hero -> destination then
-      if hero -> followTarget ~= nil then
-        xdest := hero -> followTarget -> xPos
-        ydest := hero -> followTarget -> yPos
-      end if
-			drawbox (xdest - 1, ydest - 8, xdest + 15, ydest + 8, brightred)
-			if hero -> xPos + 8 > xdest + 3 and hero -> yPos > ydest + 3 then             %left/down
-        hero -> setXPos(hero -> xPos - 3)
-        hero -> setYPos(hero -> yPos - 3)
-				hero -> setDir(ord(Direction.LEFT))
-			elsif hero -> xPos + 8 > xdest + 3 and hero -> yPos < ydest - 3 then             %left/up
-        hero -> setXPos(hero -> xPos - 3)
-        hero -> setYPos(hero -> yPos + 3)
-				hero -> setDir(ord(Direction.LEFT))
-			elsif hero -> xPos + 8 < xdest - 3 and hero -> yPos > ydest + 3 then             %right/down
-        hero -> setXPos(hero -> xPos + 3)
-        hero -> setYPos(hero -> yPos - 3)
-				hero -> setDir(ord(Direction.RIGHT))
-			elsif hero -> xPos + 8 < xdest - 3 and hero -> yPos < ydest - 3 then             %right/up
-        hero -> setXPos(hero -> xPos + 3)
-        hero -> setYPos(hero -> yPos + 3)
-				hero -> setDir(ord(Direction.RIGHT))
-			elsif hero -> xPos + 8 > xdest + 4 then             %left
-        hero -> setXPos(hero -> xPos - 4)
-				hero -> setDir(ord(Direction.LEFT))
-			elsif hero -> xPos + 8 < xdest - 4 then             %right
-        hero -> setXPos(hero -> xPos + 4)
-				hero -> setDir(ord(Direction.RIGHT))
-			elsif hero -> yPos < ydest - 4 then             %up
-        hero -> setYPos(hero -> yPos + 4)
-				hero -> setDir(ord(Direction.UP))
-			elsif hero -> yPos > ydest + 4 then             %down
-        hero -> setYPos(hero -> yPos - 4)
-				hero -> setDir(ord(Direction.DOWN))
-			else
-				if hero -> followTarget ~= peasant then
-					hero -> setDestination(false)
-				end if
-			end if
-		elsif left = 0 then
-			if move (KEY_LEFT_ARROW) and move (KEY_DOWN_ARROW) then
-        hero -> setXPos(hero -> xPos - 3)
-        hero -> setYPos(hero -> yPos - 3)
-				hero -> setDir(ord(Direction.LEFT))
-			elsif move (KEY_RIGHT_ARROW) and move (KEY_UP_ARROW) then
-        hero -> setXPos(hero -> xPos + 3)
-        hero -> setYPos(hero -> yPos + 3)
-				hero -> setDir(ord(Direction.RIGHT))
-			elsif move (KEY_LEFT_ARROW) and move (KEY_UP_ARROW) then
-        hero -> setXPos(hero -> xPos - 3)
-        hero -> setYPos(hero -> yPos + 3)
-				hero -> setDir(ord(Direction.LEFT))
-			elsif move (KEY_RIGHT_ARROW) and move (KEY_DOWN_ARROW) then
-        hero -> setXPos(hero -> xPos + 3)
-        hero -> setYPos(hero -> yPos - 3)
-				hero -> setDir(ord(Direction.RIGHT))
-			elsif move (KEY_LEFT_ARROW) then
-        hero -> setXPos(hero -> xPos - 4)
-				hero -> setDir(ord(Direction.LEFT))
-			elsif move (KEY_RIGHT_ARROW) then
-        hero -> setXPos(hero -> xPos + 4)
-				hero -> setDir(ord(Direction.RIGHT))
-			elsif move (KEY_UP_ARROW) then
-        hero -> setYPos(hero -> yPos + 4)
-				hero -> setDir(ord(Direction.UP))
-			elsif move (KEY_DOWN_ARROW) then
-        hero -> setYPos(hero -> yPos - 4)
-				hero -> setDir(ord(Direction.DOWN))
-      end if
-		end if
-    drawHero()
+  if victory then
+    return
   end if
+
+  Input.KeyDown (move)
+
+  if xm > hero -> xPos - 1 and xm < hero -> xPos + 21 and ym > hero -> yPos - 1 and ym < hero -> yPos + 30 then
+    Font.Draw ("You [Level " + intstr (totalLvl) + "]", hero -> xPos, hero -> yPos + 30, font2, white)
+  end if
+
+  if ym < 601 and ym > -1 and xm > -1 and xm < 801 then         %if mouse in playing screen then move character
+    if xm < 787 or xm > 793 or ym < 585 or ym > 595 then
+      if left = 1 and newdest then
+        hero -> setDestination(true)
+        xdest := xm - 7
+        ydest := ym
+        hero -> follow(nil)
+        newdest := false
+      elsif left = 0 then
+        newdest := true
+      end if
+    end if
+  end if
+
+  if hero -> destination then
+    if hero -> followTarget ~= nil then
+      xdest := hero -> followTarget -> xPos
+      ydest := hero -> followTarget -> yPos
+    end if
+    drawbox (xdest - 1, ydest - 8, xdest + 15, ydest + 8, brightred)
+    if hero -> xPos + 8 > xdest + 3 and hero -> yPos > ydest + 3 then             %left/down
+      hero -> setXPos(hero -> xPos - 3)
+      hero -> setYPos(hero -> yPos - 3)
+      hero -> setDir(ord(Direction.LEFT))
+    elsif hero -> xPos + 8 > xdest + 3 and hero -> yPos < ydest - 3 then             %left/up
+      hero -> setXPos(hero -> xPos - 3)
+      hero -> setYPos(hero -> yPos + 3)
+      hero -> setDir(ord(Direction.LEFT))
+    elsif hero -> xPos + 8 < xdest - 3 and hero -> yPos > ydest + 3 then             %right/down
+      hero -> setXPos(hero -> xPos + 3)
+      hero -> setYPos(hero -> yPos - 3)
+      hero -> setDir(ord(Direction.RIGHT))
+    elsif hero -> xPos + 8 < xdest - 3 and hero -> yPos < ydest - 3 then             %right/up
+      hero -> setXPos(hero -> xPos + 3)
+      hero -> setYPos(hero -> yPos + 3)
+      hero -> setDir(ord(Direction.RIGHT))
+    elsif hero -> xPos + 8 > xdest + 4 then             %left
+      hero -> setXPos(hero -> xPos - 4)
+      hero -> setDir(ord(Direction.LEFT))
+    elsif hero -> xPos + 8 < xdest - 4 then             %right
+      hero -> setXPos(hero -> xPos + 4)
+      hero -> setDir(ord(Direction.RIGHT))
+    elsif hero -> yPos < ydest - 4 then             %up
+      hero -> setYPos(hero -> yPos + 4)
+      hero -> setDir(ord(Direction.UP))
+    elsif hero -> yPos > ydest + 4 then             %down
+      hero -> setYPos(hero -> yPos - 4)
+      hero -> setDir(ord(Direction.DOWN))
+    else
+      if hero -> followTarget ~= peasant then
+        hero -> setDestination(false)
+      end if
+    end if
+  elsif left = 0 then
+    if move (KEY_LEFT_ARROW) and move (KEY_DOWN_ARROW) then
+      hero -> setXPos(hero -> xPos - 3)
+      hero -> setYPos(hero -> yPos - 3)
+      hero -> setDir(ord(Direction.LEFT))
+    elsif move (KEY_RIGHT_ARROW) and move (KEY_UP_ARROW) then
+      hero -> setXPos(hero -> xPos + 3)
+      hero -> setYPos(hero -> yPos + 3)
+      hero -> setDir(ord(Direction.RIGHT))
+    elsif move (KEY_LEFT_ARROW) and move (KEY_UP_ARROW) then
+      hero -> setXPos(hero -> xPos - 3)
+      hero -> setYPos(hero -> yPos + 3)
+      hero -> setDir(ord(Direction.LEFT))
+    elsif move (KEY_RIGHT_ARROW) and move (KEY_DOWN_ARROW) then
+      hero -> setXPos(hero -> xPos + 3)
+      hero -> setYPos(hero -> yPos - 3)
+      hero -> setDir(ord(Direction.RIGHT))
+    elsif move (KEY_LEFT_ARROW) then
+      hero -> setXPos(hero -> xPos - 4)
+      hero -> setDir(ord(Direction.LEFT))
+    elsif move (KEY_RIGHT_ARROW) then
+      hero -> setXPos(hero -> xPos + 4)
+      hero -> setDir(ord(Direction.RIGHT))
+    elsif move (KEY_UP_ARROW) then
+      hero -> setYPos(hero -> yPos + 4)
+      hero -> setDir(ord(Direction.UP))
+    elsif move (KEY_DOWN_ARROW) then
+      hero -> setYPos(hero -> yPos - 4)
+      hero -> setDir(ord(Direction.DOWN))
+    end if
+  end if
+  drawHero()
 end movement
 
 proc buyItem(item: pointer to Item)
@@ -2016,92 +2020,93 @@ proc equipItem(item: pointer to Item)
 end equipItem
 
 proc attack_enemy(actor : pointer to Actor, var go_to : string)
-  if actor -> alive then
-    if xm > actor -> xPos - 1 and xm < actor -> xPos + 21 and ym > actor -> yPos - 1 and ym < actor -> yPos + 30 then
-      if right = 100 then
-        text := actor -> description
-      elsif left = 1 then
-        hero -> setDestination(true)
-        hero -> follow(actor)
+  if ~ actor -> alive or actor -> hp <= 0 then
+    return
+  end if
+
+  if xm > actor -> xPos - 1 and xm < actor -> xPos + 21 and ym > actor -> yPos - 1 and ym < actor -> yPos + 30 then
+    if right = 100 then
+      text := actor -> description
+    elsif left = 1 then
+      hero -> setDestination(true)
+      hero -> follow(actor)
+    end if
+  end if
+
+  if hpcounter ~= 20 and hpcounter ~= 40 then
+    return
+  end if
+
+  if ((hero -> weapon -> style = "combat")
+    and (abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 20
+    and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 20))
+    or (hero -> weapon -> style = "archery"
+    and (abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 100
+    and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 200)) then
+    hero -> setAttacking(true)
+    if xdest = actor -> xPos and ydest = actor -> yPos then
+      hero -> setDestination(false)
+    end if
+    text := "You are attacking a " + actor -> name + "!  Arrows left: " + intstr (arrownum) + "  " + actor -> name + ": -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
+
+    if abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 20 and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 20 then
+      damagetaken := Rand.Int (actor -> dmgMin, actor -> dmgMax)
+      if defence < damagetaken then
+        hitpoints := hitpoints - (damagetaken - defence)
+      end if
+
+      if hitpoints <= 0 then
+        reset(go_to)
+        return
       end if
     end if
-    if ((hero -> weapon -> style = "combat")
-      and (abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 20
-      and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 20))
-      or (hero -> weapon -> style = "archery"
-      and (abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 100
-      and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 200)) then
-      attacking := true
-      if xdest = actor -> xPos and ydest = actor -> yPos then
-        hero -> setDestination(false)
-      end if
-      text := "You are attacking a " + actor -> name + "!  Arrows left: " + intstr (arrownum) + "  Goblin: -" + intstr (damagedealt) + "HP  You: -" + intstr (damagetaken - defence) + "HP"
-      if hpcounter = 20 or hpcounter = 40 then
-        if hitpoints > 0 then
-          if abs ((actor -> xPos + actor -> xRad) - (hero -> xPos + 15)) < 20 and abs ((actor -> yPos + actor -> yRad) - (hero -> yPos + 15)) < 20 then
-            damagetaken := Rand.Int (actor -> dmgMin, actor -> dmgMax)
-            if defence < damagetaken then
-              hitpoints := hitpoints - (damagetaken - defence)
-            end if
-          end if
-        else
-          reset(go_to)
-          return
-        end if
-        if actor -> hp > 0 then
-          if hero -> weapon -> style = "archery" then
-            if arrownum > 0 then
-              arrownum := arrownum - 1
-              damagedealt := Rand.Int (0, (archerylvl + hero -> weapon -> power))
-            else
-              text := "You have run out of arrows!"
-              return
-            end if
-          else
-            damagedealt := Rand.Int (0, (combatlvl + hero -> weapon -> power))
-          end if
 
-          case damagedealt of
-            label 0 : fork playParrySound
-            label : fork playHitSound
-          end case
-
-          actor -> setHp(actor -> hp - damagedealt)
-
-          if actor -> hp > 0 then
-            return
-          end if
-
-          actor -> setHp(0)
-          actor -> setAlive(false)
-          text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
-
-          if hero -> gold <= 99989 then
-            hero -> setGold(hero -> gold + actor -> goldGain)
-          else
-            text := "You do not have room to carry any more gold!"
-          end if
-
-          if hero -> weapon -> style = "combat" then
-            if combatlvl < 100 then
-              combatxp := combatxp + actor -> xpGain
-            else
-              text := "You've mastered the art of " + weapon -> style + " and cannot gain further experience."
-            end if
-          else
-            if archerylvl < 100 then
-              archeryxp := archeryxp + actor -> xpGain
-            else
-              text := "You've mastered the art of " + weapon -> style + " and cannot gain further experience."
-            end if
-          end if
-        end if
+    if hero -> weapon -> style = "archery" then
+      if arrownum > 0 then
+        arrownum := arrownum - 1
+        damagedealt := Rand.Int (0, (archerylvl + hero -> weapon -> power))
+      else
+        text := "You have run out of arrows!"
+        return
       end if
     else
-      attacking := false
+      damagedealt := Rand.Int (0, (combatlvl + hero -> weapon -> power))
     end if
-  else
-    attacking := false
+
+    case damagedealt of
+      label 0 : fork playParrySound
+      label : fork playHitSound
+    end case
+
+    actor -> setHp(actor -> hp - damagedealt)
+
+    if actor -> hp > 0 then
+      return
+    end if
+
+    actor -> setHp(0)
+    actor -> setAlive(false)
+    hero -> setAttacking(false)
+    text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
+
+    if hero -> gold <= 99989 then
+      hero -> setGold(hero -> gold + actor -> goldGain)
+    else
+      text := "You do not have room to carry any more gold!"
+    end if
+
+    if hero -> weapon -> style = "combat" then
+      if combatlvl < 100 then
+        combatxp := combatxp + actor -> xpGain
+        return
+      end if
+    else
+      if archerylvl < 100 then
+        archeryxp := archeryxp + actor -> xpGain
+        return
+      end if
+    end if
+    text := "You've mastered the art of " + weapon -> style + " and cannot gain further experience."
   end if
 end attack_enemy
 
@@ -2838,7 +2843,7 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 		end if
 		if dragonhead1alive then
 		if hero -> xPos > 180 and hero -> xPos < 220 and hero -> yPos > 500 and hero -> yPos < 550 then
-				attacking := true
+				hero -> setAttacking(true)
 				if hpcounter = 20 or hpcounter = 40 then
 				if hitpoints > 0 then
 						damagetaken := Rand.Int (0, 30)
@@ -2877,14 +2882,14 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 				end if
 		else
-				attacking := false
+				hero -> setAttacking(false)
 		end if
 		else
-		attacking := false
+		hero -> setAttacking(false)
 		end if
 		if dragonhead2alive then
 		if hero -> xPos > 380 and hero -> xPos < 420 and hero -> yPos > 450 and hero -> yPos < 500 then
-				attacking := true
+				hero -> setAttacking(true)
 				if hpcounter = 20 or hpcounter = 40 then
 				if hitpoints > 0 then
 						damagetaken := Rand.Int (0, 30)
@@ -2923,14 +2928,14 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 				end if
 		else
-				attacking := false
+				hero -> setAttacking(false)
 		end if
 		else
-		attacking := false
+		hero -> setAttacking(false)
 		end if
 		if dragonhead3alive then
 		if hero -> xPos > 580 and hero -> xPos < 620 and hero -> yPos > 500 and hero -> yPos < 550 then
-				attacking := true
+				hero -> setAttacking(true)
 				if hpcounter = 20 or hpcounter = 40 then
 				if hitpoints > 0 then
 						damagetaken := Rand.Int (0, 30)
@@ -2969,10 +2974,10 @@ proc collision (var go_to : string)     %detects collisions with objects and but
 				end if
 				end if
 		else
-				attacking := false
+				hero -> setAttacking(false)
 		end if
 		else
-		attacking := false
+		hero -> setAttacking(false)
 		end if
     end if
 end collision
@@ -3045,7 +3050,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     %character
     if hitpoints < 100 then
 		if hpcounter = 40 then
-			if ~ attacking then
+			if ~ hero -> attacking then
 					hitpoints := hitpoints + 1
 					damagedealt := 0
 					damagetaken := 0
@@ -5549,7 +5554,7 @@ loop
 			open : record2, "Newgamevars.gqr", read
 			read : record2, grail, up, battleaxe, twohanded, bowObtained, key_west_hall, cottagekey, dragonhead1alive, dragonhead2alive,
 			dragonhead3alive,
-			victory, music_on, stopmusic, scalehotkey, attacking, rope, songhotkey, newdest,
+			victory, music_on, stopmusic, scalehotkey, rope, songhotkey, newdest,
 			platebody, platelegs, fullhelm, buyhp, buyarrow, delayspeed, gold, x, y, xdest, ydest,
 			xpic, ypic, xdiff, ydiff, archeryxp, combatxp, hitpoints,
 			dragonhead1hp,
