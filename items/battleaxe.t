@@ -8,6 +8,7 @@ class BattleAxe
     cost := 500
     power := 10
     hitSound := "Sounds/battleaxehit.wav"
+    parrySound := "Sounds/bladeparry.wav"
     boughtpic := Pic.FileNew ("Images/battleaxe bought.bmp")
     invpic := Pic.FileNew ("Images/battleaxe-inv.bmp")
     pic := Pic.FileNew ("Images/battleaxe.bmp")

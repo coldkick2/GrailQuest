@@ -8,6 +8,7 @@ class TwoHanded
     cost := 1000
     power := 15
     hitSound := "Sounds/2hhit.wav"
+    parrySound := "Sounds/bladeparry.wav"
     boughtpic := Pic.FileNew ("Images/2h bought.bmp")
     invpic := Pic.FileNew ("Images/2h-inv.bmp")
     pic := Pic.FileNew ("Images/2h.bmp")

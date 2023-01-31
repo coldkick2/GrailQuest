@@ -32,6 +32,10 @@ class Hero
 
     var gold : int := 300
 
+    var combatXp : int := 0
+
+    var archeryXp : int := 0
+
     procedure setGold(i : int)
         gold := i
     end setGold

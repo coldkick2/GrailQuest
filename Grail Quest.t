@@ -1019,6 +1019,10 @@ process playHitSound
 	Music.PlayFile(hero -> weapon -> hitSound)
 end playHitSound
 
+process playParrySound
+  Music.PlayFile(hero -> weapon -> parrySound)
+end playParrySound
+
 process purchase
     Music.PlayFile ("Sounds/buy.wav")
 end purchase
@@ -2045,62 +2049,51 @@ proc attack_enemy(actor : pointer to Actor, var go_to : string)
           return
         end if
         if actor -> hp > 0 then
-          %if using a combat attack style
-          if hero -> weapon -> style = "combat" then
-            %inflicts damage to enemy accoring to player's skill level
-            damagedealt := Rand.Int (0, (combatlvl + hero -> weapon -> power))
-            actor -> setHp(actor -> hp - damagedealt)
-            if actor -> hp > 0 then
-              actor -> setAlive(true)
-            else
-              actor -> setHp(0)
-              text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
-              actor -> setAlive(false)
-              if hero -> gold <= 99989 then
-                hero -> setGold(hero -> gold + actor -> goldGain)
-              else
-                text := "You do not have room to carry any more gold!"
-              end if
-              if combatlvl < 100 then
-                combatxp := combatxp + actor -> xpGain
-              else
-                text := "You've mastered the art of combat and cannot gain further experience."
-              end if
-            end if
-          %if using an archery attack style
-          elsif hero -> weapon -> style = "archery" then
-            %inflicts damage to enemy accoring to player's skill level
+          if hero -> weapon -> style = "archery" then
             if arrownum > 0 then
               arrownum := arrownum - 1
               damagedealt := Rand.Int (0, (archerylvl + hero -> weapon -> power))
-              actor -> setHp(actor -> hp - damagedealt)
-              if actor -> hp > 0 then
-                actor -> setAlive(true)
-              else
-                actor -> setHp(0)
-                text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
-                actor -> setAlive(false)
-                if hero -> gold <= 99989 then
-                  hero -> setGold(hero -> gold + actor -> goldGain)
-                else
-                  text := "You do not have room to carry any more gold!"
-                end if
-                if archerylvl < 100 then
-                  archeryxp := archeryxp + actor -> xpGain
-                else
-                  text := "You've mastered the art of archery and cannot gain further experience."
-                end if
-              end if
             else
               text := "You have run out of arrows!"
-            end if
-          end if
-          if hero -> weapon -> style = "archery" then
-            if arrownum > 0 then
-              fork playHitSound
+              return
             end if
           else
-            fork playHitSound
+            damagedealt := Rand.Int (0, (combatlvl + hero -> weapon -> power))
+          end if
+
+          case damagedealt of
+            label 0 : fork playParrySound
+            label : fork playHitSound
+          end case
+
+          actor -> setHp(actor -> hp - damagedealt)
+
+          if actor -> hp > 0 then
+            return
+          end if
+
+          actor -> setHp(0)
+          actor -> setAlive(false)
+          text := "You defeat the " + actor -> name + " and gain " + intstr(actor -> xpGain) + " experience and " + intstr(actor -> goldGain) + " gold."
+
+          if hero -> gold <= 99989 then
+            hero -> setGold(hero -> gold + actor -> goldGain)
+          else
+            text := "You do not have room to carry any more gold!"
+          end if
+
+          if hero -> weapon -> style = "combat" then
+            if combatlvl < 100 then
+              combatxp := combatxp + actor -> xpGain
+            else
+              text := "You've mastered the art of " + weapon -> style + " and cannot gain further experience."
+            end if
+          else
+            if archerylvl < 100 then
+              archeryxp := archeryxp + actor -> xpGain
+            else
+              text := "You've mastered the art of " + weapon -> style + " and cannot gain further experience."
+            end if
           end if
         end if
       end if

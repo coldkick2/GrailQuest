@@ -9,6 +9,7 @@ class KingsSword
     obtained := true
     power := 0
     hitSound := "Sounds/swordhit.wav"
+    parrySound := "Sounds/bladeparry.wav"
     boughtpic := 0
     invpic := Pic.FileNew ("Images/king's sword-inv.bmp")
     pic := 0

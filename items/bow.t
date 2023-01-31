@@ -8,6 +8,7 @@ class Bow
     cost := 300
     power := 5
     hitSound := "Sounds/bowhit.wav"
+    parrySound := "Sounds/bladeparry.wav"
     boughtpic := Pic.FileNew ("Images/bow bought.bmp")
     invpic := Pic.FileNew ("Images/bow-inv.bmp")
     pic := Pic.FileNew ("Images/bow.bmp")
