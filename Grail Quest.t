@@ -4065,6 +4065,17 @@ process cat
   end if
 end cat
 
+proc sceneCleanupRender(var goto : string)
+  updateMouseInfo()
+  drawscreen (goto)         %run graphical output
+  if movecharacter then
+    return
+  end if
+  if exitgame then
+    return
+  end if
+end sceneCleanupRender
+
 proc in_castle (var go_to : string)         %when in the castle
   hero -> setDestination(false)
   scene := "castle entrance"
@@ -4105,15 +4116,8 @@ proc in_castle (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end in_castle
 
@@ -4138,15 +4142,8 @@ proc south_of_entrance (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end south_of_entrance
 
@@ -4172,15 +4169,8 @@ proc east_hall (var go_to : string)
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end east_hall
 
@@ -4214,15 +4204,8 @@ proc incastle_trapdoor (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end incastle_trapdoor
 
@@ -4248,15 +4231,8 @@ proc subcastle_tunnel (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end subcastle_tunnel
 
@@ -4281,15 +4257,8 @@ proc subcastle_tunnel2 (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end subcastle_tunnel2
 
@@ -4309,17 +4278,10 @@ proc troll_dungeon (var go_to : string)         %when in the castle
     if go_to = "castle entrance" then
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
+    sceneCleanupRender(goto)
     fork move_enemy(troll)
     fork talkActor(troll)
-    View.Update
+    View.Update()
   end loop
 end troll_dungeon
 
@@ -4360,18 +4322,11 @@ proc outside_entrance (var go_to : string)         %when outside entrance
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
+    sceneCleanupRender(goto)
     Pic.Draw (tree, 100, 100, picMerge)         %tree1
     Pic.Draw (tree, 500, 50, picMerge)         %tree2
     Pic.Draw (tree, 300, 300, picMerge)         %tree3
-    View.Update
+    View.Update()
   end loop
 end outside_entrance
 
@@ -4399,15 +4354,8 @@ proc shop (var go_to : string)         %when near shop
       go_to := "in shop"
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end shop
 
@@ -4415,18 +4363,11 @@ proc in_shop (var go_to : string)         %when in the shop
   hero -> setDestination(false)
   scene := "in shop"
   loop
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
     if go_to = "shop" then         %if instructed to go to shop
       return             %return to the main program
     end if
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end in_shop
 
@@ -4458,15 +4399,8 @@ proc west_hall (var go_to : string)         %when in second hall segment west of
         Font.Draw ("The door is locked; you should find the key...", 14, 614, font2, black)
       end if
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end west_hall
 
@@ -4519,17 +4453,10 @@ proc west_river (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
+    sceneCleanupRender(goto)
     fork move_enemy(skeleton)
     fork talkActor(skeleton)
-    View.Update
+    View.Update()
   end loop
 end west_river
 
@@ -4572,17 +4499,10 @@ proc cemetery (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
+    sceneCleanupRender(goto)
     fork move_enemy(ghost)
     fork talkActor(ghost)
-    View.Update
+    View.Update()
   end loop
 end cemetery
 
@@ -4619,16 +4539,9 @@ proc dark_forest (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
+    sceneCleanupRender(goto)
     Pic.Draw (dead_trees, 0, 0, picMerge)
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    View.Update()
   end loop
 end dark_forest
 
@@ -4648,17 +4561,10 @@ proc witch_house (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
+    sceneCleanupRender(goto)
     fork rat
     fork cat
-    View.Update
+    View.Update()
   end loop
 end witch_house
 
@@ -4683,17 +4589,10 @@ proc crypt (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
+    sceneCleanupRender(goto)
     fork move_enemy(zombie)
     fork talkActor(zombie)
-    View.Update
+    View.Update()
   end loop
 end crypt
 
@@ -4727,17 +4626,10 @@ proc west_river_northcorner (var go_to : string)         %when at west river
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
+    sceneCleanupRender(goto)
     fork move_enemy(skeleton)
     fork talkActor(skeleton)
-    View.Update
+    View.Update()
   end loop
 end west_river_northcorner
 
@@ -4779,15 +4671,8 @@ proc mountains (var go_to : string)         %when east of 'west river'
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end mountains
 
@@ -4813,20 +4698,13 @@ proc cottage (var go_to : string)         %when east of 'west river'
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
+    sceneCleanupRender(goto)
     fork peasant_proc
     fork talkActor(peasant)
     if ~ (hero -> xPos > 505 and hero -> yPos > 53 and hero -> yPos < 180) then         %if not in cottage
       Pic.Draw (thatchroof, 519, 149, picCopy)
     end if
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    View.Update()
   end loop
 end cottage
 
@@ -4863,17 +4741,10 @@ proc east_of_westriver (var go_to : string)         %when east of 'west river'
     if go_to = "castle entrance" then
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
+    sceneCleanupRender(goto)
     fork move_enemy(goblin)
     fork talkActor(goblin)
-    View.Update
+    View.Update()
   end loop
 end east_of_westriver
 
@@ -4902,15 +4773,8 @@ proc lair_entrance (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end lair_entrance
 
@@ -4934,15 +4798,8 @@ proc dragons_lair (var go_to : string)         %when in the castle
     if go_to = "castle entrance" then
       return
     end if
-    updateMouseInfo()
-    drawscreen (goto)         %run graphical output
-    if movecharacter then
-      return
-    end if
-    if exitgame then
-      return
-    end if
-    View.Update
+    sceneCleanupRender(goto)
+    View.Update()
   end loop
 end dragons_lair
 
