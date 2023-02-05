@@ -5136,6 +5136,33 @@ proc openingscreen
   end loop
 end openingscreen
 
+proc redirect
+  case scene of
+    label "outside entrance": outside_entrance (goto)
+    label "castle entrance": in_castle (goto)
+    label "south of entrance": south_of_entrance (goto)
+    label "east hall": east_hall (goto)
+    label "in-castle trapdoor": incastle_trapdoor (goto)
+    label "subcastle tunnel": subcastle_tunnel (goto)
+    label "subcastle_tunnel2": subcastle_tunnel2 (goto)
+    label "troll dungeon": troll_dungeon (goto)
+    label "shop": shop (goto)
+    label "in shop": in_shop (goto)
+    label "west hall": west_hall (goto)
+    label "west river": west_river (goto)
+    label "cemetery": cemetery (goto)
+    label "dark forest": dark_forest (goto)
+    label "witch house": witch_house (goto)
+    label "crypt": crypt (goto)
+    label "east of 'west river'": east_of_westriver (goto)
+    label "west river-north corner": west_river_northcorner (goto)
+    label "mountains": mountains (goto)
+    label "cottage": cottage (goto)
+    label "lair entrance": lair_entrance (goto)
+    label "dragon's lair": dragons_lair (goto)
+  end case
+end redirect
+
 %----------------------------------
 %Main Program and Redirection Code
 %----------------------------------
@@ -5152,39 +5179,7 @@ if ~ closewindow then
     Music.PlayFileStop
   end if
   if ~ loadsavedgame then
-    if scene = "outside entrance" then         %if redirected to outside entrance
-      outside_entrance (goto)         %proceed to outside entrance procedure
-    elsif scene = "castle entrance" then         %if redirected to castle
-      in_castle (goto)         %proceed to castle procedure
-    elsif scene = "shop" then         %if redirected to shop
-      shop (goto)         %proceed to shop procedure
-    elsif scene = "in shop" then         %if redirected into shop
-      in_shop (goto)         %proceed to in shop procedure
-    elsif scene = "west hall" then         %if redirected to the second hall to the west
-      west_hall (goto)         %proceed to west_hall procedure
-    elsif scene = "west river" then         %if redirected to the river to the west
-      west_river (goto)         %proceed to west_river procedure
-    elsif scene = "cemetery" then
-      cemetery (goto)
-    elsif scene = "dark forest" then
-      dark_forest (goto)
-    elsif scene = "witch house" then
-      witch_house (goto)
-    elsif scene = "crypt" then         %if redirected to crypt
-      crypt (goto)         %proceed to crypt procedure
-    elsif scene = "east of 'west river'" then         %if redirected to east of the west river
-      east_of_westriver (goto)         %proceed to east_of_westriver procedure
-    elsif scene = "west river-north corner" then
-      west_river_northcorner (goto)
-    elsif scene = "mountains" then
-      mountains (goto)
-    elsif scene = "cottage" then
-      cottage (goto)
-    elsif scene = "lair entrance" then
-      lair_entrance (goto)
-    elsif scene = "dragon's lair" then
-      dragons_lair (goto)
-    end if
+    redirect()
   end if
 end if
 loop
@@ -5229,51 +5224,7 @@ loop
       loadsavedgame := false
     end if
     movetopreviousscene := false
-    if scene = "outside entrance" then             %if redirected to outside entrance
-      outside_entrance (goto)                 %proceed to outside entrance procedure
-    elsif scene = "castle entrance" then             %if redirected to castle
-      in_castle (goto)                 %proceed to castle procedure
-    elsif goto = "south of entrance" then
-      south_of_entrance (goto)
-    elsif goto = "east hall" then
-      east_hall (goto)
-    elsif goto = "in-castle trapdoor" then
-      incastle_trapdoor (goto)
-    elsif goto = "subcastle tunnel" then
-      subcastle_tunnel (goto)
-    elsif goto = "subcastle tunnel2" then
-      subcastle_tunnel2 (goto)
-    elsif goto = "troll dungeon" then
-      troll_dungeon (goto)
-    elsif scene = "shop" then             %if redirected to shop
-      shop (goto)                 %proceed to shop procedure
-    elsif scene = "in shop" then             %if redirected into shop
-      in_shop (goto)                 %proceed to in shop procedure
-    elsif scene = "west hall" then             %if redirected to the second hall to the west
-      west_hall (goto)                 %proceed to west_hall procedure
-    elsif scene = "west river" then             %if redirected to the river to the west
-      west_river (goto)                 %proceed to west_river procedure
-    elsif scene = "cemetery" then
-      cemetery (goto)
-    elsif scene = "dark forest" then
-      dark_forest (goto)
-    elsif scene = "witch house" then
-      witch_house (goto)
-    elsif scene = "crypt" then             %if redirected to crypt
-      crypt (goto)                 %proceed to crypt procedure
-    elsif scene = "east of 'west river'" then             %if redirected to east of the west river
-      east_of_westriver (goto)                 %proceed to east_of_westriver procedure
-    elsif scene = "west river-north corner" then
-      west_river_northcorner (goto)
-    elsif scene = "mountains" then
-      mountains (goto)
-    elsif scene = "cottage" then
-      cottage (goto)
-    elsif scene = "lair entrance" then
-      lair_entrance (goto)
-    elsif scene = "dragon's lair" then
-      dragons_lair (goto)
-    end if
+    redirect()
   end if
   movecharacter := false
   if goto = "outside entrance" or goto = "OUTSIDEENTRANCE" then         %if redirected to outside entrance
