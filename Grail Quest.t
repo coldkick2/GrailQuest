@@ -173,67 +173,42 @@ var font7 : int := Font.New ("Courier New:8")
 var font8 : int := Font.New ("Old English Text MT:12")
 var font9 : int := Font.New ("Courier New:30")
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
+procedure renderLoadingIcon
+  percent := percent + 2.5
+  drawfillbox (100, 190, 400, 210, darkgrey)
+  drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
+  Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
+  View.Update()
+end renderLoadingIcon
+
 var stoneback : int := Pic.FileNew ("Images/stoneback.bmp")
 var cottage_pic : int := Pic.FileNew ("Images/cottage.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var stoneback_wall : int := Pic.FileNew ("Images/stoneback-grey-wall.bmp")
 var thatchroof : int := Pic.FileNew ("Images/thatch roof.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var castle_entrance : int := Pic.FileNew ("Images/castle entrance.bmp")
 var castle_entrance_all : int := Pic.FileNew ("Images/castle entrance - all.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var outside_entrancepic : int := Pic.FileNew ("Images/outside.bmp")
 var outside_entrancepic_all : int := Pic.FileNew ("Images/outside - all.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var shop_pic : int := Pic.FileNew ("Images/shop entrance.bmp")
 var shop_pic_all : int := Pic.FileNew ("Images/shop entrance - all.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var cottagekey_pic : int := Pic.FileNew ("Images/cottagekey.bmp")
 var chat_window_pic : int := Pic.FileNew ("Images/chat window.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var tree : int := Pic.FileNew ("Images/tree.bmp")  %242x257
 var in_cottage_pic : int := Pic.FileNew ("Images/in cottage.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var battleaxe_bought : int := Pic.FileNew ("Images/battleaxe bought.bmp")
 var cursor_moveto : int := Pic.FileNew ("Images/cursor - move-to.bmp")
 var cursor_attack : int := Pic.FileNew ("Images/cursor - attack.bmp")
@@ -244,256 +219,124 @@ var cursor_kwh_true : int := Pic.FileNew ("Images/cursor - kwh2 - true.bmp")
 var cursor_kwh_false : int := Pic.FileNew ("Images/cursor - kwh2 - false.bmp")
 var cursor_ck_true : int := Pic.FileNew ("Images/cursor - ck - true.bmp")
 var cursor_ck_false : int := Pic.FileNew ("Images/cursor - ck - false.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var twohanded_bought : int := Pic.FileNew ("Images/2h bought.bmp")
 var warriordeadgreypic : int := Pic.FileNew ("Images/warriordeadgrey.bmp")
 var warriordeadblackpic : int := Pic.FileNew ("Images/warriordeadblack.bmp")
 var warriorresurrectedpic : int := Pic.FileNew ("Images/warriorresurrected.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var bow_bought : int := Pic.FileNew ("Images/bow bought.bmp")
 var witch_house_pic : int := Pic.FileNew ("Images/witch house.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var dark_forest_pic : int := Pic.FileNew ("Images/dark forest.bmp")
 var dead_trees : int := Pic.FileNew ("Images/dead trees.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var topbar : int := Pic.FileNew ("Images/top bar.bmp")
 var dragon_slain : int := Pic.FileNew ("Images/you slay the dragon.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var westhall : int := Pic.FileNew ("Images/west hall 2.bmp")
 var westhall_all : int := Pic.FileNew ("Images/west hall 2 - all.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var key_wh2 : int := Pic.FileNew ("Images/key west hall 2.bmp")  %21x21
 var darkoverlay : int := Pic.FileNew ("Images/darkness overlay - torch.bmp") %800x600
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var west_river_pic : int := Pic.FileNew ("Images/west river.bmp")
 var logo : int := Pic.FileNew ("Images/credits logo.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var east_of_westriver_pic : int := Pic.FileNew ("Images/east of 'west river'.bmp")
 var incastletrapdoor_pic : int := Pic.FileNew ("Images/trapdoor area.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var mappic50 : int := Pic.FileNew ("Images/fullmap 50.bmp")
 var hall_all : int := Pic.FileNew ("Images/hall - all.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var mappic100 : int := Pic.FileNew ("Images/fullmap.bmp")
 var subcastletunnel_pic : int := Pic.FileNew ("Images/subcastle tunnel.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var location : int := Pic.FileNew ("Images/you are here.bmp")
 var subcastletunnel2_pic : int := Pic.FileNew ("Images/subcastle tunnel2.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var centrebtn : int := Pic.FileNew ("Images/centre.bmp")
 var trolldungeon_pic : int := Pic.FileNew ("Images/troll dungeon.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var returnbtn : int := Pic.FileNew ("Images/return.bmp")
 var stonefloor_pic : int := Pic.FileNew ("Images/stone floor.bmp")
 var cursor_normal : int := Pic.FileNew ("Images/cursor - normal.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var scalebtn : int := Pic.FileNew ("Images/scale.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var kingsswordinvpic : int := kingsSword -> invpic
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
-var battleaxeinvpic : int := Pic.FileNew ("Images/battleaxe-inv.bmp")
+var battleaxeinvpic : int := battleAxe -> invpic
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
-var twohandedinvpic : int := Pic.FileNew ("Images/2h-inv.bmp")
+var twohandedinvpic : int := twoHanded -> invpic
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
-var bowinvpic : int := Pic.FileNew ("Images/bow-inv.bmp")
+var bowinvpic : int := bow -> invpic
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var westriver_northcorner_pic : int := Pic.FileNew ("Images/west river-northwest corner.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var mountains_pic : int := Pic.FileNew ("Images/mountains.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var lair_entrance_pic : int := Pic.FileNew ("Images/lair entrance.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var dragons_lair_pic : int := Pic.FileNew ("Images/dragon's lair.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var dragondead : int := Pic.FileNew ("Images/dragon dead.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var grailpic : int := Pic.FileNew ("Images/grail.bmp") %21x24
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var creditspic : int := Pic.FileNew ("Images/opening screen - credits.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var playpic : int := Pic.FileNew ("Images/opening screen - play.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var exitpic : int := Pic.FileNew ("Images/opening screen - exit.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var intro : int := Pic.FileNew ("Images/opening screen.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var quittomenu_yes : int := Pic.FileNew ("Images/quit to menu - yes.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var quittomenu_no : int := Pic.FileNew ("Images/quit to menu - no.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var quittomenu : int := Pic.FileNew ("Images/quit to menu.bmp")
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent), 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var creditslist : int := Pic.FileNew ("Images/creditsbackground.bmp") %500x1500
 var crypt_pic : int := Pic.FileNew ("Images/crypt.bmp") %800x600
 var grailinvpic : int := Pic.FileNew ("Images/grailinv.bmp") %16x18
 var info : int := Pic.FileNew ("Images/info screen2.bmp") %600x400
 var cemetery_pic : int := Pic.FileNew ("Images/cemetery.bmp") %800x600
+renderLoadingIcon()
 
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent) - 10, 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
-percent := percent + 2.5
 var quit_highlight : int := Pic.FileNew ("Images/quit-highlight.bmp")
 var crypt_rope_pic : int := Pic.FileNew ("Images/crypt-rope.bmp") %800x600
 var stoneback_grey : int := Pic.FileNew ("Images/stoneback-grey.bmp") %800x600
@@ -512,11 +355,7 @@ var platelegs_bought : int := Pic.FileNew ("Images/platelegs bought.bmp")
 var fullhelmpic : int := Pic.FileNew ("Images/fullhelm.bmp")
 var fullhelm_bought : int := Pic.FileNew ("Images/fullhelm bought.bmp")
 var backbutton : int := Pic.FileNew ("Images/back button.bmp")
-
-drawfillbox (100, 190, 400, 210, darkgrey)
-drawfillbox (100, 190, 100 + round (3 * percent) - 10, 210, brightred)
-Font.Draw ("Loading images..." + realstr (percent, 0) + "%", 105, 195, font5, white)
-View.Update
+renderLoadingIcon()
 
 drawfillbox (100, 190, 300, 210, brightred)
 Font.Draw ("Loading booleans...", 105, 195, font5, white)
