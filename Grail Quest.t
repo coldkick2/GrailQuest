@@ -2074,15 +2074,11 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     drawfillbox (150, 570, 212, 630, black)
     if ym > 600 and ym < 630 then
       drawfillbox (150, 600, 212, 630, green)
-      Font.Draw ("Wield", 155, 610, font2, yellow)
-      Font.Draw ("Info.", 155, 580, font2, yellow)
       if left = 1 then
         equipItem(kingsSword)
       end if
     elsif ym > 570 and ym < 600 then
       drawfillbox (150, 570, 212, 600, green)
-      Font.Draw ("Wield", 155, 610, font2, yellow)
-      Font.Draw ("Info.", 155, 580, font2, yellow)
       if left = 1 then
         getInfo(kingsSword)
       end if
@@ -2097,15 +2093,11 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     drawfillbox (172, 570, 234, 630, black)
     if ym > 600 and ym < 630 then
       drawfillbox (172, 600, 234, 630, green)
-      Font.Draw ("Wield", 177, 610, font2, yellow)
-      Font.Draw ("Info.", 177, 580, font2, yellow)
       if left = 1 then
         equipItem(battleAxe)
       end if
     elsif ym > 570 and ym < 600 then
       drawfillbox (172, 570, 234, 600, green)
-      Font.Draw ("Wield", 177, 610, font2, yellow)
-      Font.Draw ("Info.", 177, 580, font2, yellow)
       if left = 1 then
         getInfo(battleAxe)
       end if
@@ -2120,15 +2112,11 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     drawfillbox (194, 570, 256, 630, black)
     if ym > 600 and ym < 630 then
       drawfillbox (194, 600, 256, 630, green)
-      Font.Draw ("Wield", 199, 610, font2, yellow)
-      Font.Draw ("Info.", 199, 580, font2, yellow)
       if left = 1 then
         equipItem(twoHanded)
       end if
     elsif ym > 570 and ym < 600 then
       drawfillbox (194, 570, 256, 600, green)
-      Font.Draw ("Wield", 199, 610, font2, yellow)
-      Font.Draw ("Info.", 199, 580, font2, yellow)
       if left = 1 then
         getInfo(twoHanded)
       end if
@@ -2143,15 +2131,11 @@ proc collision (var go_to : string)     %detects collisions with objects and but
     drawfillbox (216, 570, 278, 630, black)
     if ym > 600 and ym < 630 then
       drawfillbox (216, 600, 278, 630, green)
-      Font.Draw ("Wield", 225, 610, font2, yellow)
-      Font.Draw ("Info.", 225, 580, font2, yellow)
       if left = 1 then
         equipItem(bow)
       end if
     elsif ym > 570 and ym < 600 then
       drawfillbox (216, 570, 278, 600, green)
-      Font.Draw ("Wield", 225, 610, font2, yellow)
-      Font.Draw ("Info.", 225, 580, font2, yellow)
       if left = 1 then
         getInfo(bow)
       end if
