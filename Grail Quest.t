@@ -519,6 +519,14 @@ View.Update()
 %>>PROGRAM<<<
 %------------------------------------------
 
+proc updateMouseInfo
+  buttonchoose ("multibutton")
+  mousewhere (xm, ym, button)
+  left := button mod 10         % left = 0 or 1
+  middle := (button - left) mod 100         % middle = 0 or 10
+  right := button - middle - left         % right = 0 or 100
+end updateMouseInfo
+
 proc getInfo(item : pointer to Item)
   loop
     Pic.Draw (info, 100, 100, picMerge)
@@ -527,11 +535,7 @@ proc getInfo(item : pointer to Item)
     Font.Draw (item -> description, 150, 390, font1, brightred)
     Font.Draw ("Attack advantage: +" + intstr(item -> power), 150, 360, font1, brightred)
     Pic.Draw (returnbtn, 630, 100, picMerge)
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)
-    left := button mod 10         % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
       return
     end if
@@ -579,11 +583,7 @@ proc usermanual
     Font.Draw ("-=Completing the Game=-", 10, 40, font6, yellow)
     Font.Draw ("-After obtaining the grail you must bring it to the king who is at the castle entrance.", 20, 20, font6, grey)
     Pic.Draw (returnbtn, 720, 10, picMerge)
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)
-    left := button mod 10         % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     if xm > 719 and xm < 791 and ym > 9 and ym < 71 and left = 1 then
       return
     end if
@@ -668,11 +668,7 @@ proc talk
                   Font.Draw ("Thank you for your help.", 150, 210, font1, brightred)
                 end if
                 Pic.Draw (returnbtn, 630, 100, picMerge)
-                buttonchoose ("multibutton")
-                mousewhere (xm, ym, button)
-                left := button mod 10                                 % left = 0 or 1
-                middle := (button - left) mod 100                                 % middle = 0 or 10
-                right := button - middle - left                                 % right = 0 or 100
+                updateMouseInfo()
                 if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
                   return
                 end if
@@ -700,11 +696,7 @@ proc talk
                   Font.Draw ("Thank you for your help.", 150, 210, font1, brightred)
                 end if
                 Pic.Draw (returnbtn, 630, 100, picMerge)
-                buttonchoose ("multibutton")
-                mousewhere (xm, ym, button)
-                left := button mod 10                                 % left = 0 or 1
-                middle := (button - left) mod 100                                 % middle = 0 or 10
-                right := button - middle - left                                 % right = 0 or 100
+                updateMouseInfo()
                 if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
                   return
                 end if
@@ -724,11 +716,7 @@ proc talk
             Font.Draw ("I'm fine thank you, goodbye.", 150, 240, font1, brightred)
           end if
           Pic.Draw (returnbtn, 630, 100, picMerge)
-          buttonchoose ("multibutton")
-          mousewhere (xm, ym, button)
-          left := button mod 10                     % left = 0 or 1
-          middle := (button - left) mod 100                     % middle = 0 or 10
-          right := button - middle - left                     % right = 0 or 100
+          updateMouseInfo()
           if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
             return
           end if
@@ -739,11 +727,7 @@ proc talk
       Font.Draw ("Hello", 150, 360, font1, brightred)
     end if
     Pic.Draw (returnbtn, 630, 100, picMerge)
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)
-    left := button mod 10         % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     if xm > 629 and xm < 701 and ym > 99 and ym < 171 and left = 1 then
       return
     end if
@@ -1013,11 +997,7 @@ proc options
     if xm > sliderx - 3 and xm < sliderx + 3 and ym > 247 and ym < 263 and autosavetoggle = "on" then
       if left = 1 then
         loop
-          buttonchoose ("multibutton")
-          mousewhere (xm, ym, button)
-          left := button mod 10 % left = 0 or 1
-          middle := (button - left) mod 100 % middle = 0 or 10
-          right := button - middle - left % right = 0 or 100
+          updateMouseInfo()
           if xm > 305 and xm <= 315 then
             sliderx := 310
             autosavefrequency := 9
@@ -1056,11 +1036,7 @@ proc options
       end if
     end if
     Pic.Draw (returnbtn, 580, 150, picMerge)
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)
-    left := button mod 10         % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     if xm > 579 and xm < 651 and ym > 149 and ym < 221 and left = 1 then
       return
     end if
@@ -1100,11 +1076,7 @@ proc credits
   ycreditsbackground := -1600
   setscreen ("position:middle,centre,graphics:500;400,offscreenonly,nobuttonbar,nocursor")
   loop
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     if left = 1 then
       delayspeed := 5
     else
@@ -1231,11 +1203,7 @@ proc map
   loop
     Input.KeyDown (hotkey)
     text := "Click and drag, use arrow keys, or move cursor to edges to explore the map."
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     if left = 1 and (xm < 729 or xm > 793 or ym < 608 or ym > 658) and xm > -1 and xm < 801 and ym > -1 and ym < 601 then
       xpic := xm - xdiff
       ypic := ym - ydiff
@@ -3518,11 +3486,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
     hero -> setDestination(false)
     loop
       drawfillbox (150, 150, 650, 450, black)             %black background
-      buttonchoose ("multibutton")
-      mousewhere (xm, ym, button)
-      left := button mod 10                   % left = 0 or 1
-      middle := (button - left) mod 100             % middle = 0 or 10
-      right := button - middle - left             % right = 0 or 100
+      updateMouseInfo()
       if xm > 160 and xm < 640 and ym > 410 and ym < 440 then             %quit to main menu
         if ingamemenubutton ~= "quit" then
           ingamemenubutton := "quit"
@@ -3544,11 +3508,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
         end if
         if left = 1 then
           loop
-            buttonchoose ("multibutton")
-            mousewhere (xm, ym, button)
-            left := button mod 10                         % left = 0 or 1
-            middle := (button - left) mod 100                         % middle = 0 or 10
-            right := button - middle - left                         % right = 0 or 100
+            updateMouseInfo()
             drawfillbox (150, 150, 650, 450, black)                         %black background
             Font.Draw ("Are you sure you want to quit?", 160, 400, font2, brightred)
             if xm > 160 and xm < 640 and ym > 280 and ym < 310 then                         %yes
@@ -3611,11 +3571,7 @@ proc drawscreen (var goto : string)         %generates graphics according to sce
         end if
         if left = 1 then
           loop
-            buttonchoose ("multibutton")
-            mousewhere (xm, ym, button)
-            left := button mod 10                         % left = 0 or 1
-            middle := (button - left) mod 100                         % middle = 0 or 10
-            right := button - middle - left                         % right = 0 or 100
+            updateMouseInfo()
             drawfillbox (150, 150, 650, 450, black)                         %black background
             Font.Draw ("Saving your current game will overwrite the previously saved game!", 160, 400, font2, brightred)
             Font.Draw ("Are you sure you want to overwrite the file?", 160, 370, font2, brightred)
@@ -4197,11 +4153,7 @@ proc in_castle (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4234,11 +4186,7 @@ proc south_of_entrance (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4272,11 +4220,7 @@ proc east_hall (var go_to : string)
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4318,11 +4262,7 @@ proc incastle_trapdoor (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4356,11 +4296,7 @@ proc subcastle_tunnel (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4393,11 +4329,7 @@ proc subcastle_tunnel2 (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4425,11 +4357,7 @@ proc troll_dungeon (var go_to : string)         %when in the castle
     if go_to = "castle entrance" then
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4480,11 +4408,7 @@ proc outside_entrance (var go_to : string)         %when outside entrance
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)
     if movecharacter then
       return
@@ -4523,11 +4447,7 @@ proc shop (var go_to : string)         %when near shop
       go_to := "in shop"
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4543,11 +4463,7 @@ proc in_shop (var go_to : string)         %when in the shop
   hero -> setDestination(false)
   scene := "in shop"
   loop
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if go_to = "shop" then         %if instructed to go to shop
       return             %return to the main program
@@ -4590,11 +4506,7 @@ proc west_hall (var go_to : string)         %when in second hall segment west of
         Font.Draw ("The door is locked; you should find the key...", 14, 614, font2, black)
       end if
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4655,11 +4567,7 @@ proc west_river (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4712,11 +4620,7 @@ proc cemetery (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4763,11 +4667,7 @@ proc dark_forest (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     Pic.Draw (dead_trees, 0, 0, picMerge)
     if movecharacter then
@@ -4796,11 +4696,7 @@ proc witch_house (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4835,11 +4731,7 @@ proc crypt (var go_to : string)         %when at west river
     if go_to = "castle entrance" then
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4883,11 +4775,7 @@ proc west_river_northcorner (var go_to : string)         %when at west river
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return             %return to the main program
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4939,11 +4827,7 @@ proc mountains (var go_to : string)         %when east of 'west river'
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -4977,11 +4861,7 @@ proc cottage (var go_to : string)         %when east of 'west river'
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     fork peasant_proc
     fork talkActor(peasant)
@@ -5031,11 +4911,7 @@ proc east_of_westriver (var go_to : string)         %when east of 'west river'
     if go_to = "castle entrance" then
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -5074,11 +4950,7 @@ proc lair_entrance (var go_to : string)         %when in the castle
       setscreen ("position:middle,centre,graphics:800;665,offscreenonly,nobuttonbar,nocursor")
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -5110,11 +4982,7 @@ proc dragons_lair (var go_to : string)         %when in the castle
     if go_to = "castle entrance" then
       return
     end if
-    buttonchoose ("multibutton")
-    mousewhere (xm, ym, button)         %check mouse location
-    left := button mod 10               % left = 0 or 1
-    middle := (button - left) mod 100         % middle = 0 or 10
-    right := button - middle - left         % right = 0 or 100
+    updateMouseInfo()
     drawscreen (goto)         %run graphical output
     if movecharacter then
       return
@@ -5137,11 +5005,7 @@ proc openingscreen
   fork menumusic
   loop
     if Window.GetActive = -1 then
-      buttonchoose ("multibutton")
-      mousewhere (xm, ym, button)
-      left := button mod 10           % left = 0 or 1
-      middle := (button - left) mod 100         % middle = 0 or 10
-      right := button - middle - left         % right = 0 or 100
+      updateMouseInfo()
       if xm > 94 and xm < 161 and ym > 174 and ym < 226 then         %play
         if menubutton ~= "play" then
           Pic.Draw (playpic, 0, 0, picCopy)
@@ -5161,11 +5025,7 @@ proc openingscreen
           menubutton := ""
           loop
             if Window.GetActive = -1 then
-              buttonchoose ("multibutton")
-              mousewhere (xm, ym, button)
-              left := button mod 10             % left = 0 or 1
-              middle := (button - left) mod 100             % middle = 0 or 10
-              right := button - middle - left             % right = 0 or 100
+              updateMouseInfo()
               cls
               colourback (black)
               Font.Draw ("Play new game,", 10, 300, font3, yellow)
