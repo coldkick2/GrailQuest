@@ -889,6 +889,13 @@ process music
   music_on := false
 end music
 
+function toggleColor(toggleValue : string) : int
+  case toggleValue of
+    label "on": result green
+    label "off": result brightred
+  end case
+end toggleColor
+
 proc options
   drawfillbox (150, 150, 650, 450, black)
   Font.Draw ("Options", 150, 420, font3, brightred)
@@ -911,48 +918,15 @@ proc options
   drawfillbox (sliderx - 3, 247, sliderx + 3, 263, yellow)
 
   loop
-    if sfxtoggle = "on" then
-      drawline (285, 352, 288, 358, green)
-      drawline (282, 355, 285, 352, green)
-    elsif sfxtoggle = "off" then
-      drawline (282, 352, 288, 358, brightred)
-      drawline (282, 358, 288, 352, brightred)
-    end if
-    if musictoggle = "on" then
-      drawline (285, 302, 288, 308, green)
-      drawline (282, 305, 285, 302, green)
-    elsif musictoggle = "off" then
-      drawline (282, 302, 288, 308, brightred)
-      drawline (282, 308, 288, 302, brightred)
-    end if
-    if autosavetoggle = "on" then
-      drawline (285, 252, 288, 258, green)
-      drawline (282, 255, 285, 252, green)
-      %slider
-      drawfillbox (sliderx - 3, 247, sliderx + 3, 263, yellow)
-    elsif autosavetoggle = "off" then
-      drawline (282, 252, 288, 258, brightred)
-      drawline (282, 258, 288, 252, brightred)
-      %slider
-      drawfillbox (sliderx - 3, 247, sliderx + 3, 263, darkgrey)
-    end if
     if xm > 280 and xm < 290 and ym > 350 and ym < 360 and left = 1 and toggleready then
       toggleready := false
       if sfxtoggle = "on" then
         sfxtoggle := "off"
         sfx_on := false
-        drawfillbox (280, 350, 290, 360, darkgrey)
-        drawfillbox (282, 352, 288, 358, grey)
-        drawline (282, 352, 288, 358, brightred)
-        drawline (282, 358, 288, 352, brightred)
       elsif sfxtoggle = "off" then
         sfxtoggle := "on"
         sfx_on := true
         fork swords
-        drawfillbox (280, 350, 290, 360, darkgrey)
-        drawfillbox (282, 352, 288, 358, grey)
-        drawline (285, 352, 288, 358, green)
-        drawline (282, 355, 285, 352, green)
       end if
     elsif xm > 280 and xm < 290 and ym > 300 and ym < 310 and left = 1 and toggleready then
       toggleready := false
@@ -961,35 +935,19 @@ proc options
         playmusic_on := false
         stopmusic := true
         Music.PlayFileStop
-        drawfillbox (280, 300, 290, 310, darkgrey)
-        drawfillbox (282, 302, 288, 308, grey)
-        drawline (282, 302, 288, 308, brightred)
-        drawline (282, 308, 288, 302, brightred)
       elsif musictoggle = "off" then
         musictoggle := "on"
         playmusic_on := true
         fork music
-        drawfillbox (280, 300, 290, 310, darkgrey)
-        drawfillbox (282, 302, 288, 308, grey)
-        drawline (285, 302, 288, 308, green)
-        drawline (282, 305, 285, 302, green)
       end if
     elsif xm > 280 and xm < 290 and ym > 250 and ym < 260 and left = 1 and toggleready then
       toggleready := false
       if autosavetoggle = "on" then
         autosavetoggle := "off"
         autosave := false
-        drawfillbox (280, 250, 290, 260, darkgrey)
-        drawfillbox (282, 252, 288, 258, grey)
-        drawline (282, 252, 288, 258, brightred)
-        drawline (282, 258, 288, 252, brightred)
       elsif autosavetoggle = "off" then
         autosavetoggle := "on"
         autosave := true
-        drawfillbox (280, 250, 290, 260, darkgrey)
-        drawfillbox (282, 252, 288, 258, grey)
-        drawline (285, 252, 288, 258, green)
-        drawline (282, 255, 285, 252, green)
       end if
     elsif left = 0 then
       toggleready := true
@@ -1035,6 +993,16 @@ proc options
         end loop
       end if
     end if
+    drawline (285, 352, 288, 358, toggleColor(sfxtoggle))
+    drawline (282, 355, 285, 352, toggleColor(sfxtoggle))
+
+    drawline (285, 302, 288, 308, toggleColor(musictoggle))
+    drawline (282, 305, 285, 302, toggleColor(musictoggle))
+
+    drawline (285, 252, 288, 258, toggleColor(autosavetoggle))
+    drawline (282, 255, 285, 252, toggleColor(autosavetoggle))
+    %slider
+    drawfillbox (sliderx - 3, 247, sliderx + 3, 263, yellow)
     Pic.Draw (returnbtn, 580, 150, picMerge)
     updateMouseInfo()
     if xm > 579 and xm < 651 and ym > 149 and ym < 221 and left = 1 then
