@@ -26,44 +26,56 @@ class Actor
     var respawnCounter : int := 0
     var talkCounter : int := 0
     var talkCounterGoal : int := Rand.Int(500,1000)
+  
     procedure setHp (i : int)
 	    hp := i
     end setHp
+  
     procedure setAlive(b : boolean)
 	    alive := b
     end setAlive
+  
     procedure setRespawnCounter(i : int)
 	    respawnCounter := i
     end setRespawnCounter
+  
     procedure setMove(b : boolean)
 	    move := b
     end setMove
+  
     procedure setDir(i : int)
 	    dir := i
     end setDir
+  
     procedure setXPos(i : int)
 	    xPos := i
     end setXPos
+  
     procedure setYPos(i : int)
 	    yPos := i
     end setYPos
+  
     procedure setTalk(b : boolean)
 	    talk := b
     end setTalk
+  
     procedure setLvlClr(playerLvl : int)
-	if playerLvl > totalLvl then
-	    lvlClr := brightgreen
-	elsif playerLvl = totalLvl then
-	    lvlClr := yellow
-	elsif playerLvl < totalLvl then
-	    lvlClr := brightred
-	end if
+	    if playerLvl > totalLvl then
+	      lvlClr := brightgreen
+	    elsif playerLvl = totalLvl then
+	      lvlClr := yellow
+	    elsif playerLvl < totalLvl then
+	      lvlClr := brightred
+	    end if
     end setLvlClr
+
     procedure setTalkCounter(i : int)
-        talkCounter := i
+      talkCounter := i
     end setTalkCounter
+
     procedure newTalkCounterGoal
-        talkCounterGoal := Rand.Int(500, 1000)
+      talkCounterGoal := Rand.Int(500, 1000)
     end newTalkCounterGoal
+  
     deferred procedure detectCollision
 end Actor
